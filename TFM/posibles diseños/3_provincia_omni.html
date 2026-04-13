@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Sovereign ISEU+ Terminal | Barcelona</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;400;600;800&amp;family=Inter:wght@300;400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary": "#bdc2ff",
+                        "surface-tint": "#bdc2ff",
+                        "inverse-primary": "#4e56ab",
+                        "primary-container": "#000666",
+                        "on-secondary-container": "#00616d",
+                        "outline": "#908f9d",
+                        "on-surface-variant": "#c6c5d3",
+                        "tertiary-fixed-dim": "#45d8ed",
+                        "secondary-fixed": "#9cf0ff",
+                        "primary-fixed-dim": "#bdc2ff",
+                        "error": "#ff5252",
+                        "primary-fixed": "#e0e0ff",
+                        "on-primary-fixed-variant": "#353e91",
+                        "on-error": "#690005",
+                        "error-container": "#93000a",
+                        "surface-bright": "#363940",
+                        "on-secondary-fixed-variant": "#004f58",
+                        "surface-container-lowest": "#0b0e14",
+                        "outline-variant": "#464651",
+                        "on-secondary": "#00363d",
+                        "surface": "#10131a",
+                        "surface-dim": "#10131a",
+                        "surface-container": "#1d2026",
+                        "surface-container-low": "#191c22",
+                        "on-tertiary-fixed": "#001f24",
+                        "surface-container-high": "#272a31",
+                        "on-error-container": "#ffdad6",
+                        "secondary-fixed-dim": "#00daf3",
+                        "surface-container-highest": "#32353c",
+                        "on-primary": "#1d257a",
+                        "tertiary-container": "#001f23",
+                        "surface-variant": "#32353c",
+                        "tertiary": "#45d8ed",
+                        "secondary-container": "#00e3fd",
+                        "on-tertiary": "#00363d",
+                        "inverse-surface": "#e1e2eb",
+                        "background": "#10131a",
+                        "inverse-on-surface": "#2e3037",
+                        "on-tertiary-fixed-variant": "#004f58",
+                        "on-background": "#e1e2eb",
+                        "secondary": "#bdf4ff",
+                        "on-secondary-fixed": "#001f24",
+                        "tertiary-fixed": "#98f0ff",
+                        "on-tertiary-container": "#0091a1",
+                        "on-primary-container": "#737cd3",
+                        "on-surface": "#e1e2eb",
+                        "on-primary-fixed": "#010766"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Manrope"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body { background-color: #10131a; color: #e1e2eb; font-family: 'Inter', sans-serif; }
+        .glass-panel {
+            background: rgba(50, 53, 60, 0.4);
+            backdrop-filter: blur(24px);
+            border: 1px solid rgba(189, 194, 255, 0.1);
+        }
+        .hero-gradient {
+            background-image: radial-gradient(circle at top right, rgba(50, 0, 102, 0.4), transparent 60%),
+                        radial-gradient(circle at bottom left, rgba(69, 216, 237, 0.05), transparent 50%);
+        }
+        .radar-grid {
+            background-image: radial-gradient(circle, rgba(144, 143, 157, 0.1) 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+    </style>
+</head>
+<body class="bg-[#05001a] text-[#e1e2eb] hero-gradient min-h-screen">
+<!-- Top Navigation Shell -->
+<header class="fixed top-0 w-full z-50 bg-slate-950/60 backdrop-blur-xl shadow-[0_0_60px_rgba(189,194,255,0.08)] flex justify-between items-center px-8 h-16 w-full font-['Manrope'] uppercase tracking-wider text-xs">
+<div class="flex items-center gap-6">
+<span class="text-xl font-bold tracking-tighter text-blue-100">Sovereign ISEU+</span>
+<nav class="hidden md:flex gap-8 items-center">
+<a class="text-slate-400 hover:text-blue-200 transition-colors cursor-pointer active:scale-95 duration-200" href="#">Público General</a>
+<a class="text-slate-400 hover:text-blue-200 transition-colors cursor-pointer active:scale-95 duration-200" href="#">Inversor</a>
+<a class="text-blue-100 border-b-2 border-cyan-400 pb-1 cursor-pointer active:scale-95 duration-200" href="#">Académico</a>
+</nav>
+</div>
+<div class="flex items-center gap-6">
+<div class="flex gap-4">
+<span class="material-symbols-outlined text-blue-200 cursor-pointer active:scale-95 duration-200" data-icon="notifications">notifications</span>
+<span class="material-symbols-outlined text-blue-200 cursor-pointer active:scale-95 duration-200" data-icon="settings">settings</span>
+</div>
+<div class="h-8 w-8 rounded-full overflow-hidden border border-primary/20">
+<img alt="User profile" data-alt="Close-up portrait of a professional analyst in a dark suit with a tech-focused office background, soft blue lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAM_ZO_4ZWTf3gjKo1wxcorEmBTLkzEeaqY69twFJRY8uwNfnqiB1qdYZq5bBdV7nCx4SgyZxJ4xniBgYoJyd0KSJye04JpE6cwA5972WPJQ7F81SHbJs2PQAsIm_BEN_mkh4voPTYpGOxFVzqieEf7dqBlk4-VS5_wISi5fr8mWu6cp9RLJ0dw_GtT1RpAH3Qh6irjMyKAVJk2AhdCr84wN92nj6NZCMfdG8-pkOHwrzS2trvMMU1QVyIqO7-EC2-Si3d0xDW1O7U"/>
+</div>
+</div>
+</header>
+<!-- Side Navigation Shell -->
+<aside class="fixed left-0 top-0 h-full w-64 z-40 bg-slate-900/40 backdrop-blur-2xl shadow-[inset_-1px_0_0_rgba(189,194,255,0.15)] flex flex-col pt-20 pb-6 px-4 gap-2 font-['Inter'] font-medium text-sm">
+<div class="px-4 mb-8">
+<div class="flex items-center gap-3 mb-1">
+<div class="w-10 h-10 rounded-lg bg-primary-container flex items-center justify-center border border-primary/20">
+<span class="material-symbols-outlined text-primary" data-icon="location_city">location_city</span>
+</div>
+<div>
+<h3 class="font-['Manrope'] font-extrabold text-blue-50">Barcelona</h3>
+<p class="text-[10px] text-slate-400 uppercase tracking-widest">España &gt; Cataluña</p>
+</div>
+</div>
+</div>
+<nav class="flex-1 space-y-1">
+<div class="flex items-center gap-3 px-4 py-3 group cursor-pointer transition-all duration-300 text-slate-400 hover:bg-white/5 hover:text-blue-200 hover:translate-x-1">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span>Resumen</span>
+</div>
+<div class="flex items-center gap-3 px-4 py-3 group cursor-pointer transition-all duration-300 text-slate-400 hover:bg-white/5 hover:text-blue-200 hover:translate-x-1">
+<span class="material-symbols-outlined" data-icon="analytics">analytics</span>
+<span>Macro</span>
+</div>
+<div class="flex items-center gap-3 px-4 py-3 group cursor-pointer transition-all duration-300 text-slate-400 hover:bg-white/5 hover:text-blue-200 hover:translate-x-1">
+<span class="material-symbols-outlined" data-icon="monitoring">monitoring</span>
+<span>Mercados</span>
+</div>
+<div class="flex items-center gap-3 px-4 py-3 group cursor-pointer transition-all duration-300 bg-blue-600/20 text-blue-100 rounded-lg shadow-[inset_1px_1px_0_rgba(189,194,255,0.2)]">
+<span class="material-symbols-outlined" data-icon="account_balance">account_balance</span>
+<span>Deuda</span>
+</div>
+<div class="flex items-center gap-3 px-4 py-3 group cursor-pointer transition-all duration-300 text-slate-400 hover:bg-white/5 hover:text-blue-200 hover:translate-x-1">
+<span class="material-symbols-outlined" data-icon="receipt_long">receipt_long</span>
+<span>Fiscal</span>
+</div>
+<div class="flex items-center gap-3 px-4 py-3 group cursor-pointer transition-all duration-300 text-slate-400 hover:bg-white/5 hover:text-blue-200 hover:translate-x-1">
+<span class="material-symbols-outlined" data-icon="query_stats">query_stats</span>
+<span>Análisis</span>
+</div>
+</nav>
+<button class="mx-4 mt-4 mb-8 py-3 bg-gradient-to-br from-primary to-on-primary-container text-on-primary-fixed rounded-xl font-bold text-xs uppercase tracking-widest shadow-lg shadow-primary/10 active:scale-95 transition-transform">
+            Inversión Directa
+        </button>
+<div class="border-t border-slate-800/40 pt-4 space-y-1">
+<div class="flex items-center gap-3 px-4 py-2 text-slate-500 hover:text-blue-300 transition-colors cursor-pointer text-xs">
+<span class="material-symbols-outlined scale-75" data-icon="help_center">help_center</span>
+<span>Soporte</span>
+</div>
+<div class="flex items-center gap-3 px-4 py-2 text-slate-500 hover:text-blue-300 transition-colors cursor-pointer text-xs">
+<span class="material-symbols-outlined scale-75" data-icon="terminal">terminal</span>
+<span>Terminal</span>
+</div>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="pl-64 pt-16 min-h-screen">
+<div class="p-8 max-w-[1600px] mx-auto">
+<!-- Civic Header -->
+<div class="mb-10 flex justify-between items-end">
+<div>
+<nav class="flex gap-2 text-[10px] uppercase tracking-[0.2em] text-slate-500 mb-2 font-medium">
+<span>España</span>
+<span class="text-slate-700">/</span>
+<span>Cataluña</span>
+<span class="text-slate-700">/</span>
+<span class="text-tertiary">Barcelona</span>
+</nav>
+<h1 class="font-headline text-5xl font-extrabold tracking-tight text-on-surface">
+                        Sovereign <span class="text-primary">ISEU+</span> Terminal
+                    </h1>
+</div>
+<div class="flex gap-3 pb-2">
+<div class="flex flex-col items-end">
+<span class="text-[10px] text-slate-500 uppercase font-bold">Health Score</span>
+<span class="text-2xl font-headline font-bold text-tertiary">84.6</span>
+</div>
+<div class="w-[1px] h-10 bg-slate-800 mx-2"></div>
+<div class="flex flex-col items-end">
+<span class="text-[10px] text-slate-500 uppercase font-bold">Trend</span>
+<span class="text-2xl font-headline font-bold text-secondary">+2.4%</span>
+</div>
+</div>
+</div>
+<!-- Dashboard Grid -->
+<div class="grid grid-cols-12 gap-8">
+<!-- Left Column (40%) -->
+<div class="col-span-12 lg:col-span-5 flex flex-col gap-8">
+<!-- Map Component -->
+<div class="glass-panel rounded-xl overflow-hidden relative group aspect-[4/3]">
+<div class="absolute inset-0 bg-primary-container/20 mix-blend-overlay z-10 pointer-events-none"></div>
+<img alt="Barcelona map" class="w-full h-full object-cover grayscale opacity-40 group-hover:scale-105 transition-transform duration-700" data-alt="Satellite thermal heatmap of Barcelona city and metropolitan area, neon cyan and violet pulses indicating economic intensity over a dark topographical background" data-location="Barcelona" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDDmSzCta03DQb6PlsqmKjhlZXx3cNuQGyVzsczzfXEoQXp1KQDcj2yZ64fmPcbtGFw747zhcET50tN0W0YtUlChrFsM2rkJ5oVVK3Y8KY-e4WG30_hX4rImn166TCfiM__40A2R0oznxzoCoXa2LQKUA1KeBcAgsPSCxr-C0ZRPAmp52r8G4kx6JLjM1HrV63ufs0kpkXOLEYd8uup2k2D8uFITUjYFg0gIaJT0ZEbYNaxwpVZ0YLFBZfA6kiPYapiVlXbtVbRxxc"/>
+<div class="absolute top-6 left-6 z-20">
+<h2 class="font-headline text-xs uppercase tracking-[0.2em] text-blue-200 font-bold mb-1">Geospatial Distribution</h2>
+<p class="text-[10px] text-slate-400">Heatmap: Economic Intensity Index</p>
+</div>
+<div class="absolute bottom-6 right-6 z-20 flex gap-4">
+<div class="glass-panel px-3 py-1.5 rounded-full text-[10px] font-bold text-tertiary border border-tertiary/20 flex items-center gap-2">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary"></span>
+                                Core Zone
+                            </div>
+</div>
+</div>
+<!-- 6 Pillars Radar Chart -->
+<div class="glass-panel rounded-xl p-8 radar-grid relative overflow-hidden">
+<div class="absolute top-0 right-0 w-32 h-32 bg-primary/5 blur-3xl"></div>
+<div class="mb-8">
+<h2 class="font-headline text-xs uppercase tracking-[0.2em] text-blue-200 font-bold mb-1">6 Pillars Analysis</h2>
+<p class="text-[10px] text-slate-400">Comparison: Barcelona Actual vs Regional Avg</p>
+</div>
+<div class="flex justify-center items-center py-4">
+<!-- SVG Radar Mockup -->
+<svg class="w-full max-w-[300px]" viewBox="0 0 200 200">
+<!-- Hexagon Backgrounds -->
+<polygon fill="none" points="100,20 170,60 170,140 100,180 30,140 30,60" stroke="#464651" stroke-width="0.5"></polygon>
+<polygon fill="none" points="100,50 145,75 145,125 100,150 55,125 55,75" stroke="#464651" stroke-width="0.5"></polygon>
+<line stroke="#464651" stroke-width="0.5" x1="100" x2="100" y1="20" y2="180"></line>
+<line stroke="#464651" stroke-width="0.5" x1="30" x2="170" y1="60" y2="140"></line>
+<line stroke="#464651" stroke-width="0.5" x1="30" x2="170" y1="140" y2="60"></line>
+<!-- Regional Average (Gray Fill) -->
+<polygon fill="rgba(144, 143, 157, 0.2)" points="100,60 140,85 130,120 100,140 70,120 60,85" stroke="#908f9d" stroke-width="1"></polygon>
+<!-- Barcelona Actual (Cyan Glow Fill) -->
+<polygon fill="rgba(69, 216, 237, 0.15)" points="100,30 160,70 150,130 100,170 40,135 50,65" stroke="#45d8ed" stroke-width="2"></polygon>
+</svg>
+</div>
+<div class="grid grid-cols-2 gap-4 mt-8">
+<div class="space-y-4">
+<div class="flex items-center gap-3">
+<div class="w-1.5 h-1.5 rounded-full bg-tertiary"></div>
+<span class="text-[10px] uppercase font-bold tracking-widest text-slate-400">Capacidad consumo</span>
+</div>
+<div class="flex items-center gap-3">
+<div class="w-1.5 h-1.5 rounded-full bg-primary"></div>
+<span class="text-[10px] uppercase font-bold tracking-widest text-slate-400">Coste de vida</span>
+</div>
+<div class="flex items-center gap-3">
+<div class="w-1.5 h-1.5 rounded-full bg-secondary"></div>
+<span class="text-[10px] uppercase font-bold tracking-widest text-slate-400">Dinamismo económico</span>
+</div>
+</div>
+<div class="space-y-4">
+<div class="flex items-center gap-3">
+<div class="w-1.5 h-1.5 rounded-full bg-error"></div>
+<span class="text-[10px] uppercase font-bold tracking-widest text-slate-400">Mercado laboral</span>
+</div>
+<div class="flex items-center gap-3">
+<div class="w-1.5 h-1.5 rounded-full bg-surface-tint"></div>
+<span class="text-[10px] uppercase font-bold tracking-widest text-slate-400">Accesibilidad</span>
+</div>
+<div class="flex items-center gap-3">
+<div class="w-1.5 h-1.5 rounded-full bg-on-tertiary-container"></div>
+<span class="text-[10px] uppercase font-bold tracking-widest text-slate-400">Entorno empresarial</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Column (60%) -->
+<div class="col-span-12 lg:col-span-7">
+<div class="glass-panel rounded-xl h-full flex flex-col">
+<!-- Matrix Header -->
+<div class="p-8 pb-4 flex justify-between items-center">
+<div>
+<h2 class="font-headline text-2xl font-extrabold tracking-tight text-on-surface">The Variable Matrix</h2>
+<p class="text-xs text-slate-500 font-medium tracking-wide">64 SEC-Normalized Indices | Real-time Stream</p>
+</div>
+<div class="flex gap-2">
+<div class="px-4 py-2 rounded-lg bg-surface-container-highest/50 border border-outline-variant/30 flex items-center gap-2 cursor-pointer hover:bg-surface-container-highest transition-colors">
+<span class="material-symbols-outlined text-sm" data-icon="filter_list">filter_list</span>
+<span class="text-[10px] font-bold uppercase tracking-widest">Filter</span>
+</div>
+<div class="px-4 py-2 rounded-lg bg-surface-container-highest/50 border border-outline-variant/30 flex items-center gap-2 cursor-pointer hover:bg-surface-container-highest transition-colors">
+<span class="material-symbols-outlined text-sm" data-icon="download">download</span>
+<span class="text-[10px] font-bold uppercase tracking-widest">CSV</span>
+</div>
+</div>
+</div>
+<!-- Data Table -->
+<div class="px-8 pb-8 overflow-y-auto">
+<table class="w-full text-left border-separate border-spacing-y-3">
+<thead class="sticky top-0 bg-surface-container/60 backdrop-blur-md z-10">
+<tr>
+<th class="py-4 text-[10px] uppercase tracking-[0.15em] text-slate-500 font-bold pl-4">Variable Name</th>
+<th class="py-4 text-[10px] uppercase tracking-[0.15em] text-slate-500 font-bold">Score</th>
+<th class="py-4 text-[10px] uppercase tracking-[0.15em] text-slate-500 font-bold">Weight</th>
+<th class="py-4 text-[10px] uppercase tracking-[0.15em] text-slate-500 font-bold text-center">Confidence</th>
+<th class="py-4 text-[10px] uppercase tracking-[0.15em] text-slate-500 font-bold text-right pr-4">7d Trend</th>
+</tr>
+</thead>
+<tbody>
+<!-- Pillar: Mercado Laboral -->
+<tr class="group hover:bg-surface-container-highest/30 transition-all cursor-pointer">
+<td class="py-4 pl-4 rounded-l-xl">
+<div class="flex flex-col">
+<span class="text-sm font-semibold text-on-surface">Tasa de Desempleo Juvenil</span>
+<span class="text-[9px] text-error uppercase font-bold tracking-wider">Mercado Laboral</span>
+</div>
+</td>
+<td class="py-4">
+<span class="font-headline text-lg font-bold text-on-surface">18.4</span>
+</td>
+<td class="py-4 text-xs font-mono text-slate-400">12.5%</td>
+<td class="py-4 text-center">
+<span class="px-2 py-0.5 rounded-full bg-tertiary/10 text-tertiary text-[9px] font-bold uppercase border border-tertiary/20">High</span>
+</td>
+<td class="py-4 pr-4 rounded-r-xl text-right">
+<div class="inline-block w-16 h-4">
+<svg class="w-full h-full" viewBox="0 0 100 20">
+<path d="M0,15 L10,12 L20,18 L30,5 L40,8 L50,2 L60,10 L70,4 L80,12 L90,8 L100,2" fill="none" stroke="#45d8ed" stroke-width="2"></path>
+</svg>
+</div>
+</td>
+</tr>
+<!-- Pillar: Dinamismo -->
+<tr class="group hover:bg-surface-container-highest/30 transition-all cursor-pointer">
+<td class="py-4 pl-4 rounded-l-xl">
+<div class="flex flex-col">
+<span class="text-sm font-semibold text-on-surface">Crecimiento PIB Local</span>
+<span class="text-[9px] text-secondary uppercase font-bold tracking-wider">Dinamismo Económico</span>
+</div>
+</td>
+<td class="py-4">
+<span class="font-headline text-lg font-bold text-on-surface">92.1</span>
+</td>
+<td class="py-4 text-xs font-mono text-slate-400">15.0%</td>
+<td class="py-4 text-center">
+<span class="px-2 py-0.5 rounded-full bg-secondary/10 text-secondary text-[9px] font-bold uppercase border border-secondary/20">High</span>
+</td>
+<td class="py-4 pr-4 rounded-r-xl text-right">
+<div class="inline-block w-16 h-4">
+<svg class="w-full h-full" viewBox="0 0 100 20">
+<path d="M0,18 L20,15 L40,16 L60,8 L80,10 L100,2" fill="none" stroke="#bdf4ff" stroke-width="2"></path>
+</svg>
+</div>
+</td>
+</tr>
+<!-- Pillar: Coste de Vida -->
+<tr class="group hover:bg-surface-container-highest/30 transition-all cursor-pointer">
+<td class="py-4 pl-4 rounded-l-xl">
+<div class="flex flex-col">
+<span class="text-sm font-semibold text-on-surface">Índice Precios Alquiler</span>
+<span class="text-[9px] text-primary uppercase font-bold tracking-wider">Coste de Vida</span>
+</div>
+</td>
+<td class="py-4">
+<span class="font-headline text-lg font-bold text-on-surface">42.8</span>
+</td>
+<td class="py-4 text-xs font-mono text-slate-400">20.0%</td>
+<td class="py-4 text-center">
+<span class="px-2 py-0.5 rounded-full bg-slate-700/50 text-slate-400 text-[9px] font-bold uppercase border border-outline-variant/30">Med</span>
+</td>
+<td class="py-4 pr-4 rounded-r-xl text-right">
+<div class="inline-block w-16 h-4">
+<svg class="w-full h-full" viewBox="0 0 100 20">
+<path d="M0,2 L20,5 L40,12 L60,10 L80,18 L100,20" fill="none" stroke="#ff5252" stroke-width="2"></path>
+</svg>
+</div>
+</td>
+</tr>
+<!-- Pillar: Entorno Empresarial -->
+<tr class="group hover:bg-surface-container-highest/30 transition-all cursor-pointer">
+<td class="py-4 pl-4 rounded-l-xl">
+<div class="flex flex-col">
+<span class="text-sm font-semibold text-on-surface">Densidad de Startups Tech</span>
+<span class="text-[9px] text-tertiary uppercase font-bold tracking-wider">Entorno Empresarial</span>
+</div>
+</td>
+<td class="py-4">
+<span class="font-headline text-lg font-bold text-on-surface">88.2</span>
+</td>
+<td class="py-4 text-xs font-mono text-slate-400">10.0%</td>
+<td class="py-4 text-center">
+<span class="px-2 py-0.5 rounded-full bg-tertiary/10 text-tertiary text-[9px] font-bold uppercase border border-tertiary/20">High</span>
+</td>
+<td class="py-4 pr-4 rounded-r-xl text-right">
+<div class="inline-block w-16 h-4">
+<svg class="w-full h-full" viewBox="0 0 100 20">
+<path d="M0,10 L20,8 L40,12 L60,5 L80,2 L100,4" fill="none" stroke="#45d8ed" stroke-width="2"></path>
+</svg>
+</div>
+</td>
+</tr>
+<!-- Pillar: Bienestar -->
+<tr class="group hover:bg-surface-container-highest/30 transition-all cursor-pointer">
+<td class="py-4 pl-4 rounded-l-xl">
+<div class="flex flex-col">
+<span class="text-sm font-semibold text-on-surface">Acceso Zonas Verdes</span>
+<span class="text-[9px] text-surface-tint uppercase font-bold tracking-wider">Accesibilidad y Bienestar</span>
+</div>
+</td>
+<td class="py-4">
+<span class="font-headline text-lg font-bold text-on-surface">76.5</span>
+</td>
+<td class="py-4 text-xs font-mono text-slate-400">8.0%</td>
+<td class="py-4 text-center">
+<span class="px-2 py-0.5 rounded-full bg-slate-700/50 text-slate-400 text-[9px] font-bold uppercase border border-outline-variant/30">Med</span>
+</td>
+<td class="py-4 pr-4 rounded-r-xl text-right">
+<div class="inline-block w-16 h-4">
+<svg class="w-full h-full" viewBox="0 0 100 20">
+<path d="M0,10 L30,10 L60,8 L100,8" fill="none" stroke="#bdc2ff" stroke-width="2"></path>
+</svg>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Footer Info -->
+<div class="mt-auto p-6 border-t border-outline-variant/20 flex justify-between items-center text-[9px] uppercase tracking-widest text-slate-500 font-bold">
+<span>Update cycle: Every 24h</span>
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-secondary animate-pulse"></span>
+<span>Engine: ISEU Core v4.2.0</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</body></html>

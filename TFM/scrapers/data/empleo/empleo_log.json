@@ -1,0 +1,17 @@
+{
+  "fuente": "SEPE + Seguridad Social",
+  "timestamp": "2026-04-01T22:29:13",
+  "resultados": {
+    "sepe_paro": {
+      "estado": "MANUAL",
+      "filas": 0,
+      "nota": "Descarga manual XLSX desde portal SEPE"
+    },
+    "ss_afiliacion": {
+      "estado": "MANUAL",
+      "filas": 0,
+      "nota": "Descarga manual o usar Open Data BCN"
+    }
+  },
+  "nota": "Estas fuentes requieren descarga manual. Ver URLs en resultados."
+}

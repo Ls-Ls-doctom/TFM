@@ -1,0 +1,86 @@
+{
+  "fuente": "Idescat EMEX",
+  "municipio": "Barcelona (080193)",
+  "timestamp": "2026-04-01T22:29:09",
+  "indicadores_configurados": 13,
+  "resultados": {
+    "poblacion": {
+      "estado": "OK",
+      "nombre": "Població",
+      "barcelona": "1713247",
+      "referencia": "2025"
+    },
+    "crecimiento_poblacion": {
+      "estado": "OK",
+      "nombre": "Creixement total de la població",
+      "barcelona": "15.91",
+      "referencia": "2024"
+    },
+    "vab_servicios": {
+      "estado": "OK",
+      "nombre": "VAB serveis",
+      "barcelona": "73729.4",
+      "referencia": "2023 (p)"
+    },
+    "vab_industria": {
+      "estado": "OK",
+      "nombre": "VAB indústria",
+      "barcelona": "4762.0",
+      "referencia": "2023 (p)"
+    },
+    "vab_construccion": {
+      "estado": "OK",
+      "nombre": "VAB construcció",
+      "barcelona": "3004.4",
+      "referencia": "2023 (p)"
+    },
+    "vab_comercio": {
+      "estado": "OK",
+      "nombre": "VAB comerç",
+      "barcelona": "9831.3",
+      "referencia": "2023 (p)"
+    },
+    "vab_hostaleria": {
+      "estado": "OK",
+      "nombre": "VAB hostaleria",
+      "barcelona": "7251.5",
+      "referencia": "2023 (p)"
+    },
+    "hoteles": {
+      "estado": "OK",
+      "nombre": "Hotels",
+      "barcelona": "751",
+      "referencia": "2024"
+    },
+    "plazas_hotel": {
+      "estado": "OK",
+      "nombre": "Places d'hotels",
+      "barcelona": "82827",
+      "referencia": "2024"
+    },
+    "viviendas_principales": {
+      "estado": "OK",
+      "nombre": "Habitatges familiars principals",
+      "barcelona": "671178",
+      "referencia": "2021"
+    },
+    "ibi_cuota": {
+      "estado": "OK",
+      "nombre": "IBI. Quota íntegra",
+      "barcelona": "829660903",
+      "referencia": "2024"
+    },
+    "ibi_recibos": {
+      "estado": "OK",
+      "nombre": "IBI. Rebuts",
+      "barcelona": "1170624",
+      "referencia": "2024"
+    },
+    "espacios_deportivos": {
+      "estado": "OK",
+      "nombre": "Espais esportius",
+      "barcelona": "5112",
+      "referencia": "2024"
+    }
+  }
+}

@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>60 preguntas sobre los datos · ISEU+</title>
+  <style>
+    :root {
+      --bg: #f5efe3;
+      --card: #ffffff;
+      --ink: #17312e;
+      --muted: #61706d;
+      --line: rgba(23, 49, 46, 0.10);
+      --accent: #0f6a57;
+      --accent-soft: #def1ea;
+      --pilar: #1f65ad;
+      --pilar-soft: #e7f0fb;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top left, rgba(15,106,87,.08), transparent 26%),
+        linear-gradient(180deg, #faf7f1 0%, var(--bg) 100%);
+    }
+
+    .page {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 28px 20px 48px;
+    }
+
+    .eyebrow {
+      font: 700 12px/1 "Trebuchet MS", sans-serif;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 8px;
+    }
+
+    h1 {
+      margin: 0 0 10px;
+      font-size: clamp(2rem, 4vw, 3rem);
+      line-height: 1;
+    }
+
+    .intro {
+      margin: 0 0 18px;
+      max-width: 940px;
+      color: var(--muted);
+      line-height: 1.65;
+    }
+
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 22px;
+      font: 13px/1.2 "Trebuchet MS", sans-serif;
+    }
+
+    .legend span {
+      padding: 7px 11px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.72);
+      border: 1px solid var(--line);
+    }
+
+    .topbar {
+      display: grid;
+      grid-template-columns: 1.2fr .8fr;
+      gap: 16px;
+      margin-bottom: 22px;
+    }
+
+    .panel {
+      background: rgba(255,255,255,.78);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      padding: 18px;
+      box-shadow: 0 14px 34px rgba(23,49,46,.08);
+    }
+
+    .panel h2 {
+      margin: 0 0 10px;
+      font: 800 15px/1.2 "Trebuchet MS", sans-serif;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+    }
+
+    .score {
+      font-size: 2.4rem;
+      font-weight: 700;
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+
+    .score-note {
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    button {
+      border: 0;
+      border-radius: 999px;
+      padding: 10px 14px;
+      font: 700 13px/1 "Trebuchet MS", sans-serif;
+      cursor: pointer;
+      background: var(--accent);
+      color: white;
+    }
+
+    button.secondary {
+      background: #e7ecea;
+      color: var(--ink);
+    }
+
+    .sections {
+      display: grid;
+      gap: 18px;
+    }
+
+    .section {
+      background: rgba(255,255,255,.84);
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      padding: 18px;
+      box-shadow: 0 14px 34px rgba(23,49,46,.06);
+    }
+
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: baseline;
+      margin-bottom: 12px;
+    }
+
+    .section h2 {
+      margin: 0;
+      font: 800 19px/1.2 "Trebuchet MS", sans-serif;
+      color: var(--pilar);
+    }
+
+    .section small {
+      color: var(--muted);
+      font: 700 12px/1 "Trebuchet MS", sans-serif;
+      letter-spacing: .05em;
+      text-transform: uppercase;
+    }
+
+    .questions {
+      display: grid;
+      gap: 10px;
+    }
+
+    .question {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      align-items: center;
+      padding: 13px 14px;
+      border-radius: 16px;
+      background: #fff;
+      border: 1px solid var(--line);
+    }
+
+    .question strong {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 6px;
+      font: 800 13px/1 "Trebuchet MS", sans-serif;
+      color: var(--accent);
+    }
+
+    .question strong::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent);
+    }
+
+    .question p {
+      margin: 0;
+      line-height: 1.48;
+    }
+
+    .written-answer {
+      width: min(440px, 100%);
+      min-height: 82px;
+      resize: vertical;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 10px 12px;
+      font: 14px/1.45 "Trebuchet MS", sans-serif;
+      color: var(--ink);
+      background: #fbfdfc;
+    }
+
+    .written-answer:focus {
+      outline: 2px solid rgba(15,106,87,.18);
+      border-color: rgba(15,106,87,.36);
+    }
+
+    .footer {
+      margin-top: 20px;
+      padding: 16px 18px;
+      border-radius: 18px;
+      background: var(--pilar-soft);
+      border: 1px solid rgba(31,101,173,.12);
+      line-height: 1.6;
+      color: #244660;
+    }
+
+    @media (max-width: 900px) {
+      .topbar { grid-template-columns: 1fr; }
+      .question { grid-template-columns: 1fr; }
+      .written-answer { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <div class="eyebrow">TFM · Preguntas funcionales</div>
+    <h1>60 preguntas que los datos de ISEU+ deberían poder responder</h1>
+    <p class="intro">
+      Este documento no valida el proyecto en abstracto, sino el valor de los datos y de la plataforma.
+      La idea es traducir el modelo de variables, pilares, ciudad, scoring y confianza en preguntas reales que una web analítica debería poder contestar.
+    </p>
+
+    <div class="legend">
+      <span>Enfoque: preguntas de negocio y análisis</span>
+      <span>Objetivo: comprobar que el dato sirve para responder algo útil</span>
+      <span>Salida ideal: la web debería permitir responderlas visualmente</span>
+    </div>
+
+    <section class="topbar">
+      <div class="panel">
+        <h2>Validación de cobertura</h2>
+        <div class="score-note">
+          Escribe la respuesta o evidencia que vaya generando la app para cada pregunta. Lo que escribas se guarda automáticamente en este navegador.
+        </div>
+        <div class="actions">
+          <button id="clear-all" class="secondary">Limpiar respuestas</button>
+        </div>
+      </div>
+      <div class="panel">
+        <h2>Resumen</h2>
+        <div class="score" id="score-value">0 / --</div>
+        <div class="score-note" id="score-note">
+          Aún no hay respuestas escritas.
+        </div>
+      </div>
+    </section>
+
+    <section class="sections" id="sections"></section>
+
+    <div class="footer">
+      Si estas 60 preguntas no pueden responderse con claridad, el problema no está en el diseño de la web sino en el modelo de datos, en las variables elegidas o en la narrativa del índice.
+    </div>
+  </main>
+
+  <script>
+    const sections = [
+      {
+        title: "1. Capacidad de consumo",
+        questions: [
+          "¿Cómo ha evolucionado la capacidad de consumo de Barcelona en el último año?",
+          "¿Qué variables explican mejor la capacidad de consumo de Barcelona hoy?",
+          "¿Barcelona está por encima o por debajo de ciudades comparables en capacidad de consumo?",
+          "¿Qué peso tienen salario, gasto y ahorro dentro del resultado de este pilar?",
+          "¿Qué variable de consumo muestra mayor deterioro reciente?",
+          "¿Qué variable de consumo presenta mejor fiabilidad de dato?",
+          "¿Qué parte del pilar depende de proxies y qué parte de dato directo?",
+          "¿La mejora del score de consumo es estable o está impulsada por una sola variable?"
+        ]
+      },
+      {
+        title: "2. Coste de vida",
+        questions: [
+          "¿Cómo se posiciona Barcelona frente a otras ciudades en coste de vida?",
+          "¿Qué componente pesa más en el deterioro del coste de vida: vivienda, energía o cesta de consumo?",
+          "¿El coste de vida ha mejorado o empeorado respecto al trimestre anterior?",
+          "¿Qué variable de coste de vida requiere más interpretación por depender de proxy?",
+          "¿Cómo cambia la lectura del pilar si se excluyen variables con baja confianza?",
+          "¿Qué ciudad comparable está más cerca de Barcelona en este pilar?",
+          "¿La evolución del coste de vida está alineada con la capacidad de consumo o la contradice?",
+          "¿Qué indicadores justifican que una puntuación alta o baja tenga sentido económico?"
+        ]
+      },
+      {
+        title: "3. Dinamismo económico",
+        questions: [
+          "¿Barcelona muestra más dinamismo económico que su benchmark directo?",
+          "¿Qué variables están empujando más este pilar actualmente?",
+          "¿Hay señales de crecimiento nominal que deban separarse del crecimiento real?",
+          "¿Qué fuente alimenta mejor las variables de actividad económica?",
+          "¿Qué parte del dinamismo económico se actualiza con más frecuencia?",
+          "¿Existen diferencias fuertes entre score reciente y tendencia acumulada?",
+          "¿Qué variable de este pilar tiene mejor trazabilidad metodológica?",
+          "¿Cómo impacta este pilar en el score global de la ciudad?"
+        ]
+      },
+      {
+        title: "4. Mercado laboral",
+        questions: [
+          "¿Cuál es la situación relativa de Barcelona en mercado laboral frente a ciudades comparables?",
+          "¿Qué variable laboral penaliza más el resultado actual?",
+          "¿El mercado laboral mejora al mismo ritmo que otros pilares o va desfasado?",
+          "¿Hay contradicción entre empleo, paro y afiliación en la lectura del pilar?",
+          "¿Qué variables laborales son más robustas desde el punto de vista estadístico?",
+          "¿Cuál es la evolución mensual o trimestral de este bloque?",
+          "¿Qué nivel de confianza tiene el pilar laboral comparado con otros?",
+          "¿Qué peso tiene el mercado laboral dentro del índice final de Barcelona?"
+        ]
+      },
+      {
+        title: "5. Accesibilidad y bienestar",
+        questions: [
+          "¿Qué revela el índice sobre vivienda, movilidad, aire y bienestar en Barcelona?",
+          "¿Qué variable de accesibilidad explica mejor el score bajo o alto del pilar?",
+          "¿Cómo se compara Barcelona en bienestar frente a Madrid, Valencia o Málaga?",
+          "¿Hay variables en este bloque cuya frecuencia de actualización sea demasiado baja?",
+          "¿Qué parte de este pilar depende de indicadores con menor granularidad territorial?",
+          "¿La evolución del pilar es consistente con la percepción urbana general?",
+          "¿Qué variable de bienestar está más desconectada del resto y merece revisión?",
+          "¿Este pilar modifica de forma material el resultado final del índice?"
+        ]
+      },
+      {
+        title: "6. Entorno empresarial",
+        questions: [
+          "¿Qué tan favorable es el entorno empresarial de Barcelona según el modelo?",
+          "¿Qué variables explican la competitividad o fricción del entorno empresarial?",
+          "¿Cuál es la diferencia entre Barcelona y el benchmark en este pilar?",
+          "¿La presión fiscal y el coste laboral están correctamente reflejados en la puntuación?",
+          "¿Qué variables empresariales tienen menor cobertura y requieren proxy?",
+          "¿Qué parte del resultado es más estable y cuál más volátil?",
+          "¿El entorno empresarial acompaña o contradice otros pilares del índice?",
+          "¿Qué insights de negocio pueden extraerse solo mirando este bloque?"
+        ]
+      },
+      {
+        title: "7. Comparativa entre ciudades",
+        questions: [
+          "¿Qué posición ocupa Barcelona en el ranking global frente a ciudades comparables?",
+          "¿En qué pilares está claramente por encima del benchmark y en cuáles por debajo?",
+          "¿Qué ciudad se parece más a Barcelona en estructura de resultados?",
+          "¿Qué diferencias entre ciudades se explican por datos de alta confianza y cuáles no?",
+          "¿Cómo cambia el ranking si se pondera solo el MVP de variables estables?",
+          "¿Qué ciudad lidera cada pilar y por qué?",
+          "¿Existen outliers que estén distorsionando la comparación general?",
+          "¿La comparación entre ciudades está usando cortes temporales homogéneos?"
+        ]
+      },
+      {
+        title: "8. Score global, drivers y confianza",
+        questions: [
+          "¿Cuál es el score global actual de Barcelona y cómo ha cambiado recientemente?",
+          "¿Qué pilares están explicando más el score final?",
+          "¿Qué drivers positivos empujan el índice y cuáles lo frenan?",
+          "¿Qué nivel de confianza tiene el score global publicado?",
+          "¿Cuántas variables válidas sostienen el resultado del mes o trimestre actual?",
+          "¿Qué parte del índice depende todavía de proxies?",
+          "¿Puede el usuario entender por qué el score final es ese y no otro?",
+          "¿La narrativa del score global es defendible ante un tribunal o usuario experto?",
+          "¿Qué cambios de datos producirían una variación relevante del índice?",
+          "¿La plataforma permite pasar del score global al detalle metodológico sin perder claridad?",
+          "¿Es posible identificar rápidamente si una subida o bajada del índice es real o efecto de calidad de dato?",
+          "¿La combinación entre score, pilares, drivers y confianza aporta una lectura útil y accionable?"
+        ]
+      }
+    ];
+
+    const root = document.getElementById("sections");
+    const scoreValue = document.getElementById("score-value");
+    const scoreNote = document.getElementById("score-note");
+    const storageKey = "iseu-preguntas-60-datos-texto-v1";
+    let counter = 0;
+
+    root.innerHTML = sections.map((section) => {
+      const questions = section.questions.map((question) => {
+        counter += 1;
+        const key = `data-q-${counter}`;
+        return `
+          <article class="question">
+            <div>
+              <strong>Pregunta ${counter}</strong>
+              <p>${question}</p>
+            </div>
+            <textarea class="written-answer" name="${key}" placeholder="Escribe aquí la respuesta, evidencia o pendiente..."></textarea>
+          </article>
+        `;
+      }).join("");
+
+      return `
+        <section class="section">
+          <div class="section-head">
+            <h2>${section.title}</h2>
+            <small>${section.questions.length} preguntas</small>
+          </div>
+          <div class="questions">${questions}</div>
+        </section>
+      `;
+    }).join("");
+
+    function loadSavedAnswers() {
+      try {
+        return JSON.parse(localStorage.getItem(storageKey)) || {};
+      } catch (error) {
+        return {};
+      }
+    }
+
+    function saveAnswers() {
+      const saved = {};
+      document.querySelectorAll(".written-answer").forEach((textarea) => {
+        saved[textarea.name] = textarea.value;
+      });
+
+      try {
+        localStorage.setItem(storageKey, JSON.stringify(saved));
+      } catch (error) {
+        console.warn("No se pudieron guardar las respuestas.", error);
+      }
+    }
+
+    function restoreAnswers() {
+      const saved = loadSavedAnswers();
+      Object.entries(saved).forEach(([name, value]) => {
+        const textarea = document.querySelector(`textarea[name="${name}"]`);
+        if (textarea) textarea.value = value;
+      });
+    }
+
+    function clearSavedAnswers() {
+      try {
+        localStorage.removeItem(storageKey);
+      } catch (error) {
+        console.warn("No se pudieron limpiar las respuestas guardadas.", error);
+      }
+    }
+
+    function updateScore() {
+      const answers = [...document.querySelectorAll(".written-answer")];
+      const answered = answers.filter((textarea) => textarea.value.trim().length > 0).length;
+      const total = answers.length;
+      const ratio = total > 0 ? answered / total : 0;
+      scoreValue.textContent = `${answered} / ${total}`;
+
+      if (answered === 0) {
+        scoreNote.textContent = "Aún no hay respuestas escritas.";
+        return;
+      }
+
+      if (ratio >= 0.75) {
+        scoreNote.textContent = "Ya hay evidencia escrita para buena parte de las preguntas. La prioridad es pulir trazabilidad, lectura y defensa.";
+      } else if (ratio >= 0.5) {
+        scoreNote.textContent = "Hay una base razonable, pero todavía quedan preguntas sin respuesta escrita.";
+      } else {
+        scoreNote.textContent = "La cobertura escrita aún es baja. Conviene responder primero las preguntas clave.";
+      }
+    }
+
+    restoreAnswers();
+    updateScore();
+
+    document.addEventListener("input", (event) => {
+      if (event.target.matches(".written-answer")) {
+        saveAnswers();
+        updateScore();
+      }
+    });
+
+    document.getElementById("clear-all").addEventListener("click", () => {
+      document.querySelectorAll(".written-answer").forEach((textarea) => { textarea.value = ""; });
+      clearSavedAnswers();
+      updateScore();
+    });
+  </script>
+</body>
+</html>
