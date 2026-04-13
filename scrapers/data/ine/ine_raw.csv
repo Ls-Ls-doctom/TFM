@@ -1,0 +1,85 @@
+serie_id,fecha,valor,nombre,unidad,extraido_en,variable_iseu,clave_config
+IPC251852,1704063600000,113.404,Total Nacional. Índice general. Índice. ,,2026-04-01T22:29:02,Índice general IPC,ipc_general_barcelona
+IPC251852,1706742000000,113.807,Total Nacional. Índice general. Índice. ,,2026-04-01T22:29:02,Índice general IPC,ipc_general_barcelona
+IPC251852,1709247600000,114.674,Total Nacional. Índice general. Índice. ,,2026-04-01T22:29:02,Índice general IPC,ipc_general_barcelona
+IPC251852,1711922400000,115.472,Total Nacional. Índice general. Índice. ,,2026-04-01T22:29:02,Índice general IPC,ipc_general_barcelona
+IPC251852,1714514400000,115.776,Total Nacional. Índice general. Índice. ,,2026-04-01T22:29:02,Índice general IPC,ipc_general_barcelona
+IPC251852,1717192800000,116.212,Total Nacional. Índice general. Índice. ,,2026-04-01T22:29:02,Índice general IPC,ipc_general_barcelona
+IPC251852,1719784800000,115.66,Total Nacional. Índice general. Índice. ,,2026-04-01T22:29:02,Índice general IPC,ipc_general_barcelona
+IPC251852,1722463200000,115.707,Total Nacional. Índice general. Índice. ,,2026-04-01T22:29:02,Índice general IPC,ipc_general_barcelona
+IPC251852,1725141600000,115.009,Total Nacional. Índice general. Índice. ,,2026-04-01T22:29:02,Índice general IPC,ipc_general_barcelona
+IPC251852,1727733600000,115.726,Total Nacional. Índice general. Índice. ,,2026-04-01T22:29:02,Índice general IPC,ipc_general_barcelona
+IPC251852,1730415600000,116.01,Total Nacional. Índice general. Índice. ,,2026-04-01T22:29:02,Índice general IPC,ipc_general_barcelona
+IPC251852,1733007600000,116.534,Total Nacional. Índice general. Índice. ,,2026-04-01T22:29:02,Índice general IPC,ipc_general_barcelona
+IPC251852,1735686000000,116.733,Total Nacional. Índice general. Índice. ,,2026-04-01T22:29:02,Índice general IPC,ipc_general_barcelona
+IPC251852,1738364400000,117.191,Total Nacional. Índice general. Índice. ,,2026-04-01T22:29:02,Índice general IPC,ipc_general_barcelona
+IPC251852,1740783600000,117.26,Total Nacional. Índice general. Índice. ,,2026-04-01T22:29:02,Índice general IPC,ipc_general_barcelona
+IPC251852,1743458400000,117.997,Total Nacional. Índice general. Índice. ,,2026-04-01T22:29:02,Índice general IPC,ipc_general_barcelona
+IPC251852,1746050400000,118.077,Total Nacional. Índice general. Índice. ,,2026-04-01T22:29:02,Índice general IPC,ipc_general_barcelona
+IPC251852,1748728800000,118.867,Total Nacional. Índice general. Índice. ,,2026-04-01T22:29:02,Índice general IPC,ipc_general_barcelona
+IPC251852,1751320800000,118.777,Total Nacional. Índice general. Índice. ,,2026-04-01T22:29:02,Índice general IPC,ipc_general_barcelona
+IPC251852,1753999200000,118.824,Total Nacional. Índice general. Índice. ,,2026-04-01T22:29:02,Índice general IPC,ipc_general_barcelona
+IPC251852,1756677600000,118.485,Total Nacional. Índice general. Índice. ,,2026-04-01T22:29:02,Índice general IPC,ipc_general_barcelona
+IPC251852,1759269600000,119.301,Total Nacional. Índice general. Índice. ,,2026-04-01T22:29:02,Índice general IPC,ipc_general_barcelona
+IPC251852,1761951600000,119.532,Total Nacional. Índice general. Índice. ,,2026-04-01T22:29:02,Índice general IPC,ipc_general_barcelona
+IPC251852,1764543600000,119.942,Total Nacional. Índice general. Índice. ,,2026-04-01T22:29:02,Índice general IPC,ipc_general_barcelona
+IPC251856,1704063600000,3.4,Total Nacional. Índice general. Variación anual. ,,2026-04-01T22:29:02,Inflación alimentaria,ipc_alimentos_barcelona
+IPC251856,1706742000000,2.8,Total Nacional. Índice general. Variación anual. ,,2026-04-01T22:29:02,Inflación alimentaria,ipc_alimentos_barcelona
+IPC251856,1709247600000,3.2,Total Nacional. Índice general. Variación anual. ,,2026-04-01T22:29:02,Inflación alimentaria,ipc_alimentos_barcelona
+IPC251856,1711922400000,3.3,Total Nacional. Índice general. Variación anual. ,,2026-04-01T22:29:02,Inflación alimentaria,ipc_alimentos_barcelona
+IPC251856,1714514400000,3.6,Total Nacional. Índice general. Variación anual. ,,2026-04-01T22:29:02,Inflación alimentaria,ipc_alimentos_barcelona
+IPC251856,1717192800000,3.4,Total Nacional. Índice general. Variación anual. ,,2026-04-01T22:29:02,Inflación alimentaria,ipc_alimentos_barcelona
+IPC251856,1719784800000,2.8,Total Nacional. Índice general. Variación anual. ,,2026-04-01T22:29:02,Inflación alimentaria,ipc_alimentos_barcelona
+IPC251856,1722463200000,2.3,Total Nacional. Índice general. Variación anual. ,,2026-04-01T22:29:02,Inflación alimentaria,ipc_alimentos_barcelona
+IPC251856,1725141600000,1.5,Total Nacional. Índice general. Variación anual. ,,2026-04-01T22:29:02,Inflación alimentaria,ipc_alimentos_barcelona
+IPC251856,1727733600000,1.8,Total Nacional. Índice general. Variación anual. ,,2026-04-01T22:29:02,Inflación alimentaria,ipc_alimentos_barcelona
+IPC251856,1730415600000,2.4,Total Nacional. Índice general. Variación anual. ,,2026-04-01T22:29:02,Inflación alimentaria,ipc_alimentos_barcelona
+IPC251856,1733007600000,2.8,Total Nacional. Índice general. Variación anual. ,,2026-04-01T22:29:02,Inflación alimentaria,ipc_alimentos_barcelona
+IPC251856,1735686000000,2.9,Total Nacional. Índice general. Variación anual. ,,2026-04-01T22:29:02,Inflación alimentaria,ipc_alimentos_barcelona
+IPC251856,1738364400000,3.0,Total Nacional. Índice general. Variación anual. ,,2026-04-01T22:29:02,Inflación alimentaria,ipc_alimentos_barcelona
+IPC251856,1740783600000,2.3,Total Nacional. Índice general. Variación anual. ,,2026-04-01T22:29:02,Inflación alimentaria,ipc_alimentos_barcelona
+IPC251856,1743458400000,2.2,Total Nacional. Índice general. Variación anual. ,,2026-04-01T22:29:02,Inflación alimentaria,ipc_alimentos_barcelona
+IPC251856,1746050400000,2.0,Total Nacional. Índice general. Variación anual. ,,2026-04-01T22:29:02,Inflación alimentaria,ipc_alimentos_barcelona
+IPC251856,1748728800000,2.3,Total Nacional. Índice general. Variación anual. ,,2026-04-01T22:29:02,Inflación alimentaria,ipc_alimentos_barcelona
+IPC251856,1751320800000,2.7,Total Nacional. Índice general. Variación anual. ,,2026-04-01T22:29:02,Inflación alimentaria,ipc_alimentos_barcelona
+IPC251856,1753999200000,2.7,Total Nacional. Índice general. Variación anual. ,,2026-04-01T22:29:02,Inflación alimentaria,ipc_alimentos_barcelona
+IPC251856,1756677600000,3.0,Total Nacional. Índice general. Variación anual. ,,2026-04-01T22:29:02,Inflación alimentaria,ipc_alimentos_barcelona
+IPC251856,1759269600000,3.1,Total Nacional. Índice general. Variación anual. ,,2026-04-01T22:29:02,Inflación alimentaria,ipc_alimentos_barcelona
+IPC251856,1761951600000,3.0,Total Nacional. Índice general. Variación anual. ,,2026-04-01T22:29:02,Inflación alimentaria,ipc_alimentos_barcelona
+IPC251856,1764543600000,2.9,Total Nacional. Índice general. Variación anual. ,,2026-04-01T22:29:02,Inflación alimentaria,ipc_alimentos_barcelona
+EPA137904,1136070000000,1898.4,Inactivos. Total Nacional. Mujeres. 16 y más años. Solteros/Solteras. Personas. ,,2026-04-01T22:29:02,Tasa de paro,tasa_paro_cataluna
+EPA137904,1167606000000,1926.2,Inactivos. Total Nacional. Mujeres. 16 y más años. Solteros/Solteras. Personas. ,,2026-04-01T22:29:02,Tasa de paro,tasa_paro_cataluna
+EPA137904,1199142000000,1892.9,Inactivos. Total Nacional. Mujeres. 16 y más años. Solteros/Solteras. Personas. ,,2026-04-01T22:29:02,Tasa de paro,tasa_paro_cataluna
+EPA137904,1230764400000,1908.4,Inactivos. Total Nacional. Mujeres. 16 y más años. Solteros/Solteras. Personas. ,,2026-04-01T22:29:02,Tasa de paro,tasa_paro_cataluna
+EPA137904,1262300400000,1897.7,Inactivos. Total Nacional. Mujeres. 16 y más años. Solteros/Solteras. Personas. ,,2026-04-01T22:29:02,Tasa de paro,tasa_paro_cataluna
+EPA137904,1293836400000,1890.8,Inactivos. Total Nacional. Mujeres. 16 y más años. Solteros/Solteras. Personas. ,,2026-04-01T22:29:02,Tasa de paro,tasa_paro_cataluna
+EPA137904,1325372400000,1899.0,Inactivos. Total Nacional. Mujeres. 16 y más años. Solteros/Solteras. Personas. ,,2026-04-01T22:29:02,Tasa de paro,tasa_paro_cataluna
+EPA137904,1356994800000,1931.5,Inactivos. Total Nacional. Mujeres. 16 y más años. Solteros/Solteras. Personas. ,,2026-04-01T22:29:02,Tasa de paro,tasa_paro_cataluna
+EPA137904,1388530800000,1962.0,Inactivos. Total Nacional. Mujeres. 16 y más años. Solteros/Solteras. Personas. ,,2026-04-01T22:29:02,Tasa de paro,tasa_paro_cataluna
+EPA137904,1420066800000,1998.8,Inactivos. Total Nacional. Mujeres. 16 y más años. Solteros/Solteras. Personas. ,,2026-04-01T22:29:02,Tasa de paro,tasa_paro_cataluna
+EPA137904,1451602800000,2023.4,Inactivos. Total Nacional. Mujeres. 16 y más años. Solteros/Solteras. Personas. ,,2026-04-01T22:29:02,Tasa de paro,tasa_paro_cataluna
+EPA137904,1483225200000,2065.5,Inactivos. Total Nacional. Mujeres. 16 y más años. Solteros/Solteras. Personas. ,,2026-04-01T22:29:02,Tasa de paro,tasa_paro_cataluna
+EPA137904,1514761200000,2148.8,Inactivos. Total Nacional. Mujeres. 16 y más años. Solteros/Solteras. Personas. ,,2026-04-01T22:29:02,Tasa de paro,tasa_paro_cataluna
+EPA137904,1546297200000,2190.9,Inactivos. Total Nacional. Mujeres. 16 y más años. Solteros/Solteras. Personas. ,,2026-04-01T22:29:02,Tasa de paro,tasa_paro_cataluna
+EPA137904,1577833200000,2389.6,Inactivos. Total Nacional. Mujeres. 16 y más años. Solteros/Solteras. Personas. ,,2026-04-01T22:29:02,Tasa de paro,tasa_paro_cataluna
+EPA137904,1609455600000,2325.7,Inactivos. Total Nacional. Mujeres. 16 y más años. Solteros/Solteras. Personas. ,,2026-04-01T22:29:02,Tasa de paro,tasa_paro_cataluna
+EPA137904,1640991600000,2347.7,Inactivos. Total Nacional. Mujeres. 16 y más años. Solteros/Solteras. Personas. ,,2026-04-01T22:29:02,Tasa de paro,tasa_paro_cataluna
+EPA137904,1672527600000,2377.4,Inactivos. Total Nacional. Mujeres. 16 y más años. Solteros/Solteras. Personas. ,,2026-04-01T22:29:02,Tasa de paro,tasa_paro_cataluna
+EPA137916,1136070000000,20.8,Inactivos. Total Nacional. Hombres. De 55 a 59 años. Separados/Separadas o Divorciados/Divorciadas. Personas. ,,2026-04-01T22:29:03,Tasa de empleo,tasa_empleo_cataluna
+EPA137916,1167606000000,21.7,Inactivos. Total Nacional. Hombres. De 55 a 59 años. Separados/Separadas o Divorciados/Divorciadas. Personas. ,,2026-04-01T22:29:03,Tasa de empleo,tasa_empleo_cataluna
+EPA137916,1199142000000,23.6,Inactivos. Total Nacional. Hombres. De 55 a 59 años. Separados/Separadas o Divorciados/Divorciadas. Personas. ,,2026-04-01T22:29:03,Tasa de empleo,tasa_empleo_cataluna
+EPA137916,1230764400000,25.0,Inactivos. Total Nacional. Hombres. De 55 a 59 años. Separados/Separadas o Divorciados/Divorciadas. Personas. ,,2026-04-01T22:29:03,Tasa de empleo,tasa_empleo_cataluna
+EPA137916,1262300400000,21.8,Inactivos. Total Nacional. Hombres. De 55 a 59 años. Separados/Separadas o Divorciados/Divorciadas. Personas. ,,2026-04-01T22:29:03,Tasa de empleo,tasa_empleo_cataluna
+EPA137916,1293836400000,25.5,Inactivos. Total Nacional. Hombres. De 55 a 59 años. Separados/Separadas o Divorciados/Divorciadas. Personas. ,,2026-04-01T22:29:03,Tasa de empleo,tasa_empleo_cataluna
+EPA137916,1325372400000,25.8,Inactivos. Total Nacional. Hombres. De 55 a 59 años. Separados/Separadas o Divorciados/Divorciadas. Personas. ,,2026-04-01T22:29:03,Tasa de empleo,tasa_empleo_cataluna
+EPA137916,1356994800000,30.2,Inactivos. Total Nacional. Hombres. De 55 a 59 años. Separados/Separadas o Divorciados/Divorciadas. Personas. ,,2026-04-01T22:29:03,Tasa de empleo,tasa_empleo_cataluna
+EPA137916,1388530800000,34.7,Inactivos. Total Nacional. Hombres. De 55 a 59 años. Separados/Separadas o Divorciados/Divorciadas. Personas. ,,2026-04-01T22:29:03,Tasa de empleo,tasa_empleo_cataluna
+EPA137916,1420066800000,29.3,Inactivos. Total Nacional. Hombres. De 55 a 59 años. Separados/Separadas o Divorciados/Divorciadas. Personas. ,,2026-04-01T22:29:03,Tasa de empleo,tasa_empleo_cataluna
+EPA137916,1451602800000,32.1,Inactivos. Total Nacional. Hombres. De 55 a 59 años. Separados/Separadas o Divorciados/Divorciadas. Personas. ,,2026-04-01T22:29:03,Tasa de empleo,tasa_empleo_cataluna
+EPA137916,1483225200000,38.3,Inactivos. Total Nacional. Hombres. De 55 a 59 años. Separados/Separadas o Divorciados/Divorciadas. Personas. ,,2026-04-01T22:29:03,Tasa de empleo,tasa_empleo_cataluna
+EPA137916,1514761200000,39.8,Inactivos. Total Nacional. Hombres. De 55 a 59 años. Separados/Separadas o Divorciados/Divorciadas. Personas. ,,2026-04-01T22:29:03,Tasa de empleo,tasa_empleo_cataluna
+EPA137916,1546297200000,36.7,Inactivos. Total Nacional. Hombres. De 55 a 59 años. Separados/Separadas o Divorciados/Divorciadas. Personas. ,,2026-04-01T22:29:03,Tasa de empleo,tasa_empleo_cataluna
+EPA137916,1577833200000,41.4,Inactivos. Total Nacional. Hombres. De 55 a 59 años. Separados/Separadas o Divorciados/Divorciadas. Personas. ,,2026-04-01T22:29:03,Tasa de empleo,tasa_empleo_cataluna
+EPA137916,1609455600000,40.3,Inactivos. Total Nacional. Hombres. De 55 a 59 años. Separados/Separadas o Divorciados/Divorciadas. Personas. ,,2026-04-01T22:29:03,Tasa de empleo,tasa_empleo_cataluna
+EPA137916,1640991600000,42.1,Inactivos. Total Nacional. Hombres. De 55 a 59 años. Separados/Separadas o Divorciados/Divorciadas. Personas. ,,2026-04-01T22:29:03,Tasa de empleo,tasa_empleo_cataluna
+EPA137916,1672527600000,42.4,Inactivos. Total Nacional. Hombres. De 55 a 59 años. Separados/Separadas o Divorciados/Divorciadas. Personas. ,,2026-04-01T22:29:03,Tasa de empleo,tasa_empleo_cataluna

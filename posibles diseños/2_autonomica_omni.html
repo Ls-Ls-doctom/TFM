@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Sovereign ISEU+ | Cataluña Terminal</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;400;600;800&amp;family=Inter:wght@300;400;600&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-background": "#e1e2eb",
+                    "surface-tint": "#bdc2ff",
+                    "primary-fixed-dim": "#bdc2ff",
+                    "on-primary-fixed-variant": "#353e91",
+                    "surface-dim": "#10131a",
+                    "error": "#ff5252",
+                    "surface-container-lowest": "#0b0e14",
+                    "secondary-container": "#00e3fd",
+                    "on-surface-variant": "#c6c5d3",
+                    "outline": "#908f9d",
+                    "on-secondary-container": "#00616d",
+                    "tertiary-fixed-dim": "#45d8ed",
+                    "surface-container-low": "#191c22",
+                    "on-error-container": "#ffdad6",
+                    "surface-container-highest": "#32353c",
+                    "on-tertiary-fixed-variant": "#004f58",
+                    "on-tertiary-fixed": "#001f24",
+                    "on-primary-container": "#737cd3",
+                    "primary-container": "#000666",
+                    "on-surface": "#e1e2eb",
+                    "secondary": "#bdf4ff",
+                    "secondary-fixed-dim": "#00daf3",
+                    "outline-variant": "#464651",
+                    "secondary-fixed": "#9cf0ff",
+                    "background": "#10131a",
+                    "on-tertiary": "#00363d",
+                    "surface-container-high": "#272a31",
+                    "on-secondary-fixed-variant": "#004f58",
+                    "on-secondary": "#00363d",
+                    "on-primary-fixed": "#010766",
+                    "tertiary-container": "#001f23",
+                    "error-container": "#93000a",
+                    "inverse-on-surface": "#2e3037",
+                    "primary-fixed": "#e0e0ff",
+                    "primary": "#bdc2ff",
+                    "inverse-surface": "#e1e2eb",
+                    "tertiary-fixed": "#98f0ff",
+                    "on-primary": "#1d257a",
+                    "surface": "#10131a",
+                    "surface-variant": "#32353c",
+                    "tertiary": "#45d8ed",
+                    "surface-container": "#1d2026",
+                    "surface-bright": "#363940",
+                    "on-tertiary-container": "#0091a1",
+                    "on-error": "#690005",
+                    "on-secondary-fixed": "#001f24",
+                    "inverse-primary": "#4e56ab"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "fontFamily": {
+                    "headline": ["Manrope"],
+                    "body": ["Inter"],
+                    "label": ["Inter"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-panel {
+            background: rgba(50, 53, 60, 0.6);
+            backdrop-filter: blur(40px);
+            border: 1px solid rgba(189, 194, 255, 0.15);
+        }
+        .sidebar-active {
+            background: #32353c;
+            color: #bdc2ff;
+            border-left: 4px solid #45d8ed;
+        }
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #32353c; border-radius: 10px; }
+    </style>
+</head>
+<body class="bg-[#05001a] text-[#e1e2eb]   font-body selection:bg-primary/30">
+<!-- TopNavBar Shell -->
+<nav class="fixed top-0 w-full z-50 bg-[#05001a] backdrop-blur-2xl bg-opacity-80 flex justify-between items-center px-8 py-4 h-20 shadow-[0_0_60px_0_rgba(189,194,255,0.08)]">
+<div class="flex items-center gap-8">
+<span class="text-xl font-black tracking-tighter text-[#bdc2ff] font-headline">Sovereign ISEU+</span>
+<div class="hidden md:flex gap-6 text-[0.75rem] uppercase tracking-widest font-headline">
+<a class="text-[#737cd3] hover:text-[#bdc2ff] transition-colors duration-300" href="#">España</a>
+<a class="text-[#bdc2ff] border-b-2 border-[#bdc2ff] pb-1" href="#">Cataluña</a>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<div class="relative group">
+<div class="flex items-center gap-3 px-4 py-2 glass-panel rounded-full cursor-pointer hover:bg-[#32353c]/40 transition-all active:scale-95">
+<span class="text-[0.7rem] font-bold text-primary-fixed-dim uppercase tracking-tighter">Inversor</span>
+<div class="w-2 h-2 rounded-full bg-tertiary animate-pulse"></div>
+</div>
+</div>
+<div class="flex items-center gap-4 text-[#737cd3]">
+<span class="material-symbols-outlined cursor-pointer hover:text-primary transition-colors" data-icon="notifications">notifications</span>
+<span class="material-symbols-outlined cursor-pointer hover:text-primary transition-colors" data-icon="settings">settings</span>
+<div class="w-8 h-8 rounded-full bg-primary-container border border-outline-variant flex items-center justify-center overflow-hidden">
+<img alt="Profile" data-alt="Stylized geometric avatar with minimalist features in shades of deep blue and neon cyan" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAeIoQgTUiCVIVqw57sz7VFwijw7QfZ9gnIrEMEsqU4gmSin_dK17FPTElzeoBzQN1EyQdL7wXjYDv1WKaY8nSgSOdUjHWjxWPH_rwl_jqoUYNSRCdzQZb-L8FC906eKcLTPPBu0z77Eb4oVgcmsuSorNJopFLSFDF9MEHxlUdetvnZTB3Ln9SAl-Ux9SC6-ttqk_4DAJqek4suDKyJNpA6qIMe9jxnwDU-SMfikg0GEd7o9wSN7EcDxY5SDwpsCA2Ehesfu3y8NZU"/>
+</div>
+</div>
+</div>
+</nav>
+<!-- SideNavBar Shell -->
+<aside class="fixed left-0 top-0 h-full w-64 z-40 bg-[#191c22] border-r border-[#32353c]/15 shadow-2xl flex flex-col pt-24 pb-8 px-4 space-y-2">
+<div class="px-4 mb-8">
+<div class="flex items-center gap-3 mb-1">
+<span class="material-symbols-outlined text-tertiary" data-icon="shield">shield</span>
+<span class="text-lg font-bold text-[#bdc2ff] font-headline">ISEU+</span>
+</div>
+<p class="text-[0.6rem] uppercase tracking-[0.2em] text-[#737cd3] font-label">The Civic Ledger</p>
+</div>
+<div class="space-y-1">
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-[#737cd3] opacity-70 hover:opacity-100 hover:bg-[#272a31] transition-all duration-200 hover:translate-x-1" href="#">
+<span class="material-symbols-outlined text-sm" data-icon="analytics">analytics</span>
+<span class="text-[0.6875rem] uppercase tracking-[0.05em] font-label">Macro Context</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg bg-[#32353c] text-[#bdc2ff] font-bold border-l-4 border-[#45d8ed] transition-all duration-200" href="#">
+<span class="material-symbols-outlined text-sm" data-icon="dashboard">dashboard</span>
+<span class="text-[0.6875rem] uppercase tracking-[0.05em] font-label">Market Overview</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-[#737cd3] opacity-70 hover:opacity-100 hover:bg-[#272a31] transition-all duration-200 hover:translate-x-1" href="#">
+<span class="material-symbols-outlined text-sm" data-icon="payments">payments</span>
+<span class="text-[0.6875rem] uppercase tracking-[0.05em] font-label">Asset Flow</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-[#737cd3] opacity-70 hover:opacity-100 hover:bg-[#272a31] transition-all duration-200 hover:translate-x-1" href="#">
+<span class="material-symbols-outlined text-sm" data-icon="show_chart">show_chart</span>
+<span class="text-[0.6875rem] uppercase tracking-[0.05em] font-label">Yield Curve</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-[#737cd3] opacity-70 hover:opacity-100 hover:bg-[#272a31] transition-all duration-200 hover:translate-x-1" href="#">
+<span class="material-symbols-outlined text-sm" data-icon="security">security</span>
+<span class="text-[0.6875rem] uppercase tracking-[0.05em] font-label">Risk Analytics</span>
+</a>
+</div>
+<div class="mt-auto space-y-1 border-t border-[#32353c]/20 pt-4">
+<button class="w-full flex items-center justify-center gap-2 bg-gradient-to-br from-[#bdc2ff] to-[#737cd3] text-[#010766] py-3 rounded-xl font-bold text-xs uppercase tracking-widest mb-4 active:scale-95 transition-all">
+<span class="material-symbols-outlined text-sm" data-icon="add">add</span>
+                New Analysis
+            </button>
+<a class="flex items-center gap-3 px-4 py-2 text-[#737cd3] hover:text-primary transition-all text-[0.65rem] uppercase tracking-widest" href="#">
+<span class="material-symbols-outlined text-sm" data-icon="help">help</span> Support
+            </a>
+<a class="flex items-center gap-3 px-4 py-2 text-[#737cd3] hover:text-primary transition-all text-[0.65rem] uppercase tracking-widest" href="#">
+<span class="material-symbols-outlined text-sm" data-icon="history">history</span> Logs
+            </a>
+</div>
+</aside>
+<!-- Main Canvas -->
+<main class="ml-64 pt-24 min-h-screen bg-surface-dim">
+<header class="px-8 mb-8 flex justify-between items-end">
+<div>
+<h1 class="text-4xl font-black font-headline text-on-surface tracking-tighter mb-1">Sovereign ISEU+ Terminal</h1>
+<nav class="flex text-[0.7rem] text-[#737cd3] uppercase tracking-[0.1em] font-label">
+<span>España</span>
+<span class="mx-2">/</span>
+<span class="text-tertiary">Cataluña</span>
+</nav>
+</div>
+<div class="flex gap-1 bg-surface-container-low p-1 rounded-xl">
+<button class="px-4 py-2 text-[0.65rem] uppercase font-bold text-[#737cd3] hover:text-on-surface transition-colors">Público General</button>
+<button class="px-4 py-2 text-[0.65rem] uppercase font-bold bg-surface-container-highest text-[#bdc2ff] rounded-lg shadow-inner">Inversor</button>
+<button class="px-4 py-2 text-[0.65rem] uppercase font-bold text-[#737cd3] hover:text-on-surface transition-colors">Académico</button>
+</div>
+</header>
+<div class="px-8 grid grid-cols-12 gap-6 pb-12">
+<!-- Left Column: Visual Analytics -->
+<div class="col-span-12 lg:col-span-5 space-y-6">
+<!-- Map Card -->
+<div class="glass-panel rounded-2xl overflow-hidden relative group">
+<div class="absolute top-4 left-4 z-10">
+<span class="bg-primary-container/80 backdrop-blur-md px-3 py-1 rounded-full text-[0.6rem] font-bold text-tertiary border border-tertiary/20">REGIONAL FOCUS: CATALUÑA</span>
+</div>
+<div class="h-[400px] w-full bg-[#0b0e14]">
+<img class="w-full h-full object-cover opacity-50 grayscale contrast-125" data-alt="Abstract satellite topographic map of Catalonia region with neon blue boundaries and high contrast data overlays" data-location="Catalonia" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDJvpncrLaVAccGbCtu8JxHyxjShU9LCFS2N-cxFAmLWQ9XkDyil5wRCyjTdAES1b7fHY8fBatDXsBTBcllTqJyznvhGguSX2ftpNqH5s-sECXolRM5SRbud58NuNLxKE0QTMq_5BNKnCwpg_oRgp6tnXJi0HrH733yQ04AtqAtWYHSjO62e-3R55HdwTpxWMx_rbTHYzi3P2gElY2ztSREebq_DthY51AeJ3VTyYcbbRPRrxouheSEf56NzUum2G4Hp5gmcbJXWQ0"/>
+<div class="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent"></div>
+</div>
+<div class="p-6 absolute bottom-0 w-full flex justify-between items-center">
+<div class="flex gap-4">
+<div class="text-center">
+<p class="text-[0.6rem] text-[#737cd3] uppercase font-label">Score ISEU+</p>
+<p class="text-2xl font-black text-tertiary">84.2</p>
+</div>
+<div class="w-[1px] h-10 bg-outline-variant/30"></div>
+<div class="text-center">
+<p class="text-[0.6rem] text-[#737cd3] uppercase font-label">Rank Nac.</p>
+<p class="text-2xl font-black text-on-surface">#02</p>
+</div>
+</div>
+<button class="bg-surface-container-highest/60 hover:bg-tertiary/20 p-3 rounded-full transition-all">
+<span class="material-symbols-outlined text-on-surface" data-icon="zoom_in">zoom_in</span>
+</button>
+</div>
+</div>
+<!-- Radar Chart Card -->
+<div class="glass-panel rounded-2xl p-8">
+<div class="flex justify-between items-center mb-8">
+<h3 class="text-[0.7rem] font-black uppercase tracking-[0.2em] text-[#737cd3]">Comparative Performance Radar</h3>
+<div class="flex gap-4">
+<div class="flex items-center gap-2">
+<span class="w-3 h-1 bg-tertiary rounded-full"></span>
+<span class="text-[0.6rem] text-on-surface/60 font-label">Cataluña</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="w-3 h-1 bg-outline-variant rounded-full"></span>
+<span class="text-[0.6rem] text-on-surface/60 font-label">Avg. España</span>
+</div>
+</div>
+</div>
+<div class="relative h-[300px] flex items-center justify-center">
+<!-- Simulated Radar Chart -->
+<div class="absolute inset-0 border border-outline-variant/10 rounded-full flex items-center justify-center">
+<div class="w-3/4 h-3/4 border border-outline-variant/10 rounded-full flex items-center justify-center">
+<div class="w-1/2 h-1/2 border border-outline-variant/10 rounded-full"></div>
+</div>
+</div>
+<svg class="absolute w-full h-full transform -rotate-30" viewBox="0 0 100 100">
+<!-- Background Axis -->
+<line stroke="white" stroke-opacity="0.2" stroke-width="0.1" x1="50" x2="50" y1="50" y2="10"></line>
+<line stroke="white" stroke-opacity="0.2" stroke-width="0.1" x1="50" x2="85" y1="50" y2="30"></line>
+<line stroke="white" stroke-opacity="0.2" stroke-width="0.1" x1="50" x2="85" y1="50" y2="70"></line>
+<line stroke="white" stroke-opacity="0.2" stroke-width="0.1" x1="50" x2="50" y1="50" y2="90"></line>
+<line stroke="white" stroke-opacity="0.2" stroke-width="0.1" x1="50" x2="15" y1="50" y2="70"></line>
+<line stroke="white" stroke-opacity="0.2" stroke-width="0.1" x1="50" x2="15" y1="50" y2="30"></line>
+<!-- National Avg -->
+<polygon fill="none" points="50,25 70,40 70,65 50,80 30,65 30,40" stroke="#464651" stroke-dasharray="2" stroke-width="0.5"></polygon>
+<!-- Cataluña Score -->
+<polygon fill="#45d8ed" fill-opacity="0.2" points="50,15 80,35 75,70 50,75 25,60 20,35" stroke="#45d8ed" stroke-width="1.5"></polygon>
+</svg>
+<!-- Radar Labels -->
+<div class="absolute top-0 text-[0.55rem] font-bold text-[#737cd3] uppercase">Consumo</div>
+<div class="absolute top-1/4 right-0 text-[0.55rem] font-bold text-[#737cd3] uppercase">Coste Vida</div>
+<div class="absolute bottom-1/4 right-0 text-[0.55rem] font-bold text-[#737cd3] uppercase">Dinamismo</div>
+<div class="absolute bottom-0 text-[0.55rem] font-bold text-[#737cd3] uppercase">Laboral</div>
+<div class="absolute bottom-1/4 left-0 text-[0.55rem] font-bold text-[#737cd3] uppercase">Bienestar</div>
+<div class="absolute top-1/4 left-0 text-[0.55rem] font-bold text-[#737cd3] uppercase">Empresarial</div>
+</div>
+</div>
+</div>
+<!-- Right Column: Variable Matrix -->
+<div class="col-span-12 lg:col-span-7">
+<div class="glass-panel rounded-2xl flex flex-col h-full max-h-[815px]">
+<div class="p-8 border-b border-outline-variant/10 flex justify-between items-center">
+<div>
+<h2 class="text-xl font-black font-headline text-on-surface tracking-tighter">The Variable Matrix</h2>
+<p class="text-[0.65rem] text-[#737cd3] uppercase tracking-widest font-label">ISEU+ Index Catalog • 62 Determinants</p>
+</div>
+<div class="flex gap-2">
+<span class="material-symbols-outlined text-on-surface/40 hover:text-tertiary cursor-pointer transition-colors" data-icon="filter_list">filter_list</span>
+<span class="material-symbols-outlined text-on-surface/40 hover:text-tertiary cursor-pointer transition-colors" data-icon="search">search</span>
+</div>
+</div>
+<!-- Matrix Headers -->
+<div class="grid grid-cols-12 gap-4 px-8 py-4 bg-surface-container-low/50 text-[0.6rem] font-bold uppercase tracking-wider text-[#737cd3]">
+<div class="col-span-4">Variable Name</div>
+<div class="col-span-2 text-center">Reg. Score</div>
+<div class="col-span-2 text-center">Weight %</div>
+<div class="col-span-2 text-center">Confidence</div>
+<div class="col-span-2 text-right">7D Trend</div>
+</div>
+<!-- Scrollable List -->
+<div class="flex-1 overflow-y-auto px-4 py-2">
+<!-- Category: Dinamismo Económico -->
+<div class="px-4 py-2 mb-2 bg-[#45d8ed]/5 rounded-lg">
+<span class="text-[0.6rem] font-black text-tertiary uppercase tracking-widest">Dinamismo Económico</span>
+</div>
+<!-- Rows -->
+<div class="group grid grid-cols-12 gap-4 px-4 py-4 hover:bg-surface-container-highest/40 transition-colors rounded-xl items-center">
+<div class="col-span-4 flex items-center gap-3">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary"></span>
+<span class="text-[0.75rem] font-semibold text-on-surface">PIB Per Cápita Nominal</span>
+</div>
+<div class="col-span-2 text-center font-black text-on-surface">88.5</div>
+<div class="col-span-2 text-center text-[0.7rem] text-[#737cd3]">12.5%</div>
+<div class="col-span-2 text-center">
+<span class="px-2 py-0.5 rounded-full bg-tertiary/10 text-tertiary text-[0.55rem] font-bold uppercase">High</span>
+</div>
+<div class="col-span-2 flex justify-end">
+<svg class="w-16 h-6" viewBox="0 0 60 20">
+<path d="M0,15 L10,12 L20,18 L30,5 L40,8 L50,2 L60,5" fill="none" stroke="#45d8ed" stroke-linecap="round" stroke-width="2"></path>
+</svg>
+</div>
+</div>
+<div class="group grid grid-cols-12 gap-4 px-4 py-4 hover:bg-surface-container-highest/40 transition-colors rounded-xl items-center">
+<div class="col-span-4 flex items-center gap-3">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary opacity-30"></span>
+<span class="text-[0.75rem] font-semibold text-on-surface">Inversión I+D Bruta</span>
+</div>
+<div class="col-span-2 text-center font-black text-on-surface">92.1</div>
+<div class="col-span-2 text-center text-[0.7rem] text-[#737cd3]">8.0%</div>
+<div class="col-span-2 text-center">
+<span class="px-2 py-0.5 rounded-full bg-tertiary/10 text-tertiary text-[0.55rem] font-bold uppercase">High</span>
+</div>
+<div class="col-span-2 flex justify-end">
+<svg class="w-16 h-6" viewBox="0 0 60 20">
+<path d="M0,18 L10,15 L20,12 L30,10 L40,5 L50,8 L60,2" fill="none" stroke="#45d8ed" stroke-linecap="round" stroke-width="2"></path>
+</svg>
+</div>
+</div>
+<!-- Category: Mercado Laboral -->
+<div class="px-4 py-2 my-2 bg-primary/5 rounded-lg">
+<span class="text-[0.6rem] font-black text-primary uppercase tracking-widest">Mercado Laboral</span>
+</div>
+<div class="group grid grid-cols-12 gap-4 px-4 py-4 hover:bg-surface-container-highest/40 transition-colors rounded-xl items-center">
+<div class="col-span-4 flex items-center gap-3">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+<span class="text-[0.75rem] font-semibold text-on-surface">Tasa de Desempleo IT</span>
+</div>
+<div class="col-span-2 text-center font-black text-on-surface">76.4</div>
+<div class="col-span-2 text-center text-[0.7rem] text-[#737cd3]">10.0%</div>
+<div class="col-span-2 text-center">
+<span class="px-2 py-0.5 rounded-full bg-on-primary-container/10 text-[#737cd3] text-[0.55rem] font-bold uppercase">Med</span>
+</div>
+<div class="col-span-2 flex justify-end">
+<svg class="w-16 h-6" viewBox="0 0 60 20">
+<path d="M0,10 L10,8 L20,12 L30,12 L40,15 L50,12 L60,14" fill="none" stroke="#737cd3" stroke-linecap="round" stroke-width="2"></path>
+</svg>
+</div>
+</div>
+<div class="group grid grid-cols-12 gap-4 px-4 py-4 hover:bg-surface-container-highest/40 transition-colors rounded-xl items-center">
+<div class="col-span-4 flex items-center gap-3">
+<span class="w-1.5 h-1.5 rounded-full bg-primary opacity-30"></span>
+<span class="text-[0.75rem] font-semibold text-on-surface">Creación de Empleo Neto</span>
+</div>
+<div class="col-span-2 text-center font-black text-on-surface">81.8</div>
+<div class="col-span-2 text-center text-[0.7rem] text-[#737cd3]">7.5%</div>
+<div class="col-span-2 text-center">
+<span class="px-2 py-0.5 rounded-full bg-tertiary/10 text-tertiary text-[0.55rem] font-bold uppercase">High</span>
+</div>
+<div class="col-span-2 flex justify-end">
+<svg class="w-16 h-6" viewBox="0 0 60 20">
+<path d="M0,18 L20,10 L40,5 L60,2" fill="none" stroke="#45d8ed" stroke-linecap="round" stroke-width="2"></path>
+</svg>
+</div>
+</div>
+<!-- Repeat/Scroll Indicator -->
+<div class="flex justify-center py-6 text-[0.6rem] text-[#737cd3] uppercase tracking-widest gap-2 items-center">
+<div class="w-8 h-[1px] bg-outline-variant/30"></div>
+                            Scroll for more variables
+                            <div class="w-8 h-[1px] bg-outline-variant/30"></div>
+</div>
+</div>
+<div class="p-6 border-t border-outline-variant/10 bg-surface-container-lowest/80 flex justify-between items-center rounded-b-2xl">
+<div class="text-[0.65rem] text-[#737cd3] font-label">SHOWING 1-12 OF 62 DETERMINANTS</div>
+<div class="flex gap-4">
+<button class="p-2 glass-panel rounded-lg hover:text-tertiary active:scale-95 transition-all"><span class="material-symbols-outlined text-sm" data-icon="chevron_left">chevron_left</span></button>
+<button class="p-2 glass-panel rounded-lg hover:text-tertiary active:scale-95 transition-all"><span class="material-symbols-outlined text-sm" data-icon="chevron_right">chevron_right</span></button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- FAB Suppression (Hidden on Detail Screens) -->
+<!-- Not rendering FAB as per instructions for Transactional/Detail screens -->
+</body></html>

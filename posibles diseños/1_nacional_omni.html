@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Sovereign ISEU+ | Terminal Nacional</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;400;600;800&amp;family=Inter:wght@300;400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-primary-fixed": "#010766",
+                    "surface-dim": "#10131a",
+                    "outline": "#908f9d",
+                    "on-tertiary-fixed": "#001f24",
+                    "inverse-on-surface": "#2e3037",
+                    "secondary-fixed-dim": "#00daf3",
+                    "tertiary-fixed": "#98f0ff",
+                    "tertiary-container": "#001f23",
+                    "surface-container-lowest": "#0b0e14",
+                    "inverse-surface": "#e1e2eb",
+                    "surface-container-high": "#272a31",
+                    "on-secondary-fixed-variant": "#004f58",
+                    "error": "#ff5252",
+                    "background": "#10131a",
+                    "surface-container-highest": "#32353c",
+                    "primary-container": "#000666",
+                    "surface-container": "#1d2026",
+                    "inverse-primary": "#4e56ab",
+                    "on-secondary": "#00363d",
+                    "on-surface": "#e1e2eb",
+                    "primary-fixed": "#e0e0ff",
+                    "on-secondary-container": "#00616d",
+                    "on-surface-variant": "#c6c5d3",
+                    "tertiary-fixed-dim": "#45d8ed",
+                    "secondary": "#bdf4ff",
+                    "primary": "#bdc2ff",
+                    "on-background": "#e1e2eb",
+                    "surface": "#10131a",
+                    "error-container": "#93000a",
+                    "surface-bright": "#363940",
+                    "outline-variant": "#464651",
+                    "on-primary": "#1d257a",
+                    "on-primary-fixed-variant": "#353e91",
+                    "primary-fixed-dim": "#bdc2ff",
+                    "on-secondary-fixed": "#001f24",
+                    "on-error": "#690005",
+                    "on-primary-container": "#737cd3",
+                    "surface-container-low": "#191c22",
+                    "surface-variant": "#32353c",
+                    "surface-tint": "#bdc2ff",
+                    "secondary-container": "#00e3fd",
+                    "on-tertiary-fixed-variant": "#004f58",
+                    "tertiary": "#45d8ed",
+                    "on-tertiary": "#00363d",
+                    "secondary-fixed": "#9cf0ff",
+                    "on-tertiary-container": "#0091a1",
+                    "on-error-container": "#ffdad6"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "fontFamily": {
+                    "headline": ["Manrope"],
+                    "body": ["Inter"],
+                    "label": ["Inter"]
+            }
+          },
+        }
+      }
+    </script>
+<style>
+        body {
+            background-color: #10131a;
+            color: #e1e2eb;
+            font-family: 'Inter', sans-serif;
+        }
+        .glass-panel {
+            background: rgba(50, 53, 60, 0.4);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(189, 194, 255, 0.1);
+            border-left: 1px solid rgba(189, 194, 255, 0.1);
+        }
+        .premium-gradient-text {
+            background: linear-gradient(135deg, #bdc2ff 0%, #737cd3 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .pill-chart-bg {
+            background-image: radial-gradient(circle at 50% 50%, rgba(0, 6, 102, 0.4) 0%, transparent 70%);
+        }
+        /* Custom scrollbar for dense matrix */
+        .dense-scroll::-webkit-scrollbar {
+            width: 4px;
+        }
+        .dense-scroll::-webkit-scrollbar-track {
+            background: rgba(25, 28, 34, 1);
+        }
+        .dense-scroll::-webkit-scrollbar-thumb {
+            background: #32353c;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body class="bg-[#05001a] text-[#e1e2eb]   overflow-hidden h-screen flex flex-col">
+<!-- TopNavBar (Shared Component) -->
+<nav class="fixed top-0 w-full z-50 bg-slate-950/60 backdrop-blur-2xl flex justify-between items-center px-8 py-4 w-full shadow-[0_0_60px_rgba(189,194,255,0.08)]">
+<div class="flex items-center gap-8">
+<span class="text-2xl font-bold tracking-tighter text-indigo-100 font-['Manrope']">Sovereign ISEU+</span>
+<div class="hidden md:flex items-center gap-6 text-sm font-['Manrope'] tracking-tight">
+<a class="text-slate-400 hover:text-slate-200 transition-colors cursor-pointer active:scale-95 duration-200" href="#">Público General</a>
+<a class="text-indigo-200 border-b-2 border-cyan-400 pb-1 transition-colors cursor-pointer active:scale-95 duration-200" href="#">Inversionista</a>
+<a class="text-slate-400 hover:text-slate-200 transition-colors cursor-pointer active:scale-95 duration-200" href="#">Académico</a>
+</div>
+</div>
+<div class="flex items-center gap-5">
+<div class="relative group">
+<span class="material-symbols-outlined text-indigo-200 hover:bg-slate-800/50 p-2 rounded-lg transition-colors cursor-pointer">notifications</span>
+</div>
+<div class="relative group">
+<span class="material-symbols-outlined text-indigo-200 hover:bg-slate-800/50 p-2 rounded-lg transition-colors cursor-pointer">settings</span>
+</div>
+<div class="relative group">
+<span class="material-symbols-outlined text-indigo-200 hover:bg-slate-800/50 p-2 rounded-lg transition-colors cursor-pointer">help</span>
+</div>
+<div class="w-10 h-10 rounded-full border border-primary/20 overflow-hidden ml-2">
+<img alt="User profile avatar" class="w-full h-full object-cover" data-alt="professional corporate headshot avatar of a financial analyst with glasses and modern attire on a neutral blue background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAJ3nGyCJTGZ9UmkYoTpCieT9M_K-s0jv-j_L8zKTPWI0VkCMHLEJ0oRGklf3LA2LKheRaq5xD9h-KOXgimaoaLu_R-Om6dEBldVcRzRmUP_v0o_AwGu1hRCDhi_x87Et1-nQv5dAxegPE2dtgpd51ZXRQGkKIPXLY8vfE6C78SDEqxv63_hjvQ2CSbxZUfTr3Iw6JyvjUEQMS0TcAzA1UD2LB5j6Fa5yahdipvpq6p9A4Iq2kmvgFXMx5SiF-GZygh5md0zyuH6F0"/>
+</div>
+</div>
+</nav>
+<!-- SideNavBar (Shared Component) -->
+<aside class="fixed left-0 top-0 h-screen w-64 z-40 bg-slate-900/80 backdrop-blur-3xl flex flex-col p-6 gap-y-4 shadow-2xl pt-24">
+<div class="mb-6">
+<h2 class="text-indigo-100 font-['Manrope'] font-black text-xl uppercase tracking-tighter">Terminal</h2>
+<p class="text-slate-500 text-[10px] uppercase tracking-[0.2em]">Active Session</p>
+</div>
+<nav class="flex-1 space-y-2">
+<div class="flex items-center gap-3 p-3 font-['Inter'] font-medium text-sm uppercase tracking-wider text-slate-400 hover:text-slate-100 hover:bg-slate-700/40 rounded-lg transition-all duration-300 ease-in-out cursor-pointer">
+<span class="material-symbols-outlined text-indigo-300">analytics</span>
+<span>Macro Context</span>
+</div>
+<div class="flex items-center gap-3 p-3 font-['Inter'] font-medium text-sm uppercase tracking-wider bg-slate-800/60 text-cyan-400 rounded-lg transition-all duration-300 ease-in-out cursor-pointer">
+<span class="material-symbols-outlined text-indigo-300" data-weight="fill" style="font-variation-settings: 'FILL' 1;">monitoring</span>
+<span>Market Overview</span>
+</div>
+<div class="flex items-center gap-3 p-3 font-['Inter'] font-medium text-sm uppercase tracking-wider text-slate-400 hover:text-slate-100 hover:bg-slate-700/40 rounded-lg transition-all duration-300 ease-in-out cursor-pointer">
+<span class="material-symbols-outlined text-indigo-300">public</span>
+<span>Global Macro</span>
+</div>
+</nav>
+<div class="mt-auto border-t border-slate-800/50 pt-4 space-y-2">
+<button class="w-full py-3 bg-gradient-to-br from-primary to-on-primary-container text-on-primary-fixed rounded-xl font-bold text-xs uppercase tracking-widest shadow-lg shadow-primary/10 active:scale-95 transition-transform">
+                Generate Report
+            </button>
+<div class="flex items-center gap-3 p-3 font-['Inter'] font-medium text-xs uppercase tracking-wider text-slate-400 hover:text-slate-100 transition-colors cursor-pointer">
+<span class="material-symbols-outlined text-sm">support_agent</span>
+<span>Support</span>
+</div>
+<div class="flex items-center gap-3 p-3 font-['Inter'] font-medium text-xs uppercase tracking-wider text-error/80 hover:text-error transition-colors cursor-pointer">
+<span class="material-symbols-outlined text-sm">logout</span>
+<span>Sign Out</span>
+</div>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="ml-64 mt-20 p-8 h-[calc(100vh-80px)] overflow-hidden flex gap-8">
+<!-- Left Column: National View (40%) -->
+<section class="w-[42%] flex flex-col gap-6">
+<header>
+<h1 class="text-4xl font-headline font-extrabold tracking-tighter premium-gradient-text">Sovereign ISEU+ Terminal</h1>
+<p class="text-on-surface-variant font-body text-sm mt-1">Structural economic monitoring across 6 key pillars (España - Nivel Nacional)</p>
+</header>
+<!-- Map Panel -->
+<div class="glass-panel rounded-xl flex-1 relative overflow-hidden flex flex-col">
+<div class="p-6 pb-2">
+<h3 class="text-[10px] font-label uppercase tracking-[0.2em] text-tertiary">Geospatial Distribution</h3>
+<p class="text-on-surface font-headline font-bold text-lg">Regional Economic Intensity</p>
+</div>
+<div class="flex-1 w-full bg-surface-container-lowest/50 relative">
+<!-- Map Visualization -->
+<div class="absolute inset-0 flex items-center justify-center p-8">
+<img class="w-full h-full object-contain opacity-80 mix-blend-screen" data-alt="Stylized geometric choropleth map of Spain with glowing blue and cyan regions against a dark navy background with data nodes" data-location="Spain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD1TvvvMoZJVFnMQn4d5_HTg57tn4nw4H8d1IhuXECYjIunGZZFP7mgE_2lZytd6JFfFXEZ3vZI6I09IxpKqNxIYCaU0AR38Y_ZMDK2oj5Tkygrm7pNLcF6OPiIinkMcwbxJVAtjwtoDQ4cGaLykM0qrUswm9KaqIv3RUjacRGQRkZ1odYdVMc-2fihDZku98HwP0lDoAqsLYlETjCTu269UzhFlD7CL48mGZjBvfhmDlr3jVca0kzN6BIw18NUO9hiFH-LtPtrNY8"/>
+</div>
+<!-- Map HUD Elements -->
+<div class="absolute bottom-4 left-4 p-4 glass-panel rounded-lg border-none shadow-xl bg-slate-950/80">
+<div class="flex items-center gap-2 mb-2">
+<span class="w-3 h-3 rounded-full bg-cyan-400 animate-pulse"></span>
+<span class="text-[10px] font-bold text-on-surface">Top Performer: Madrid</span>
+</div>
+<div class="flex flex-col gap-1">
+<div class="flex justify-between items-center gap-6">
+<span class="text-[10px] text-slate-500">Global Score</span>
+<span class="text-[11px] font-bold text-cyan-300">88.42</span>
+</div>
+<div class="w-32 h-1 bg-slate-800 rounded-full overflow-hidden">
+<div class="w-[88%] h-full bg-cyan-400"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Radar Chart Panel -->
+<div class="glass-panel rounded-xl h-72 p-6 flex flex-col pill-chart-bg">
+<div class="flex justify-between items-start mb-4">
+<div>
+<h3 class="text-[10px] font-label uppercase tracking-[0.2em] text-tertiary">Pillar Analysis</h3>
+<p class="text-on-surface font-headline font-bold text-lg">National Averages</p>
+</div>
+<div class="flex items-center gap-2">
+<span class="text-xs text-slate-400 font-label">Confidence: 94.2%</span>
+<span class="material-symbols-outlined text-tertiary text-sm">verified</span>
+</div>
+</div>
+<div class="flex-1 flex items-center justify-center relative">
+<!-- Stylized Radar Visual -->
+<div class="w-48 h-48 rounded-full border border-slate-800 flex items-center justify-center relative">
+<div class="absolute inset-0 border border-slate-800 scale-75 rounded-full"></div>
+<div class="absolute inset-0 border border-slate-800 scale-50 rounded-full"></div>
+<!-- Radar Web (SVG) -->
+<svg class="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+<polygon fill="rgba(69, 216, 237, 0.15)" points="50,10 85,30 85,70 50,90 15,70 15,30" stroke="#45d8ed" stroke-width="1"></polygon>
+<circle cx="50" cy="50" fill="#45d8ed" r="1"></circle>
+</svg>
+<!-- Pillar Labels (Absolute) -->
+<span class="absolute -top-4 text-[9px] font-bold uppercase tracking-tighter text-slate-300">Consumo</span>
+<span class="absolute -right-12 top-1/4 text-[9px] font-bold uppercase tracking-tighter text-slate-300">C. Vida</span>
+<span class="absolute -right-12 bottom-1/4 text-[9px] font-bold uppercase tracking-tighter text-slate-300">Dinamismo</span>
+<span class="absolute -bottom-4 text-[9px] font-bold uppercase tracking-tighter text-slate-300">Mercado Laboral</span>
+<span class="absolute -left-12 bottom-1/4 text-[9px] font-bold uppercase tracking-tighter text-slate-300">Bienestar</span>
+<span class="absolute -left-12 top-1/4 text-[9px] font-bold uppercase tracking-tighter text-slate-300">Empresarial</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Right Column: The Variable Matrix (60%) -->
+<section class="w-[58%] flex flex-col gap-6">
+<header class="flex justify-between items-end">
+<div>
+<h2 class="text-2xl font-headline font-extrabold tracking-tight text-on-surface">The Variable Matrix</h2>
+<p class="text-on-surface-variant font-body text-sm">Full catalog of localized economic metrics by structural priority</p>
+</div>
+<div class="flex gap-2">
+<button class="p-2 rounded-lg bg-surface-container-high hover:bg-surface-container-highest transition-colors">
+<span class="material-symbols-outlined text-on-surface">filter_list</span>
+</button>
+<button class="p-2 rounded-lg bg-surface-container-high hover:bg-surface-container-highest transition-colors">
+<span class="material-symbols-outlined text-on-surface">download</span>
+</button>
+</div>
+</header>
+<div class="glass-panel rounded-xl flex-1 overflow-hidden flex flex-col">
+<!-- Table Header -->
+<div class="grid grid-cols-12 gap-4 px-6 py-4 bg-surface-container-low text-[10px] font-label font-bold uppercase tracking-widest text-slate-500 border-b border-white/5">
+<div class="col-span-5">Variable / Factor</div>
+<div class="col-span-1 text-center">Score</div>
+<div class="col-span-1 text-center">Weight</div>
+<div class="col-span-2 text-center">Confidence</div>
+<div class="col-span-3 text-right">7D Sparkline</div>
+</div>
+<!-- Matrix Body -->
+<div class="flex-1 overflow-y-auto dense-scroll">
+<!-- Pillar Group: Capacidad de Consumo -->
+<div class="px-6 py-3 bg-primary-container/20 border-l-2 border-primary">
+<span class="text-[10px] font-bold text-primary-fixed uppercase tracking-widest">Pillar 01: Capacidad de Consumo</span>
+</div>
+<div class="grid grid-cols-12 gap-4 px-6 py-4 items-center hover:bg-slate-800/30 transition-colors group">
+<div class="col-span-5 flex items-center gap-3">
+<span class="material-symbols-outlined text-slate-600 text-sm group-hover:text-primary">payments</span>
+<span class="text-sm font-medium text-on-surface">Renta Media por Hogar</span>
+</div>
+<div class="col-span-1 text-center text-sm font-bold text-cyan-400">82.1</div>
+<div class="col-span-1 text-center text-[11px] text-slate-500">22%</div>
+<div class="col-span-2 flex justify-center">
+<span class="px-2 py-0.5 rounded-full bg-green-500/10 text-green-400 text-[9px] font-bold uppercase">High</span>
+</div>
+<div class="col-span-3 h-8 flex items-center justify-end">
+    <!-- Vector Sparkline -->
+    <svg class="w-[70px] h-5 opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all drop-shadow-md" viewBox="0 0 100 20" preserveAspectRatio="none">
+        <polyline points="0,5 20,8 40,6 60,12 80,10 100,18" fill="none" stroke="#ff5252" stroke-width="1.8" vector-effect="non-scaling-stroke" stroke-linecap="round" stroke-linejoin="round" style="filter: drop-shadow(0px 1px 3px #ff5252)"/>
+    </svg>
+</div>
+</div>
+<div class="grid grid-cols-12 gap-4 px-6 py-4 items-center hover:bg-slate-800/30 transition-colors group">
+<div class="col-span-5 flex items-center gap-3">
+<span class="material-symbols-outlined text-slate-600 text-sm group-hover:text-primary">shopping_cart</span>
+<span class="text-sm font-medium text-on-surface">Índice de Comercio Minorista</span>
+</div>
+<div class="col-span-1 text-center text-sm font-bold text-cyan-400">74.5</div>
+<div class="col-span-1 text-center text-[11px] text-slate-500">18%</div>
+<div class="col-span-2 flex justify-center">
+<span class="px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-400 text-[9px] font-bold uppercase">Med</span>
+</div>
+<div class="col-span-3 h-8 flex items-center justify-end">
+    <!-- Vector Sparkline -->
+    <svg class="w-[70px] h-5 opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all drop-shadow-md" viewBox="0 0 100 20" preserveAspectRatio="none">
+        <polyline points="0,5 20,8 40,6 60,12 80,10 100,18" fill="none" stroke="#ff5252" stroke-width="1.8" vector-effect="non-scaling-stroke" stroke-linecap="round" stroke-linejoin="round" style="filter: drop-shadow(0px 1px 3px #ff5252)"/>
+    </svg>
+</div>
+</div>
+<!-- Pillar Group: Mercado Laboral -->
+<div class="px-6 py-3 bg-primary-container/20 border-l-2 border-tertiary mt-2">
+<span class="text-[10px] font-bold text-tertiary-fixed-dim uppercase tracking-widest">Pillar 02: Mercado Laboral</span>
+</div>
+<div class="grid grid-cols-12 gap-4 px-6 py-4 items-center hover:bg-slate-800/30 transition-colors group">
+<div class="col-span-5 flex items-center gap-3">
+<span class="material-symbols-outlined text-slate-600 text-sm group-hover:text-tertiary">work_history</span>
+<span class="text-sm font-medium text-on-surface">Tasa de Desempleo (EPA)</span>
+</div>
+<div class="col-span-1 text-center text-sm font-bold text-error">65.2</div>
+<div class="col-span-1 text-center text-[11px] text-slate-500">25%</div>
+<div class="col-span-2 flex justify-center">
+<span class="px-2 py-0.5 rounded-full bg-green-500/10 text-green-400 text-[9px] font-bold uppercase">High</span>
+</div>
+<div class="col-span-3 h-8 flex items-center justify-end">
+    <!-- Vector Sparkline -->
+    <svg class="w-[70px] h-5 opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all drop-shadow-md" viewBox="0 0 100 20" preserveAspectRatio="none">
+        <polyline points="0,5 20,8 40,6 60,12 80,10 100,18" fill="none" stroke="#ff5252" stroke-width="1.8" vector-effect="non-scaling-stroke" stroke-linecap="round" stroke-linejoin="round" style="filter: drop-shadow(0px 1px 3px #ff5252)"/>
+    </svg>
+</div>
+</div>
+<div class="grid grid-cols-12 gap-4 px-6 py-4 items-center hover:bg-slate-800/30 transition-colors group">
+<div class="col-span-5 flex items-center gap-3">
+<span class="material-symbols-outlined text-slate-600 text-sm group-hover:text-tertiary">groups</span>
+<span class="text-sm font-medium text-on-surface">Afiliación Seguridad Social</span>
+</div>
+<div class="col-span-1 text-center text-sm font-bold text-cyan-400">89.8</div>
+<div class="col-span-1 text-center text-[11px] text-slate-500">20%</div>
+<div class="col-span-2 flex justify-center">
+<span class="px-2 py-0.5 rounded-full bg-green-500/10 text-green-400 text-[9px] font-bold uppercase">High</span>
+</div>
+<div class="col-span-3 h-8 flex items-center justify-end">
+    <!-- Vector Sparkline -->
+    <svg class="w-[70px] h-5 opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all drop-shadow-md" viewBox="0 0 100 20" preserveAspectRatio="none">
+        <polyline points="0,15 20,10 40,12 60,8 80,4 100,2" fill="none" stroke="#45d8ed" stroke-width="1.8" vector-effect="non-scaling-stroke" stroke-linecap="round" stroke-linejoin="round" style="filter: drop-shadow(0px 1px 3px #45d8ed)"/>
+    </svg>
+</div>
+</div>
+<!-- Pillar Group: Accesibilidad y Bienestar -->
+<div class="px-6 py-3 bg-primary-container/20 border-l-2 border-indigo-400 mt-2">
+<span class="text-[10px] font-bold text-indigo-200 uppercase tracking-widest">Pillar 03: Accesibilidad y Bienestar</span>
+</div>
+<div class="grid grid-cols-12 gap-4 px-6 py-4 items-center hover:bg-slate-800/30 transition-colors group">
+<div class="col-span-5 flex items-center gap-3">
+<span class="material-symbols-outlined text-slate-600 text-sm group-hover:text-indigo-400">apartment</span>
+<span class="text-sm font-medium text-on-surface">Índice de Precio de Vivienda</span>
+</div>
+<div class="col-span-1 text-center text-sm font-bold text-cyan-400">54.3</div>
+<div class="col-span-1 text-center text-[11px] text-slate-500">15%</div>
+<div class="col-span-2 flex justify-center">
+<span class="px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-400 text-[9px] font-bold uppercase">Med</span>
+</div>
+<div class="col-span-3 h-8 flex items-center justify-end">
+    <!-- Vector Sparkline -->
+    <svg class="w-[70px] h-5 opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all drop-shadow-md" viewBox="0 0 100 20" preserveAspectRatio="none">
+        <polyline points="0,15 20,10 40,12 60,8 80,4 100,2" fill="none" stroke="#45d8ed" stroke-width="1.8" vector-effect="non-scaling-stroke" stroke-linecap="round" stroke-linejoin="round" style="filter: drop-shadow(0px 1px 3px #45d8ed)"/>
+    </svg>
+</div>
+</div>
+<div class="grid grid-cols-12 gap-4 px-6 py-4 items-center hover:bg-slate-800/30 transition-colors group">
+<div class="col-span-5 flex items-center gap-3">
+<span class="material-symbols-outlined text-slate-600 text-sm group-hover:text-indigo-400">health_and_safety</span>
+<span class="text-sm font-medium text-on-surface">Infraestructura Sanitaria</span>
+</div>
+<div class="col-span-1 text-center text-sm font-bold text-cyan-400">91.0</div>
+<div class="col-span-1 text-center text-[11px] text-slate-500">10%</div>
+<div class="col-span-2 flex justify-center">
+<span class="px-2 py-0.5 rounded-full bg-green-500/10 text-green-400 text-[9px] font-bold uppercase">High</span>
+</div>
+<div class="col-span-3 h-8 flex items-center justify-end">
+    <!-- Vector Sparkline -->
+    <svg class="w-[70px] h-5 opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all drop-shadow-md" viewBox="0 0 100 20" preserveAspectRatio="none">
+        <polyline points="0,15 20,10 40,12 60,8 80,4 100,2" fill="none" stroke="#45d8ed" stroke-width="1.8" vector-effect="non-scaling-stroke" stroke-linecap="round" stroke-linejoin="round" style="filter: drop-shadow(0px 1px 3px #45d8ed)"/>
+    </svg>
+</div>
+</div>
+<!-- Additional Variables Placeholder -->
+<div class="px-6 py-12 flex flex-col items-center justify-center opacity-30">
+<span class="material-symbols-outlined text-4xl mb-2">more_horiz</span>
+<p class="text-[10px] uppercase tracking-widest">Additional 42 variables available in detailed drill-down</p>
+</div>
+</div>
+<!-- Footer Summary Bar -->
+<div class="p-4 bg-surface-container-highest/20 border-t border-white/5 flex justify-between items-center">
+<div class="flex items-center gap-6">
+<div class="flex flex-col">
+<span class="text-[9px] uppercase tracking-tighter text-slate-500">Variables Monitored</span>
+<span class="text-sm font-bold text-on-surface">124</span>
+</div>
+<div class="flex flex-col">
+<span class="text-[9px] uppercase tracking-tighter text-slate-500">Data Points (24h)</span>
+<span class="text-sm font-bold text-on-surface">1.2M</span>
+</div>
+</div>
+<button class="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-tertiary hover:text-secondary-fixed transition-colors">
+                        Expand All Pillars
+                        <span class="material-symbols-outlined text-xs">open_in_full</span>
+</button>
+</div>
+</div>
+</section>
+</main>
+<!-- Background Decorative Element -->
+<div class="fixed top-0 right-0 -z-10 w-[60vw] h-[60vw] rounded-full bg-primary-container blur-[150px] opacity-10 translate-x-1/2 -translate-y-1/2"></div>
+<div class="fixed bottom-0 left-0 -z-10 w-[40vw] h-[40vw] rounded-full bg-tertiary-container blur-[120px] opacity-10 -translate-x-1/4 translate-y-1/4"></div>
+</body></html>

@@ -1,0 +1,249 @@
+[
+  {
+    "indicador_id": "f171",
+    "nombre": "Població",
+    "valores_raw": "1713247,2398280,8124126",
+    "barcelona": "1713247",
+    "comarca": "2398280",
+    "catalunya": "8124126",
+    "columnas": [
+      "Barcelona",
+      "Barcelonès",
+      "Catalunya"
+    ],
+    "referencia": "2025",
+    "fuente_idescat": "Idescat, a partir del Cens de població anual de l'INE.",
+    "actualizado": "2026-02-25T11:00:00+00:00",
+    "extraido_en": "2026-04-01T22:29:07",
+    "variable_iseu": "Población",
+    "clave_config": "poblacion"
+  },
+  {
+    "indicador_id": "f53",
+    "nombre": "Creixement total de la població",
+    "valores_raw": "15.91,18.51,13.87",
+    "barcelona": "15.91",
+    "comarca": "18.51",
+    "catalunya": "13.87",
+    "columnas": [
+      "Barcelona",
+      "Barcelonès",
+      "Catalunya"
+    ],
+    "referencia": "2024",
+    "fuente_idescat": "Idescat. Indicadors demogràfics.",
+    "actualizado": "2025-05-07T10:00:00+00:00",
+    "extraido_en": "2026-04-01T22:29:07",
+    "variable_iseu": "Crecimiento población",
+    "clave_config": "crecimiento_poblacion"
+  },
+  {
+    "indicador_id": "f197",
+    "nombre": "VAB serveis",
+    "valores_raw": "73729.4,85588.4,204236.1",
+    "barcelona": "73729.4",
+    "comarca": "85588.4",
+    "catalunya": "204236.1",
+    "columnas": [
+      "Barcelona",
+      "Barcelonès",
+      "Catalunya"
+    ],
+    "referencia": "2023 (p)",
+    "fuente_idescat": "Idescat.",
+    "actualizado": "2025-12-11T11:00:00+00:00",
+    "extraido_en": "2026-04-01T22:29:07",
+    "variable_iseu": "PIB regional",
+    "clave_config": "vab_servicios"
+  },
+  {
+    "indicador_id": "f195",
+    "nombre": "VAB indústria",
+    "valores_raw": "4762.0,6368.6,52200.0",
+    "barcelona": "4762.0",
+    "comarca": "6368.6",
+    "catalunya": "52200.0",
+    "columnas": [
+      "Barcelona",
+      "Barcelonès",
+      "Catalunya"
+    ],
+    "referencia": "2023 (p)",
+    "fuente_idescat": "Idescat.",
+    "actualizado": "2025-12-11T11:00:00+00:00",
+    "extraido_en": "2026-04-01T22:29:07",
+    "variable_iseu": "Dinamismo económico",
+    "clave_config": "vab_industria"
+  },
+  {
+    "indicador_id": "f196",
+    "nombre": "VAB construcció",
+    "valores_raw": "3004.4,3942.3,13500.6",
+    "barcelona": "3004.4",
+    "comarca": "3942.3",
+    "catalunya": "13500.6",
+    "columnas": [
+      "Barcelona",
+      "Barcelonès",
+      "Catalunya"
+    ],
+    "referencia": "2023 (p)",
+    "fuente_idescat": "Idescat.",
+    "actualizado": "2025-12-11T11:00:00+00:00",
+    "extraido_en": "2026-04-01T22:29:08",
+    "variable_iseu": "Dinamismo económico",
+    "clave_config": "vab_construccion"
+  },
+  {
+    "indicador_id": "f209",
+    "nombre": "VAB comerç",
+    "valores_raw": "9831.3,12190.5,35483.1",
+    "barcelona": "9831.3",
+    "comarca": "12190.5",
+    "catalunya": "35483.1",
+    "columnas": [
+      "Barcelona",
+      "Barcelonès",
+      "Catalunya"
+    ],
+    "referencia": "2023 (p)",
+    "fuente_idescat": "Idescat.",
+    "actualizado": "2025-12-11T11:00:00+00:00",
+    "extraido_en": "2026-04-01T22:29:08",
+    "variable_iseu": "Ventas retail",
+    "clave_config": "vab_comercio"
+  },
+  {
+    "indicador_id": "f210",
+    "nombre": "VAB hostaleria",
+    "valores_raw": "7251.5,7991.7,18733.9",
+    "barcelona": "7251.5",
+    "comarca": "7991.7",
+    "catalunya": "18733.9",
+    "columnas": [
+      "Barcelona",
+      "Barcelonès",
+      "Catalunya"
+    ],
+    "referencia": "2023 (p)",
+    "fuente_idescat": "Idescat.",
+    "actualizado": "2025-12-11T11:00:00+00:00",
+    "extraido_en": "2026-04-01T22:29:08",
+    "variable_iseu": "Turismo (nº visitantes)",
+    "clave_config": "vab_hostaleria"
+  },
+  {
+    "indicador_id": "f215",
+    "nombre": "Hotels",
+    "valores_raw": "751,795,3167",
+    "barcelona": "751",
+    "comarca": "795",
+    "catalunya": "3167",
+    "columnas": [
+      "Barcelona",
+      "Barcelonès",
+      "Catalunya"
+    ],
+    "referencia": "2024",
+    "fuente_idescat": "Idescat, a partir del Departament d'Empresa i Treball.",
+    "actualizado": "2025-06-12T10:00:00+00:00",
+    "extraido_en": "2026-04-01T22:29:08",
+    "variable_iseu": "Ocupación hotelera",
+    "clave_config": "hoteles"
+  },
+  {
+    "indicador_id": "f216",
+    "nombre": "Places d'hotels",
+    "valores_raw": "82827,89755,329102",
+    "barcelona": "82827",
+    "comarca": "89755",
+    "catalunya": "329102",
+    "columnas": [
+      "Barcelona",
+      "Barcelonès",
+      "Catalunya"
+    ],
+    "referencia": "2024",
+    "fuente_idescat": "Idescat, a partir del Departament d'Empresa i Treball.",
+    "actualizado": "2025-06-12T10:00:00+00:00",
+    "extraido_en": "2026-04-01T22:29:08",
+    "variable_iseu": "Ocupación hotelera",
+    "clave_config": "plazas_hotel"
+  },
+  {
+    "indicador_id": "f193",
+    "nombre": "Habitatges familiars principals",
+    "valores_raw": "671178,914259,2989357",
+    "barcelona": "671178",
+    "comarca": "914259",
+    "catalunya": "2989357",
+    "columnas": [
+      "Barcelona",
+      "Barcelonès",
+      "Catalunya"
+    ],
+    "referencia": "2021",
+    "fuente_idescat": "Idescat, a partir del Cens de població i habitatges de l'INE.",
+    "actualizado": "2023-10-30T11:00:00+00:00",
+    "extraido_en": "2026-04-01T22:29:08",
+    "variable_iseu": "Ratio vivienda / ingresos",
+    "clave_config": "viviendas_principales"
+  },
+  {
+    "indicador_id": "f200",
+    "nombre": "IBI. Quota íntegra",
+    "valores_raw": "829660903,1002580796,3148702722",
+    "barcelona": "829660903",
+    "comarca": "1002580796",
+    "catalunya": "3148702722",
+    "columnas": [
+      "Barcelona",
+      "Barcelonès",
+      "Catalunya"
+    ],
+    "referencia": "2024",
+    "fuente_idescat": "Idescat, a partir de la Direcció General del Cadastre.",
+    "actualizado": "2025-06-26T10:00:00+00:00",
+    "extraido_en": "2026-04-01T22:29:08",
+    "variable_iseu": "Presión fiscal",
+    "clave_config": "ibi_cuota"
+  },
+  {
+    "indicador_id": "f198",
+    "nombre": "IBI. Rebuts",
+    "valores_raw": "1170624,1576638,6021771",
+    "barcelona": "1170624",
+    "comarca": "1576638",
+    "catalunya": "6021771",
+    "columnas": [
+      "Barcelona",
+      "Barcelonès",
+      "Catalunya"
+    ],
+    "referencia": "2024",
+    "fuente_idescat": "Idescat, a partir de la Direcció General del Cadastre.",
+    "actualizado": "2025-06-26T10:00:00+00:00",
+    "extraido_en": "2026-04-01T22:29:09",
+    "variable_iseu": "Presión fiscal",
+    "clave_config": "ibi_recibos"
+  },
+  {
+    "indicador_id": "f300",
+    "nombre": "Espais esportius",
+    "valores_raw": "5112,6896,52108",
+    "barcelona": "5112",
+    "comarca": "6896",
+    "catalunya": "52108",
+    "columnas": [
+      "Barcelona",
+      "Barcelonès",
+      "Catalunya"
+    ],
+    "referencia": "2024",
+    "fuente_idescat": "Idescat, a partir del Consell Català de l'Esport.",
+    "actualizado": "2025-03-03T11:00:00+00:00",
+    "extraido_en": "2026-04-01T22:29:09",
+    "variable_iseu": "Accesibilidad y bienestar",
+    "clave_config": "espacios_deportivos"
+  }
+]

@@ -1,0 +1,842 @@
+[
+  {
+    "serie_id": "IPC251852",
+    "fecha": 1704063600000,
+    "valor": 113.404,
+    "nombre": "Total Nacional. Índice general. Índice. ",
+    "unidad": "",
+    "extraido_en": "2026-04-01T22:29:02",
+    "variable_iseu": "Índice general IPC",
+    "clave_config": "ipc_general_barcelona"
+  },
+  {
+    "serie_id": "IPC251852",
+    "fecha": 1706742000000,
+    "valor": 113.807,
+    "nombre": "Total Nacional. Índice general. Índice. ",
+    "unidad": "",
+    "extraido_en": "2026-04-01T22:29:02",
+    "variable_iseu": "Índice general IPC",
+    "clave_config": "ipc_general_barcelona"
+  },
+  {
+    "serie_id": "IPC251852",
+    "fecha": 1709247600000,
+    "valor": 114.674,
+    "nombre": "Total Nacional. Índice general. Índice. ",
+    "unidad": "",
+    "extraido_en": "2026-04-01T22:29:02",
+    "variable_iseu": "Índice general IPC",
+    "clave_config": "ipc_general_barcelona"
+  },
+  {
+    "serie_id": "IPC251852",
+    "fecha": 1711922400000,
+    "valor": 115.472,
+    "nombre": "Total Nacional. Índice general. Índice. ",
+    "unidad": "",
+    "extraido_en": "2026-04-01T22:29:02",
+    "variable_iseu": "Índice general IPC",
+    "clave_config": "ipc_general_barcelona"
+  },
+  {
+    "serie_id": "IPC251852",
+    "fecha": 1714514400000,
+    "valor": 115.776,
+    "nombre": "Total Nacional. Índice general. Índice. ",
+    "unidad": "",
+    "extraido_en": "2026-04-01T22:29:02",
+    "variable_iseu": "Índice general IPC",
+    "clave_config": "ipc_general_barcelona"
+  },
+  {
+    "serie_id": "IPC251852",
+    "fecha": 1717192800000,
+    "valor": 116.212,
+    "nombre": "Total Nacional. Índice general. Índice. ",
+    "unidad": "",
+    "extraido_en": "2026-04-01T22:29:02",
+    "variable_iseu": "Índice general IPC",
+    "clave_config": "ipc_general_barcelona"
+  },
+  {
+    "serie_id": "IPC251852",
+    "fecha": 1719784800000,
+    "valor": 115.66,
+    "nombre": "Total Nacional. Índice general. Índice. ",
+    "unidad": "",
+    "extraido_en": "2026-04-01T22:29:02",
+    "variable_iseu": "Índice general IPC",
+    "clave_config": "ipc_general_barcelona"
+  },
+  {
+    "serie_id": "IPC251852",
+    "fecha": 1722463200000,
+    "valor": 115.707,
+    "nombre": "Total Nacional. Índice general. Índice. ",
+    "unidad": "",
+    "extraido_en": "2026-04-01T22:29:02",
+    "variable_iseu": "Índice general IPC",
+    "clave_config": "ipc_general_barcelona"
+  },
+  {
+    "serie_id": "IPC251852",
+    "fecha": 1725141600000,
+    "valor": 115.009,
+    "nombre": "Total Nacional. Índice general. Índice. ",
+    "unidad": "",
+    "extraido_en": "2026-04-01T22:29:02",
+    "variable_iseu": "Índice general IPC",
+    "clave_config": "ipc_general_barcelona"
+  },
+  {
+    "serie_id": "IPC251852",
+    "fecha": 1727733600000,
+    "valor": 115.726,
+    "nombre": "Total Nacional. Índice general. Índice. ",
+    "unidad": "",
+    "extraido_en": "2026-04-01T22:29:02",
+    "variable_iseu": "Índice general IPC",
+    "clave_config": "ipc_general_barcelona"
+  },
+  {
+    "serie_id": "IPC251852",
+    "fecha": 1730415600000,
+    "valor": 116.01,
+    "nombre": "Total Nacional. Índice general. Índice. ",
+    "unidad": "",
+    "extraido_en": "2026-04-01T22:29:02",
+    "variable_iseu": "Índice general IPC",
+    "clave_config": "ipc_general_barcelona"
+  },
+  {
+    "serie_id": "IPC251852",
+    "fecha": 1733007600000,
+    "valor": 116.534,
+    "nombre": "Total Nacional. Índice general. Índice. ",
+    "unidad": "",
+    "extraido_en": "2026-04-01T22:29:02",
+    "variable_iseu": "Índice general IPC",
+    "clave_config": "ipc_general_barcelona"
+  },
+  {
+    "serie_id": "IPC251852",
+    "fecha": 1735686000000,
+    "valor": 116.733,
+    "nombre": "Total Nacional. Índice general. Índice. ",
+    "unidad": "",
+    "extraido_en": "2026-04-01T22:29:02",
+    "variable_iseu": "Índice general IPC",
+    "clave_config": "ipc_general_barcelona"
+  },
+  {
+    "serie_id": "IPC251852",
+    "fecha": 1738364400000,
+    "valor": 117.191,
+    "nombre": "Total Nacional. Índice general. Índice. ",
+    "unidad": "",
+    "extraido_en": "2026-04-01T22:29:02",
+    "variable_iseu": "Índice general IPC",
+    "clave_config": "ipc_general_barcelona"
+  },
+  {
+    "serie_id": "IPC251852",
+    "fecha": 1740783600000,
+    "valor": 117.26,
+    "nombre": "Total Nacional. Índice general. Índice. ",
+    "unidad": "",
+    "extraido_en": "2026-04-01T22:29:02",
+    "variable_iseu": "Índice general IPC",
+    "clave_config": "ipc_general_barcelona"
+  },
+  {
+    "serie_id": "IPC251852",
+    "fecha": 1743458400000,
+    "valor": 117.997,
+    "nombre": "Total Nacional. Índice general. Índice. ",
+    "unidad": "",
+    "extraido_en": "2026-04-01T22:29:02",
+    "variable_iseu": "Índice general IPC",
+    "clave_config": "ipc_general_barcelona"
+  },
+  {
+    "serie_id": "IPC251852",
+    "fecha": 1746050400000,
+    "valor": 118.077,
+    "nombre": "Total Nacional. Índice general. Índice. ",
+    "unidad": "",
+    "extraido_en": "2026-04-01T22:29:02",
+    "variable_iseu": "Índice general IPC",
+    "clave_config": "ipc_general_barcelona"
+  },
+  {
+    "serie_id": "IPC251852",
+    "fecha": 1748728800000,
+    "valor": 118.867,
+    "nombre": "Total Nacional. Índice general. Índice. ",
+    "unidad": "",
+    "extraido_en": "2026-04-01T22:29:02",
+    "variable_iseu": "Índice general IPC",
+    "clave_config": "ipc_general_barcelona"
+  },
+  {
+    "serie_id": "IPC251852",
+    "fecha": 1751320800000,
+    "valor": 118.777,
+    "nombre": "Total Nacional. Índice general. Índice. ",
+    "unidad": "",
+    "extraido_en": "2026-04-01T22:29:02",
+    "variable_iseu": "Índice general IPC",
+    "clave_config": "ipc_general_barcelona"
+  },
+  {
+    "serie_id": "IPC251852",
+    "fecha": 1753999200000,
+    "valor": 118.824,
+    "nombre": "Total Nacional. Índice general. Índice. ",
+    "unidad": "",
+    "extraido_en": "2026-04-01T22:29:02",
+    "variable_iseu": "Índice general IPC",
+    "clave_config": "ipc_general_barcelona"
+  },
+  {
+    "serie_id": "IPC251852",
+    "fecha": 1756677600000,
+    "valor": 118.485,
+    "nombre": "Total Nacional. Índice general. Índice. ",
+    "unidad": "",
+    "extraido_en": "2026-04-01T22:29:02",
+    "variable_iseu": "Índice general IPC",
+    "clave_config": "ipc_general_barcelona"
+  },
+  {
+    "serie_id": "IPC251852",
+    "fecha": 1759269600000,
+    "valor": 119.301,
+    "nombre": "Total Nacional. Índice general. Índice. ",
+    "unidad": "",
+    "extraido_en": "2026-04-01T22:29:02",
+    "variable_iseu": "Índice general IPC",
+    "clave_config": "ipc_general_barcelona"
+  },
+  {
+    "serie_id": "IPC251852",
+    "fecha": 1761951600000,
+    "valor": 119.532,
+    "nombre": "Total Nacional. Índice general. Índice. ",
+    "unidad": "",
+    "extraido_en": "2026-04-01T22:29:02",
+    "variable_iseu": "Índice general IPC",
+    "clave_config": "ipc_general_barcelona"
+  },
+  {
+    "serie_id": "IPC251852",
+    "fecha": 1764543600000,
+    "valor": 119.942,
+    "nombre": "Total Nacional. Índice general. Índice. ",
+    "unidad": "",
+    "extraido_en": "2026-04-01T22:29:02",
+    "variable_iseu": "Índice general IPC",
+    "clave_config": "ipc_general_barcelona"
+  },
+  {
+    "serie_id": "IPC251856",
+    "fecha": 1704063600000,
+    "valor": 3.4,
+    "nombre": "Total Nacional. Índice general. Variación anual. ",
+    "unidad": "",
+    "extraido_en": "2026-04-01T22:29:02",
+    "variable_iseu": "Inflación alimentaria",
+    "clave_config": "ipc_alimentos_barcelona"
+  },
+  {
+    "serie_id": "IPC251856",
+    "fecha": 1706742000000,
+    "valor": 2.8,
+    "nombre": "Total Nacional. Índice general. Variación anual. ",
+    "unidad": "",
+    "extraido_en": "2026-04-01T22:29:02",
+    "variable_iseu": "Inflación alimentaria",
+    "clave_config": "ipc_alimentos_barcelona"
+  },
+  {
+    "serie_id": "IPC251856",
+    "fecha": 1709247600000,
+    "valor": 3.2,
+    "nombre": "Total Nacional. Índice general. Variación anual. ",
+    "unidad": "",
+    "extraido_en": "2026-04-01T22:29:02",
+    "variable_iseu": "Inflación alimentaria",
+    "clave_config": "ipc_alimentos_barcelona"
+  },
+  {
+    "serie_id": "IPC251856",
+    "fecha": 1711922400000,
+    "valor": 3.3,
+    "nombre": "Total Nacional. Índice general. Variación anual. ",
+    "unidad": "",
+    "extraido_en": "2026-04-01T22:29:02",
+    "variable_iseu": "Inflación alimentaria",
+    "clave_config": "ipc_alimentos_barcelona"
+  },
+  {
+    "serie_id": "IPC251856",
+    "fecha": 1714514400000,
+    "valor": 3.6,
+    "nombre": "Total Nacional. Índice general. Variación anual. ",
+    "unidad": "",
+    "extraido_en": "2026-04-01T22:29:02",
+    "variable_iseu": "Inflación alimentaria",
+    "clave_config": "ipc_alimentos_barcelona"
+  },
+  {
+    "serie_id": "IPC251856",
+    "fecha": 1717192800000,
+    "valor": 3.4,
+    "nombre": "Total Nacional. Índice general. Variación anual. ",
+    "unidad": "",
+    "extraido_en": "2026-04-01T22:29:02",
+    "variable_iseu": "Inflación alimentaria",
+    "clave_config": "ipc_alimentos_barcelona"
+  },
+  {
+    "serie_id": "IPC251856",
+    "fecha": 1719784800000,
+    "valor": 2.8,
+    "nombre": "Total Nacional. Índice general. Variación anual. ",
+    "unidad": "",
+    "extraido_en": "2026-04-01T22:29:02",
+    "variable_iseu": "Inflación alimentaria",
+    "clave_config": "ipc_alimentos_barcelona"
+  },
+  {
+    "serie_id": "IPC251856",
+    "fecha": 1722463200000,
+    "valor": 2.3,
+    "nombre": "Total Nacional. Índice general. Variación anual. ",
+    "unidad": "",
+    "extraido_en": "2026-04-01T22:29:02",
+    "variable_iseu": "Inflación alimentaria",
+    "clave_config": "ipc_alimentos_barcelona"
+  },
+  {
+    "serie_id": "IPC251856",
+    "fecha": 1725141600000,
+    "valor": 1.5,
+    "nombre": "Total Nacional. Índice general. Variación anual. ",
+    "unidad": "",
+    "extraido_en": "2026-04-01T22:29:02",
+    "variable_iseu": "Inflación alimentaria",
+    "clave_config": "ipc_alimentos_barcelona"
+  },
+  {
+    "serie_id": "IPC251856",
+    "fecha": 1727733600000,
+    "valor": 1.8,
+    "nombre": "Total Nacional. Índice general. Variación anual. ",
+    "unidad": "",
+    "extraido_en": "2026-04-01T22:29:02",
+    "variable_iseu": "Inflación alimentaria",
+    "clave_config": "ipc_alimentos_barcelona"
+  },
+  {
+    "serie_id": "IPC251856",
+    "fecha": 1730415600000,
+    "valor": 2.4,
+    "nombre": "Total Nacional. Índice general. Variación anual. ",
+    "unidad": "",
+    "extraido_en": "2026-04-01T22:29:02",
+    "variable_iseu": "Inflación alimentaria",
+    "clave_config": "ipc_alimentos_barcelona"
+  },
+  {
+    "serie_id": "IPC251856",
+    "fecha": 1733007600000,
+    "valor": 2.8,
+    "nombre": "Total Nacional. Índice general. Variación anual. ",
+    "unidad": "",
+    "extraido_en": "2026-04-01T22:29:02",
+    "variable_iseu": "Inflación alimentaria",
+    "clave_config": "ipc_alimentos_barcelona"
+  },
+  {
+    "serie_id": "IPC251856",
+    "fecha": 1735686000000,
+    "valor": 2.9,
+    "nombre": "Total Nacional. Índice general. Variación anual. ",
+    "unidad": "",
+    "extraido_en": "2026-04-01T22:29:02",
+    "variable_iseu": "Inflación alimentaria",
+    "clave_config": "ipc_alimentos_barcelona"
+  },
+  {
+    "serie_id": "IPC251856",
+    "fecha": 1738364400000,
+    "valor": 3.0,
+    "nombre": "Total Nacional. Índice general. Variación anual. ",
+    "unidad": "",
+    "extraido_en": "2026-04-01T22:29:02",
+    "variable_iseu": "Inflación alimentaria",
+    "clave_config": "ipc_alimentos_barcelona"
+  },
+  {
+    "serie_id": "IPC251856",
+    "fecha": 1740783600000,
+    "valor": 2.3,
+    "nombre": "Total Nacional. Índice general. Variación anual. ",
+    "unidad": "",
+    "extraido_en": "2026-04-01T22:29:02",
+    "variable_iseu": "Inflación alimentaria",
+    "clave_config": "ipc_alimentos_barcelona"
+  },
+  {
+    "serie_id": "IPC251856",
+    "fecha": 1743458400000,
+    "valor": 2.2,
+    "nombre": "Total Nacional. Índice general. Variación anual. ",
+    "unidad": "",
+    "extraido_en": "2026-04-01T22:29:02",
+    "variable_iseu": "Inflación alimentaria",
+    "clave_config": "ipc_alimentos_barcelona"
+  },
+  {
+    "serie_id": "IPC251856",
+    "fecha": 1746050400000,
+    "valor": 2.0,
+    "nombre": "Total Nacional. Índice general. Variación anual. ",
+    "unidad": "",
+    "extraido_en": "2026-04-01T22:29:02",
+    "variable_iseu": "Inflación alimentaria",
+    "clave_config": "ipc_alimentos_barcelona"
+  },
+  {
+    "serie_id": "IPC251856",
+    "fecha": 1748728800000,
+    "valor": 2.3,
+    "nombre": "Total Nacional. Índice general. Variación anual. ",
+    "unidad": "",
+    "extraido_en": "2026-04-01T22:29:02",
+    "variable_iseu": "Inflación alimentaria",
+    "clave_config": "ipc_alimentos_barcelona"
+  },
+  {
+    "serie_id": "IPC251856",
+    "fecha": 1751320800000,
+    "valor": 2.7,
+    "nombre": "Total Nacional. Índice general. Variación anual. ",
+    "unidad": "",
+    "extraido_en": "2026-04-01T22:29:02",
+    "variable_iseu": "Inflación alimentaria",
+    "clave_config": "ipc_alimentos_barcelona"
+  },
+  {
+    "serie_id": "IPC251856",
+    "fecha": 1753999200000,
+    "valor": 2.7,
+    "nombre": "Total Nacional. Índice general. Variación anual. ",
+    "unidad": "",
+    "extraido_en": "2026-04-01T22:29:02",
+    "variable_iseu": "Inflación alimentaria",
+    "clave_config": "ipc_alimentos_barcelona"
+  },
+  {
+    "serie_id": "IPC251856",
+    "fecha": 1756677600000,
+    "valor": 3.0,
+    "nombre": "Total Nacional. Índice general. Variación anual. ",
+    "unidad": "",
+    "extraido_en": "2026-04-01T22:29:02",
+    "variable_iseu": "Inflación alimentaria",
+    "clave_config": "ipc_alimentos_barcelona"
+  },
+  {
+    "serie_id": "IPC251856",
+    "fecha": 1759269600000,
+    "valor": 3.1,
+    "nombre": "Total Nacional. Índice general. Variación anual. ",
+    "unidad": "",
+    "extraido_en": "2026-04-01T22:29:02",
+    "variable_iseu": "Inflación alimentaria",
+    "clave_config": "ipc_alimentos_barcelona"
+  },
+  {
+    "serie_id": "IPC251856",
+    "fecha": 1761951600000,
+    "valor": 3.0,
+    "nombre": "Total Nacional. Índice general. Variación anual. ",
+    "unidad": "",
+    "extraido_en": "2026-04-01T22:29:02",
+    "variable_iseu": "Inflación alimentaria",
+    "clave_config": "ipc_alimentos_barcelona"
+  },
+  {
+    "serie_id": "IPC251856",
+    "fecha": 1764543600000,
+    "valor": 2.9,
+    "nombre": "Total Nacional. Índice general. Variación anual. ",
+    "unidad": "",
+    "extraido_en": "2026-04-01T22:29:02",
+    "variable_iseu": "Inflación alimentaria",
+    "clave_config": "ipc_alimentos_barcelona"
+  },
+  {
+    "serie_id": "EPA137904",
+    "fecha": 1136070000000,
+    "valor": 1898.4,
+    "nombre": "Inactivos. Total Nacional. Mujeres. 16 y más años. Solteros/Solteras. Personas. ",
+    "unidad": "",
+    "extraido_en": "2026-04-01T22:29:02",
+    "variable_iseu": "Tasa de paro",
+    "clave_config": "tasa_paro_cataluna"
+  },
+  {
+    "serie_id": "EPA137904",
+    "fecha": 1167606000000,
+    "valor": 1926.2,
+    "nombre": "Inactivos. Total Nacional. Mujeres. 16 y más años. Solteros/Solteras. Personas. ",
+    "unidad": "",
+    "extraido_en": "2026-04-01T22:29:02",
+    "variable_iseu": "Tasa de paro",
+    "clave_config": "tasa_paro_cataluna"
+  },
+  {
+    "serie_id": "EPA137904",
+    "fecha": 1199142000000,
+    "valor": 1892.9,
+    "nombre": "Inactivos. Total Nacional. Mujeres. 16 y más años. Solteros/Solteras. Personas. ",
+    "unidad": "",
+    "extraido_en": "2026-04-01T22:29:02",
+    "variable_iseu": "Tasa de paro",
+    "clave_config": "tasa_paro_cataluna"
+  },
+  {
+    "serie_id": "EPA137904",
+    "fecha": 1230764400000,
+    "valor": 1908.4,
+    "nombre": "Inactivos. Total Nacional. Mujeres. 16 y más años. Solteros/Solteras. Personas. ",
+    "unidad": "",
+    "extraido_en": "2026-04-01T22:29:02",
+    "variable_iseu": "Tasa de paro",
+    "clave_config": "tasa_paro_cataluna"
+  },
+  {
+    "serie_id": "EPA137904",
+    "fecha": 1262300400000,
+    "valor": 1897.7,
+    "nombre": "Inactivos. Total Nacional. Mujeres. 16 y más años. Solteros/Solteras. Personas. ",
+    "unidad": "",
+    "extraido_en": "2026-04-01T22:29:02",
+    "variable_iseu": "Tasa de paro",
+    "clave_config": "tasa_paro_cataluna"
+  },
+  {
+    "serie_id": "EPA137904",
+    "fecha": 1293836400000,
+    "valor": 1890.8,
+    "nombre": "Inactivos. Total Nacional. Mujeres. 16 y más años. Solteros/Solteras. Personas. ",
+    "unidad": "",
+    "extraido_en": "2026-04-01T22:29:02",
+    "variable_iseu": "Tasa de paro",
+    "clave_config": "tasa_paro_cataluna"
+  },
+  {
+    "serie_id": "EPA137904",
+    "fecha": 1325372400000,
+    "valor": 1899.0,
+    "nombre": "Inactivos. Total Nacional. Mujeres. 16 y más años. Solteros/Solteras. Personas. ",
+    "unidad": "",
+    "extraido_en": "2026-04-01T22:29:02",
+    "variable_iseu": "Tasa de paro",
+    "clave_config": "tasa_paro_cataluna"
+  },
+  {
+    "serie_id": "EPA137904",
+    "fecha": 1356994800000,
+    "valor": 1931.5,
+    "nombre": "Inactivos. Total Nacional. Mujeres. 16 y más años. Solteros/Solteras. Personas. ",
+    "unidad": "",
+    "extraido_en": "2026-04-01T22:29:02",
+    "variable_iseu": "Tasa de paro",
+    "clave_config": "tasa_paro_cataluna"
+  },
+  {
+    "serie_id": "EPA137904",
+    "fecha": 1388530800000,
+    "valor": 1962.0,
+    "nombre": "Inactivos. Total Nacional. Mujeres. 16 y más años. Solteros/Solteras. Personas. ",
+    "unidad": "",
+    "extraido_en": "2026-04-01T22:29:02",
+    "variable_iseu": "Tasa de paro",
+    "clave_config": "tasa_paro_cataluna"
+  },
+  {
+    "serie_id": "EPA137904",
+    "fecha": 1420066800000,
+    "valor": 1998.8,
+    "nombre": "Inactivos. Total Nacional. Mujeres. 16 y más años. Solteros/Solteras. Personas. ",
+    "unidad": "",
+    "extraido_en": "2026-04-01T22:29:02",
+    "variable_iseu": "Tasa de paro",
+    "clave_config": "tasa_paro_cataluna"
+  },
+  {
+    "serie_id": "EPA137904",
+    "fecha": 1451602800000,
+    "valor": 2023.4,
+    "nombre": "Inactivos. Total Nacional. Mujeres. 16 y más años. Solteros/Solteras. Personas. ",
+    "unidad": "",
+    "extraido_en": "2026-04-01T22:29:02",
+    "variable_iseu": "Tasa de paro",
+    "clave_config": "tasa_paro_cataluna"
+  },
+  {
+    "serie_id": "EPA137904",
+    "fecha": 1483225200000,
+    "valor": 2065.5,
+    "nombre": "Inactivos. Total Nacional. Mujeres. 16 y más años. Solteros/Solteras. Personas. ",
+    "unidad": "",
+    "extraido_en": "2026-04-01T22:29:02",
+    "variable_iseu": "Tasa de paro",
+    "clave_config": "tasa_paro_cataluna"
+  },
+  {
+    "serie_id": "EPA137904",
+    "fecha": 1514761200000,
+    "valor": 2148.8,
+    "nombre": "Inactivos. Total Nacional. Mujeres. 16 y más años. Solteros/Solteras. Personas. ",
+    "unidad": "",
+    "extraido_en": "2026-04-01T22:29:02",
+    "variable_iseu": "Tasa de paro",
+    "clave_config": "tasa_paro_cataluna"
+  },
+  {
+    "serie_id": "EPA137904",
+    "fecha": 1546297200000,
+    "valor": 2190.9,
+    "nombre": "Inactivos. Total Nacional. Mujeres. 16 y más años. Solteros/Solteras. Personas. ",
+    "unidad": "",
+    "extraido_en": "2026-04-01T22:29:02",
+    "variable_iseu": "Tasa de paro",
+    "clave_config": "tasa_paro_cataluna"
+  },
+  {
+    "serie_id": "EPA137904",
+    "fecha": 1577833200000,
+    "valor": 2389.6,
+    "nombre": "Inactivos. Total Nacional. Mujeres. 16 y más años. Solteros/Solteras. Personas. ",
+    "unidad": "",
+    "extraido_en": "2026-04-01T22:29:02",
+    "variable_iseu": "Tasa de paro",
+    "clave_config": "tasa_paro_cataluna"
+  },
+  {
+    "serie_id": "EPA137904",
+    "fecha": 1609455600000,
+    "valor": 2325.7,
+    "nombre": "Inactivos. Total Nacional. Mujeres. 16 y más años. Solteros/Solteras. Personas. ",
+    "unidad": "",
+    "extraido_en": "2026-04-01T22:29:02",
+    "variable_iseu": "Tasa de paro",
+    "clave_config": "tasa_paro_cataluna"
+  },
+  {
+    "serie_id": "EPA137904",
+    "fecha": 1640991600000,
+    "valor": 2347.7,
+    "nombre": "Inactivos. Total Nacional. Mujeres. 16 y más años. Solteros/Solteras. Personas. ",
+    "unidad": "",
+    "extraido_en": "2026-04-01T22:29:02",
+    "variable_iseu": "Tasa de paro",
+    "clave_config": "tasa_paro_cataluna"
+  },
+  {
+    "serie_id": "EPA137904",
+    "fecha": 1672527600000,
+    "valor": 2377.4,
+    "nombre": "Inactivos. Total Nacional. Mujeres. 16 y más años. Solteros/Solteras. Personas. ",
+    "unidad": "",
+    "extraido_en": "2026-04-01T22:29:02",
+    "variable_iseu": "Tasa de paro",
+    "clave_config": "tasa_paro_cataluna"
+  },
+  {
+    "serie_id": "EPA137916",
+    "fecha": 1136070000000,
+    "valor": 20.8,
+    "nombre": "Inactivos. Total Nacional. Hombres. De 55 a 59 años. Separados/Separadas o Divorciados/Divorciadas. Personas. ",
+    "unidad": "",
+    "extraido_en": "2026-04-01T22:29:03",
+    "variable_iseu": "Tasa de empleo",
+    "clave_config": "tasa_empleo_cataluna"
+  },
+  {
+    "serie_id": "EPA137916",
+    "fecha": 1167606000000,
+    "valor": 21.7,
+    "nombre": "Inactivos. Total Nacional. Hombres. De 55 a 59 años. Separados/Separadas o Divorciados/Divorciadas. Personas. ",
+    "unidad": "",
+    "extraido_en": "2026-04-01T22:29:03",
+    "variable_iseu": "Tasa de empleo",
+    "clave_config": "tasa_empleo_cataluna"
+  },
+  {
+    "serie_id": "EPA137916",
+    "fecha": 1199142000000,
+    "valor": 23.6,
+    "nombre": "Inactivos. Total Nacional. Hombres. De 55 a 59 años. Separados/Separadas o Divorciados/Divorciadas. Personas. ",
+    "unidad": "",
+    "extraido_en": "2026-04-01T22:29:03",
+    "variable_iseu": "Tasa de empleo",
+    "clave_config": "tasa_empleo_cataluna"
+  },
+  {
+    "serie_id": "EPA137916",
+    "fecha": 1230764400000,
+    "valor": 25.0,
+    "nombre": "Inactivos. Total Nacional. Hombres. De 55 a 59 años. Separados/Separadas o Divorciados/Divorciadas. Personas. ",
+    "unidad": "",
+    "extraido_en": "2026-04-01T22:29:03",
+    "variable_iseu": "Tasa de empleo",
+    "clave_config": "tasa_empleo_cataluna"
+  },
+  {
+    "serie_id": "EPA137916",
+    "fecha": 1262300400000,
+    "valor": 21.8,
+    "nombre": "Inactivos. Total Nacional. Hombres. De 55 a 59 años. Separados/Separadas o Divorciados/Divorciadas. Personas. ",
+    "unidad": "",
+    "extraido_en": "2026-04-01T22:29:03",
+    "variable_iseu": "Tasa de empleo",
+    "clave_config": "tasa_empleo_cataluna"
+  },
+  {
+    "serie_id": "EPA137916",
+    "fecha": 1293836400000,
+    "valor": 25.5,
+    "nombre": "Inactivos. Total Nacional. Hombres. De 55 a 59 años. Separados/Separadas o Divorciados/Divorciadas. Personas. ",
+    "unidad": "",
+    "extraido_en": "2026-04-01T22:29:03",
+    "variable_iseu": "Tasa de empleo",
+    "clave_config": "tasa_empleo_cataluna"
+  },
+  {
+    "serie_id": "EPA137916",
+    "fecha": 1325372400000,
+    "valor": 25.8,
+    "nombre": "Inactivos. Total Nacional. Hombres. De 55 a 59 años. Separados/Separadas o Divorciados/Divorciadas. Personas. ",
+    "unidad": "",
+    "extraido_en": "2026-04-01T22:29:03",
+    "variable_iseu": "Tasa de empleo",
+    "clave_config": "tasa_empleo_cataluna"
+  },
+  {
+    "serie_id": "EPA137916",
+    "fecha": 1356994800000,
+    "valor": 30.2,
+    "nombre": "Inactivos. Total Nacional. Hombres. De 55 a 59 años. Separados/Separadas o Divorciados/Divorciadas. Personas. ",
+    "unidad": "",
+    "extraido_en": "2026-04-01T22:29:03",
+    "variable_iseu": "Tasa de empleo",
+    "clave_config": "tasa_empleo_cataluna"
+  },
+  {
+    "serie_id": "EPA137916",
+    "fecha": 1388530800000,
+    "valor": 34.7,
+    "nombre": "Inactivos. Total Nacional. Hombres. De 55 a 59 años. Separados/Separadas o Divorciados/Divorciadas. Personas. ",
+    "unidad": "",
+    "extraido_en": "2026-04-01T22:29:03",
+    "variable_iseu": "Tasa de empleo",
+    "clave_config": "tasa_empleo_cataluna"
+  },
+  {
+    "serie_id": "EPA137916",
+    "fecha": 1420066800000,
+    "valor": 29.3,
+    "nombre": "Inactivos. Total Nacional. Hombres. De 55 a 59 años. Separados/Separadas o Divorciados/Divorciadas. Personas. ",
+    "unidad": "",
+    "extraido_en": "2026-04-01T22:29:03",
+    "variable_iseu": "Tasa de empleo",
+    "clave_config": "tasa_empleo_cataluna"
+  },
+  {
+    "serie_id": "EPA137916",
+    "fecha": 1451602800000,
+    "valor": 32.1,
+    "nombre": "Inactivos. Total Nacional. Hombres. De 55 a 59 años. Separados/Separadas o Divorciados/Divorciadas. Personas. ",
+    "unidad": "",
+    "extraido_en": "2026-04-01T22:29:03",
+    "variable_iseu": "Tasa de empleo",
+    "clave_config": "tasa_empleo_cataluna"
+  },
+  {
+    "serie_id": "EPA137916",
+    "fecha": 1483225200000,
+    "valor": 38.3,
+    "nombre": "Inactivos. Total Nacional. Hombres. De 55 a 59 años. Separados/Separadas o Divorciados/Divorciadas. Personas. ",
+    "unidad": "",
+    "extraido_en": "2026-04-01T22:29:03",
+    "variable_iseu": "Tasa de empleo",
+    "clave_config": "tasa_empleo_cataluna"
+  },
+  {
+    "serie_id": "EPA137916",
+    "fecha": 1514761200000,
+    "valor": 39.8,
+    "nombre": "Inactivos. Total Nacional. Hombres. De 55 a 59 años. Separados/Separadas o Divorciados/Divorciadas. Personas. ",
+    "unidad": "",
+    "extraido_en": "2026-04-01T22:29:03",
+    "variable_iseu": "Tasa de empleo",
+    "clave_config": "tasa_empleo_cataluna"
+  },
+  {
+    "serie_id": "EPA137916",
+    "fecha": 1546297200000,
+    "valor": 36.7,
+    "nombre": "Inactivos. Total Nacional. Hombres. De 55 a 59 años. Separados/Separadas o Divorciados/Divorciadas. Personas. ",
+    "unidad": "",
+    "extraido_en": "2026-04-01T22:29:03",
+    "variable_iseu": "Tasa de empleo",
+    "clave_config": "tasa_empleo_cataluna"
+  },
+  {
+    "serie_id": "EPA137916",
+    "fecha": 1577833200000,
+    "valor": 41.4,
+    "nombre": "Inactivos. Total Nacional. Hombres. De 55 a 59 años. Separados/Separadas o Divorciados/Divorciadas. Personas. ",
+    "unidad": "",
+    "extraido_en": "2026-04-01T22:29:03",
+    "variable_iseu": "Tasa de empleo",
+    "clave_config": "tasa_empleo_cataluna"
+  },
+  {
+    "serie_id": "EPA137916",
+    "fecha": 1609455600000,
+    "valor": 40.3,
+    "nombre": "Inactivos. Total Nacional. Hombres. De 55 a 59 años. Separados/Separadas o Divorciados/Divorciadas. Personas. ",
+    "unidad": "",
+    "extraido_en": "2026-04-01T22:29:03",
+    "variable_iseu": "Tasa de empleo",
+    "clave_config": "tasa_empleo_cataluna"
+  },
+  {
+    "serie_id": "EPA137916",
+    "fecha": 1640991600000,
+    "valor": 42.1,
+    "nombre": "Inactivos. Total Nacional. Hombres. De 55 a 59 años. Separados/Separadas o Divorciados/Divorciadas. Personas. ",
+    "unidad": "",
+    "extraido_en": "2026-04-01T22:29:03",
+    "variable_iseu": "Tasa de empleo",
+    "clave_config": "tasa_empleo_cataluna"
+  },
+  {
+    "serie_id": "EPA137916",
+    "fecha": 1672527600000,
+    "valor": 42.4,
+    "nombre": "Inactivos. Total Nacional. Hombres. De 55 a 59 años. Separados/Separadas o Divorciados/Divorciadas. Personas. ",
+    "unidad": "",
+    "extraido_en": "2026-04-01T22:29:03",
+    "variable_iseu": "Tasa de empleo",
+    "clave_config": "tasa_empleo_cataluna"
+  }
+]
