@@ -1,0 +1,39 @@
+{
+  "fuente": "INE",
+  "timestamp": "2026-04-01T22:29:03",
+  "series_configuradas": 8,
+  "resultados": {
+    "ipc_general_barcelona": {
+      "estado": "OK",
+      "filas": 24
+    },
+    "ipc_alimentos_barcelona": {
+      "estado": "OK",
+      "filas": 24
+    },
+    "salario_medio_cataluna": {
+      "estado": "ERROR",
+      "filas": 0
+    },
+    "tasa_paro_cataluna": {
+      "estado": "OK",
+      "filas": 18
+    },
+    "tasa_empleo_cataluna": {
+      "estado": "OK",
+      "filas": 18
+    },
+    "ventas_retail_cataluna": {
+      "estado": "ERROR",
+      "filas": 0
+    },
+    "ocupacion_hotelera_barcelona": {
+      "estado": "ERROR",
+      "filas": 0
+    },
+    "creacion_empresas_barcelona": {
+      "estado": "ERROR",
+      "filas": 0
+    }
+  }
+}

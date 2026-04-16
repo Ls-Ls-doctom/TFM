@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>30 preguntas de ciudadano promedio · ISEU+</title>
+  <style>
+    :root {
+      --bg: #f7f3ea;
+      --card: #ffffff;
+      --ink: #17312e;
+      --muted: #63706d;
+      --line: rgba(23, 49, 46, 0.12);
+      --accent: #0f6a57;
+      --accent-soft: #e1f2ec;
+      --blue: #235f9f;
+      --blue-soft: #e8f1fb;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top left, rgba(15, 106, 87, .08), transparent 28%),
+        linear-gradient(180deg, #fbf8f2 0%, var(--bg) 100%);
+    }
+
+    .page {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 30px 20px 48px;
+    }
+
+    .eyebrow {
+      margin: 0 0 8px;
+      font: 800 12px/1 "Trebuchet MS", sans-serif;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+
+    h1 {
+      margin: 0 0 10px;
+      max-width: 900px;
+      font-size: clamp(2rem, 4vw, 3rem);
+      line-height: 1;
+    }
+
+    .intro {
+      max-width: 900px;
+      margin: 0 0 20px;
+      color: var(--muted);
+      line-height: 1.65;
+    }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    button {
+      border: 0;
+      border-radius: 8px;
+      padding: 10px 14px;
+      font: 800 13px/1 "Trebuchet MS", sans-serif;
+      cursor: pointer;
+      color: #fff;
+      background: var(--accent);
+    }
+
+    .questions {
+      display: grid;
+      gap: 14px;
+    }
+
+    .qa {
+      display: grid;
+      grid-template-columns: 74px 1fr;
+      gap: 16px;
+      align-items: start;
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: rgba(255, 255, 255, .86);
+      box-shadow: 0 14px 34px rgba(23, 49, 46, .06);
+    }
+
+    .num {
+      display: grid;
+      place-items: center;
+      width: 54px;
+      height: 54px;
+      border-radius: 8px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font: 900 18px/1 "Trebuchet MS", sans-serif;
+    }
+
+    .qa h2 {
+      margin: 0 0 8px;
+      font: 800 18px/1.25 "Trebuchet MS", sans-serif;
+      color: var(--ink);
+    }
+
+    .answer {
+      margin: 0;
+      color: #314440;
+      line-height: 1.58;
+    }
+
+    .tag {
+      display: inline-flex;
+      margin: 10px 0 0;
+      padding: 6px 9px;
+      border-radius: 8px;
+      background: var(--blue-soft);
+      color: var(--blue);
+      font: 800 12px/1 "Trebuchet MS", sans-serif;
+    }
+
+    .note {
+      margin-top: 20px;
+      padding: 16px 18px;
+      border: 1px solid rgba(35, 95, 159, .16);
+      border-radius: 16px;
+      background: var(--blue-soft);
+      color: #28495f;
+      line-height: 1.6;
+    }
+
+    @media (max-width: 720px) {
+      .qa { grid-template-columns: 1fr; }
+      .num { width: 48px; height: 48px; }
+    }
+
+    @media print {
+      body { background: #fff !important; }
+      .page { max-width: 100%; padding: 0; }
+      .toolbar { display: none; }
+      .qa { box-shadow: none; break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <p class="eyebrow">TFM · Validación ciudadana</p>
+    <h1>30 preguntas que haría una persona normal sobre ISEU+</h1>
+    <p class="intro">
+      Este documento traduce el proyecto a lenguaje cotidiano. Sirve para comprobar si la plataforma responde dudas reales de una persona que vive, trabaja, estudia o quiere tomar decisiones informadas sobre Barcelona.
+    </p>
+
+    <div class="toolbar">
+      <button type="button" id="printButton">Exportar a PDF</button>
+    </div>
+
+    <section class="questions" aria-label="Preguntas y respuestas de ciudadano promedio">
+      <article class="qa">
+        <div class="num">01</div>
+        <div>
+          <h2>¿Barcelona está mejor o peor económicamente que hace un año?</h2>
+          <p class="answer">ISEU+ debería responderlo con una evolución del índice general y de sus pilares principales. La respuesta no debe ser solo "mejor" o "peor", sino explicar qué ha cambiado: empleo, precios, energía, actividad económica, bienestar o calidad del dato.</p>
+          <span class="tag">Lectura esperada: tendencia general</span>
+        </div>
+      </article>
+
+      <article class="qa">
+        <div class="num">02</div>
+        <div>
+          <h2>¿Por qué siento que vivir en Barcelona cada vez cuesta más?</h2>
+          <p class="answer">La plataforma debería separar coste de vida, inflación, energía, presión fiscal y otros indicadores disponibles. La idea es mostrar si la percepción ciudadana coincide con los datos y qué variables están empujando esa presión.</p>
+          <span class="tag">Lectura esperada: coste de vida</span>
+        </div>
+      </article>
+
+      <article class="qa">
+        <div class="num">03</div>
+        <div>
+          <h2>¿Hay más oportunidades de trabajo ahora que antes?</h2>
+          <p class="answer">ISEU+ debería mirar el pilar laboral: paro, empleo, afiliación o proxies disponibles. La respuesta tendría que indicar si el mercado mejora, si está estancado o si hay señales contradictorias entre empleo y actividad económica.</p>
+          <span class="tag">Lectura esperada: mercado laboral</span>
+        </div>
+      </article>
+
+      <article class="qa">
+        <div class="num">04</div>
+        <div>
+          <h2>¿Barcelona es una ciudad buena para buscar empleo?</h2>
+          <p class="answer">La respuesta debería comparar Barcelona con otras ciudades o territorios de referencia. No basta con decir si hay empleo: conviene explicar si el empleo compensa el coste de vida y qué nivel de confianza tienen los datos utilizados.</p>
+          <span class="tag">Lectura esperada: empleo frente a coste</span>
+        </div>
+      </article>
+
+      <article class="qa">
+        <div class="num">05</div>
+        <div>
+          <h2>¿Mi salario alcanza menos que antes?</h2>
+          <p class="answer">ISEU+ debería cruzar capacidad de consumo con coste de vida. Si los precios suben más rápido que los ingresos o que la actividad económica disponible, la plataforma debería señalar una pérdida de margen real para el ciudadano.</p>
+          <span class="tag">Lectura esperada: poder adquisitivo</span>
+        </div>
+      </article>
+
+      <article class="qa">
+        <div class="num">06</div>
+        <div>
+          <h2>¿La economía de Barcelona depende demasiado del turismo?</h2>
+          <p class="answer">La herramienta debería mostrar indicadores de actividad económica y estructura sectorial cuando estén disponibles. Si no existe dato directo suficiente, debe avisar que la respuesta usa proxies y no presentar conclusiones como verdades absolutas.</p>
+          <span class="tag">Lectura esperada: actividad económica</span>
+        </div>
+      </article>
+
+      <article class="qa">
+        <div class="num">07</div>
+        <div>
+          <h2>¿Qué barrio o zona está mejor situada económicamente?</h2>
+          <p class="answer">Si hay datos por distrito o barrio, ISEU+ debería permitir comparar zonas. Si el dato solo existe a nivel municipal o autonómico, la plataforma debe indicarlo claramente para no prometer una precisión que no tiene.</p>
+          <span class="tag">Lectura esperada: granularidad territorial</span>
+        </div>
+      </article>
+
+      <article class="qa">
+        <div class="num">08</div>
+        <div>
+          <h2>¿Los datos son actuales o están desfasados?</h2>
+          <p class="answer">Cada respuesta debería mostrar fecha, fuente y frecuencia de actualización. Para un ciudadano, saber si el dato es mensual, trimestral o anual es clave para confiar en la lectura.</p>
+          <span class="tag">Lectura esperada: actualización</span>
+        </div>
+      </article>
+
+      <article class="qa">
+        <div class="num">09</div>
+        <div>
+          <h2>¿De dónde salen los números que me enseña la web?</h2>
+          <p class="answer">ISEU+ debe enseñar la fuente de cada variable: INE, Idescat, Open Data BCN, REE, MITMA, SEPE u otras fuentes. La trazabilidad es parte central del proyecto, no un detalle secundario.</p>
+          <span class="tag">Lectura esperada: fuentes</span>
+        </div>
+      </article>
+
+      <article class="qa">
+        <div class="num">10</div>
+        <div>
+          <h2>¿Puedo fiarme de este índice?</h2>
+          <p class="answer">La respuesta debería incluir un nivel de confianza. El índice es más defendible cuando separa dato directo, proxy, dato pendiente y calidad de fuente, en vez de ocultar la incertidumbre.</p>
+          <span class="tag">Lectura esperada: confianza</span>
+        </div>
+      </article>
+
+      <article class="qa">
+        <div class="num">11</div>
+        <div>
+          <h2>¿Qué significa que Barcelona tenga un score alto o bajo?</h2>
+          <p class="answer">El score debe resumir la salud económica urbana, pero siempre acompañado de explicación. Un número aislado no sirve mucho; lo importante es saber qué pilares lo suben o lo bajan.</p>
+          <span class="tag">Lectura esperada: explicación del score</span>
+        </div>
+      </article>
+
+      <article class="qa">
+        <div class="num">12</div>
+        <div>
+          <h2>¿Qué es lo que más está perjudicando a Barcelona ahora mismo?</h2>
+          <p class="answer">La plataforma debería identificar los drivers negativos del índice. Por ejemplo, puede señalar si el problema viene de coste de vida, empleo, energía, accesibilidad, bienestar o falta de datos fiables.</p>
+          <span class="tag">Lectura esperada: drivers negativos</span>
+        </div>
+      </article>
+
+      <article class="qa">
+        <div class="num">13</div>
+        <div>
+          <h2>¿Qué es lo que mejor está funcionando en la ciudad?</h2>
+          <p class="answer">ISEU+ debería mostrar los pilares y variables que empujan positivamente el resultado. Esto ayuda a no tener una lectura solo pesimista y permite detectar fortalezas reales de la ciudad.</p>
+          <span class="tag">Lectura esperada: fortalezas</span>
+        </div>
+      </article>
+
+      <article class="qa">
+        <div class="num">14</div>
+        <div>
+          <h2>¿Barcelona está mejor que Madrid, Valencia o Málaga?</h2>
+          <p class="answer">La respuesta ideal es comparativa: score global, pilares y variables equivalentes. La comparación debe hacerse con cortes temporales homogéneos para no mezclar datos de años distintos.</p>
+          <span class="tag">Lectura esperada: comparativa entre ciudades</span>
+        </div>
+      </article>
+
+      <article class="qa">
+        <div class="num">15</div>
+        <div>
+          <h2>¿Qué ciudad se parece más a Barcelona?</h2>
+          <p class="answer">ISEU+ podría responder comparando patrones de pilares, no solo ranking final. Dos ciudades pueden tener un score parecido por razones muy distintas, y eso debe quedar claro.</p>
+          <span class="tag">Lectura esperada: similitud urbana</span>
+        </div>
+      </article>
+
+      <article class="qa">
+        <div class="num">16</div>
+        <div>
+          <h2>¿La ciudad va bien para abrir un negocio?</h2>
+          <p class="answer">La plataforma debería mirar entorno empresarial, actividad económica, empleo, coste operativo y presión fiscal cuando haya datos. La respuesta tendría que ser orientativa, no una recomendación financiera cerrada.</p>
+          <span class="tag">Lectura esperada: entorno empresarial</span>
+        </div>
+      </article>
+
+      <article class="qa">
+        <div class="num">17</div>
+        <div>
+          <h2>¿Hay señales de que la economía local se esté frenando?</h2>
+          <p class="answer">ISEU+ debería detectar deterioros recientes en variables de actividad, empleo, consumo o demanda. También debe distinguir entre una caída puntual y una tendencia sostenida.</p>
+          <span class="tag">Lectura esperada: alerta temprana</span>
+        </div>
+      </article>
+
+      <article class="qa">
+        <div class="num">18</div>
+        <div>
+          <h2>¿La subida de la energía afecta al índice de la ciudad?</h2>
+          <p class="answer">Sí, si la energía forma parte del coste de vida o de la presión económica. ISEU+ debería mostrar cuánto pesa esa variable y si su impacto es temporal o persistente.</p>
+          <span class="tag">Lectura esperada: energía</span>
+        </div>
+      </article>
+
+      <article class="qa">
+        <div class="num">19</div>
+        <div>
+          <h2>¿La sanidad o los servicios públicos entran en la lectura económica?</h2>
+          <p class="answer">Pueden entrar dentro de accesibilidad y bienestar, siempre que existan datos defendibles. La salud económica urbana no es solo dinero: también depende de condiciones de vida que afectan a personas y empresas.</p>
+          <span class="tag">Lectura esperada: bienestar urbano</span>
+        </div>
+      </article>
+
+      <article class="qa">
+        <div class="num">20</div>
+        <div>
+          <h2>¿La contaminación o la movilidad influyen en el resultado?</h2>
+          <p class="answer">Sí, si se incluyen como variables de bienestar o accesibilidad. La plataforma debería explicar su peso y evitar mezclarlas sin criterio con variables estrictamente económicas.</p>
+          <span class="tag">Lectura esperada: calidad urbana</span>
+        </div>
+      </article>
+
+      <article class="qa">
+        <div class="num">21</div>
+        <div>
+          <h2>¿Qué pasa si falta un dato importante?</h2>
+          <p class="answer">ISEU+ debería marcarlo como dato pendiente, proxy o baja confianza. Es mejor reconocer una ausencia que rellenarla de forma opaca, porque el objetivo del proyecto también es medir la calidad de la información.</p>
+          <span class="tag">Lectura esperada: datos faltantes</span>
+        </div>
+      </article>
+
+      <article class="qa">
+        <div class="num">22</div>
+        <div>
+          <h2>¿Por qué algunas respuestas hablan de Catalunya y no solo de Barcelona?</h2>
+          <p class="answer">Porque algunas fuentes no ofrecen todos los indicadores a escala municipal. En esos casos, la plataforma debe explicar que usa un proxy territorial y que la confianza de la respuesta baja.</p>
+          <span class="tag">Lectura esperada: proxy territorial</span>
+        </div>
+      </article>
+
+      <article class="qa">
+        <div class="num">23</div>
+        <div>
+          <h2>¿La web me dice qué decisión tomar?</h2>
+          <p class="answer">No debería decidir por el usuario, pero sí ayudarle a interpretar la situación. El valor está en ordenar datos dispersos, explicar drivers y dar contexto para tomar mejores decisiones.</p>
+          <span class="tag">Lectura esperada: apoyo a decisión</span>
+        </div>
+      </article>
+
+      <article class="qa">
+        <div class="num">24</div>
+        <div>
+          <h2>¿Esto sirve solo para expertos?</h2>
+          <p class="answer">No. El proyecto debe tener una capa simple para ciudadanía y una capa más técnica para revisar fuentes, variables y metodología. Si solo lo entiende un analista, la experiencia no está bien resuelta.</p>
+          <span class="tag">Lectura esperada: lenguaje claro</span>
+        </div>
+      </article>
+
+      <article class="qa">
+        <div class="num">25</div>
+        <div>
+          <h2>¿Qué puedo preguntar en el chat de la plataforma?</h2>
+          <p class="answer">Preguntas sobre empleo, coste de vida, sanidad, bienestar, energía, fuentes, calidad del dato o comparativas. El chat debe traducir una pregunta normal en variables y visualizaciones comprensibles.</p>
+          <span class="tag">Lectura esperada: asistente conversacional</span>
+        </div>
+      </article>
+
+      <article class="qa">
+        <div class="num">26</div>
+        <div>
+          <h2>¿La respuesta del chat se basa en datos reales?</h2>
+          <p class="answer">En la versión final del proyecto, la respuesta debería conectarse a datos curados por scrapers y fuentes oficiales. En prototipo, debe distinguirse claramente entre maqueta, dato real y dato pendiente.</p>
+          <span class="tag">Lectura esperada: real frente a maqueta</span>
+        </div>
+      </article>
+
+      <article class="qa">
+        <div class="num">27</div>
+        <div>
+          <h2>¿Cada cuánto se actualizaría la información?</h2>
+          <p class="answer">Depende de cada fuente. Algunas variables pueden actualizarse diariamente o mensualmente, otras son trimestrales o anuales. ISEU+ debe mostrar esa frecuencia junto a cada dato.</p>
+          <span class="tag">Lectura esperada: frecuencia</span>
+        </div>
+      </article>
+
+      <article class="qa">
+        <div class="num">28</div>
+        <div>
+          <h2>¿Este índice puede cambiar mucho de un día para otro?</h2>
+          <p class="answer">No debería cambiar de forma brusca salvo que entren datos muy volátiles o se corrija una fuente. La metodología debe evitar que una sola variable distorsione todo el resultado sin explicación.</p>
+          <span class="tag">Lectura esperada: estabilidad</span>
+        </div>
+      </article>
+
+      <article class="qa">
+        <div class="num">29</div>
+        <div>
+          <h2>¿Qué diferencia hay entre ver datos sueltos y usar ISEU+?</h2>
+          <p class="answer">ISEU+ no solo muestra datos: los agrupa, normaliza, compara, explica su confianza y los convierte en una lectura urbana. El valor está en pasar de información dispersa a interpretación estructurada.</p>
+          <span class="tag">Lectura esperada: valor añadido</span>
+        </div>
+      </article>
+
+      <article class="qa">
+        <div class="num">30</div>
+        <div>
+          <h2>¿Cuál sería la conclusión rápida para una persona normal?</h2>
+          <p class="answer">La conclusión debería responder tres cosas: cómo está Barcelona, qué factores explican esa situación y cuánta confianza tiene el dato. Si la plataforma consigue eso en lenguaje claro, el proyecto está bien encaminado.</p>
+          <span class="tag">Lectura esperada: resumen ciudadano</span>
+        </div>
+      </article>
+    </section>
+
+    <div class="note">
+      Uso recomendado: estas preguntas sirven como prueba de realidad. Si la plataforma no puede responder varias de ellas con datos, fuente y explicación sencilla, conviene revisar variables, alcance o narrativa antes de cerrar el TFM.
+    </div>
+  </main>
+
+  <script>
+    document.getElementById("printButton").addEventListener("click", () => {
+      window.print();
+    });
+  </script>
+</body>
+</html>

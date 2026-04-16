@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>60 preguntas de validación · ISEU+</title>
+  <style>
+    :root {
+      --bg: #f4efe4;
+      --card: #ffffff;
+      --ink: #17312e;
+      --muted: #61706d;
+      --line: rgba(23, 49, 46, 0.10);
+      --accent: #0f6a57;
+      --accent-soft: #dff0ea;
+      --warn: #9e6a00;
+      --warn-soft: #fff2cf;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top left, rgba(15,106,87,.08), transparent 26%),
+        linear-gradient(180deg, #faf7f1 0%, var(--bg) 100%);
+    }
+
+    .page {
+      max-width: 1220px;
+      margin: 0 auto;
+      padding: 28px 20px 48px;
+    }
+
+    .eyebrow {
+      font: 700 12px/1 "Trebuchet MS", sans-serif;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 8px;
+    }
+
+    h1 {
+      margin: 0 0 10px;
+      font-size: clamp(2rem, 4vw, 3rem);
+      line-height: 1;
+    }
+
+    .intro {
+      margin: 0 0 20px;
+      max-width: 900px;
+      color: var(--muted);
+      line-height: 1.65;
+    }
+
+    .topbar {
+      display: grid;
+      grid-template-columns: 1.2fr .8fr;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .panel {
+      background: rgba(255,255,255,.78);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      padding: 18px;
+      box-shadow: 0 14px 34px rgba(23,49,46,.08);
+    }
+
+    .panel h2 {
+      margin: 0 0 10px;
+      font: 800 15px/1.2 "Trebuchet MS", sans-serif;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+    }
+
+    .score {
+      font-size: 2.4rem;
+      font-weight: 700;
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+
+    .score-note {
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    button {
+      border: 0;
+      border-radius: 999px;
+      padding: 10px 14px;
+      font: 700 13px/1 "Trebuchet MS", sans-serif;
+      cursor: pointer;
+      background: var(--accent);
+      color: white;
+    }
+
+    button.secondary {
+      background: #e7ecea;
+      color: var(--ink);
+    }
+
+    .sections {
+      display: grid;
+      gap: 18px;
+    }
+
+    .section {
+      background: rgba(255,255,255,.84);
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      padding: 18px;
+      box-shadow: 0 14px 34px rgba(23,49,46,.06);
+    }
+
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: baseline;
+      margin-bottom: 12px;
+    }
+
+    .section h3 {
+      margin: 0;
+      font: 800 18px/1.2 "Trebuchet MS", sans-serif;
+    }
+
+    .section small {
+      color: var(--muted);
+      font: 700 12px/1 "Trebuchet MS", sans-serif;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+    }
+
+    .questions {
+      display: grid;
+      gap: 10px;
+    }
+
+    .question {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      align-items: center;
+      padding: 12px 14px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: #fff;
+    }
+
+    .question strong {
+      display: block;
+      margin-bottom: 4px;
+      font: 700 13px/1 "Trebuchet MS", sans-serif;
+      color: var(--accent);
+    }
+
+    .question p {
+      margin: 0;
+      line-height: 1.45;
+    }
+
+    .answers {
+      display: inline-flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .answers label {
+      position: relative;
+      cursor: pointer;
+    }
+
+    .answers input {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .answers span {
+      display: inline-flex;
+      min-width: 42px;
+      justify-content: center;
+      padding: 8px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      font: 700 12px/1 "Trebuchet MS", sans-serif;
+      background: #fff;
+      color: var(--muted);
+    }
+
+    .answers input:checked + span {
+      background: var(--accent-soft);
+      color: var(--accent);
+      border-color: rgba(15,106,87,.24);
+    }
+
+    .footer {
+      margin-top: 20px;
+      padding: 16px 18px;
+      border-radius: 18px;
+      background: var(--warn-soft);
+      color: #5c4b18;
+      border: 1px solid rgba(158,106,0,.16);
+      line-height: 1.6;
+    }
+
+    @media (max-width: 900px) {
+      .topbar { grid-template-columns: 1fr; }
+      .question { grid-template-columns: 1fr; }
+      .answers { justify-content: flex-start; }
+    }
+
+    @media print {
+      body { background: #fff !important; }
+      .page { padding: 0; max-width: 100%; }
+      .actions { display: none !important; }
+      .panel, .section, .question { box-shadow: none; break-inside: avoid; }
+      .answers input:checked + span {
+        background: var(--accent-soft);
+        color: var(--accent);
+        border-color: rgba(15,106,87,.24);
+        font-weight: 900;
+      }
+      .answers input:not(:checked) + span {
+        opacity: 0.3;
+      }
+    }
+
+    .btn-export {
+      background: #1f65ad;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <div class="eyebrow">TFM · Validación estratégica</div>
+    <h1>60 preguntas para validar si ISEU+ resuelve el problema objetivo</h1>
+    <p class="intro">
+      Este cuestionario sirve para comprobar si el proyecto tiene sentido como solución: si el problema está bien definido,
+      si la web aporta valor real, si el dato es defendible y si el resultado será útil para un usuario final y para la defensa del TFM.
+      Marca cada pregunta con `Sí`, `Parcial` o `No`.
+    </p>
+
+    <section class="topbar">
+      <div class="panel">
+        <h2>Cómo usarlo</h2>
+        <div class="score-note">
+          Usa este formulario al inicio del proyecto, después del MVP local y antes del cierre final. Si muchas respuestas quedan en
+          `No` o `Parcial`, eso indica que el proyecto aún no está atacando bien el problema original o que la narrativa necesita ajuste.
+        </div>
+        <div class="actions">
+          <button id="export-pdf" class="btn-export">Exportar a PDF</button>
+          <button id="mark-yes">Marcar todo Sí</button>
+          <button id="clear-all" class="secondary">Limpiar respuestas</button>
+        </div>
+      </div>
+      <div class="panel">
+        <h2>Resumen</h2>
+        <div class="score" id="score-value">0 / --</div>
+        <div class="score-note" id="score-note">
+          Aún no hay respuestas. Empieza a marcar preguntas para ver la lectura global.
+        </div>
+      </div>
+    </section>
+
+    <section class="sections" id="sections"></section>
+
+    <div class="footer">
+      Lectura sugerida del resultado:
+      75% o más indica que el proyecto está bien alineado con el problema.
+      Entre 50% y 74% indica que hay base, pero falta cerrar propuesta, dato o narrativa.
+      Menos de 50% indica que el proyecto aún no demuestra con claridad por qué debe existir ni qué problema resuelve.
+    </div>
+  </main>
+
+  <script>
+    const sections = [
+      {
+        title: "1. Problema y objetivo",
+        questions: [
+          "¿El problema que resuelve ISEU+ está formulado con claridad en una frase simple?",
+          "¿Queda claro por qué medir salud económica urbana aporta valor real?",
+          "¿Barcelona está justificada como ciudad piloto y no solo como ejemplo arbitrario?",
+          "¿El proyecto responde a una necesidad concreta y no solo a un ejercicio técnico?",
+          "¿El usuario objetivo está identificado con suficiente precisión?",
+          "¿Se entiende qué decisión podría tomar alguien usando esta herramienta?",
+          "¿El problema original puede resolverse mejor con una web que con una app móvil en esta fase?",
+          "¿La propuesta evita querer resolver demasiadas cosas a la vez?",
+          "¿La versión MVP mantiene el foco en lo esencial del problema?",
+          "¿El objetivo final del TFM se puede defender sin depender de funcionalidades extra?"
+        ]
+      },
+      {
+        title: "2. Utilidad de la solución web",
+        questions: [
+          "¿La página web permite visualizar el índice de forma más rápida y defendible que una app móvil inicial?",
+          "¿El usuario entendería el score global en pocos segundos?",
+          "¿La interfaz web permite explicar drivers, pilares y variables sin saturar?",
+          "¿La web es suficiente como demostrador funcional del producto?",
+          "¿La navegación principal puede resolverse con pocas pantallas bien estructuradas?",
+          "¿La visualización web ayuda a defender mejor el TFM ante el tribunal?",
+          "¿El diseño prioriza claridad analítica antes que complejidad visual innecesaria?",
+          "¿La propuesta web puede construirse de forma realista dentro del tiempo disponible?",
+          "¿La experiencia web puede funcionar bien en escritorio y móvil sin rehacer todo el proyecto?",
+          "¿Expo Go puede quedar realmente como opcional sin perjudicar el valor del TFM?"
+        ]
+      },
+      {
+        title: "3. Dato, fuentes y viabilidad",
+        questions: [
+          "¿Las 60 variables tienen una justificación económica clara?",
+          "¿El MVP de variables está bien recortado para ser operable?",
+          "¿Se distingue claramente entre dato real, proxy y dato futuro?",
+          "¿Las fuentes principales son razonables para sostener una primera versión?",
+          "¿El proyecto evita depender de demasiadas fuentes frágiles o inestables?",
+          "¿La trazabilidad de cada dato está resuelta de forma defendible?",
+          "¿Se puede explicar por qué una variable entra o se queda fuera del MVP?",
+          "¿El modelo contempla qué hacer cuando falta un dato municipal?",
+          "¿La comparabilidad entre ciudades está bien cuidada?",
+          "¿La capa de confianza añade valor real a la interpretación del índice?"
+        ]
+      },
+      {
+        title: "4. Motor analítico y metodología",
+        questions: [
+          "¿La metodología de scoring está formulada de manera comprensible?",
+          "¿La polaridad de las variables está correctamente definida?",
+          "¿La normalización robusta tiene sentido para este tipo de problema?",
+          "¿El score por pilar mejora la interpretabilidad del score global?",
+          "¿El índice evita convertirse en una caja negra?",
+          "¿Se puede defender por qué el score global es útil y no meramente decorativo?",
+          "¿La agregación de pilares refleja bien la lógica del modelo?",
+          "¿La metodología soporta comparaciones temporales con sentido?",
+          "¿El sistema permite identificar qué empuja o deteriora el índice?",
+          "¿La capa analítica está alineada con el problema de negocio planteado?"
+        ]
+      },
+      {
+        title: "5. Construcción local-first",
+        questions: [
+          "¿El proyecto puede construirse y probarse completamente en local?",
+          "¿La estrategia local-first reduce complejidad frente a desplegar pronto en la nube?",
+          "¿El equipo puede iterar más rápido trabajando primero en local?",
+          "¿El entorno local está pensado para frontend, backend y datos a la vez?",
+          "¿La web puede validarse funcionalmente sin depender todavía de cloud?",
+          "¿La arquitectura final puede definirse mejor una vez el MVP ya funciona?",
+          "¿La estrategia evita perder tiempo temprano en DevOps o infraestructura?",
+          "¿El paso a staging cloud queda correctamente pospuesto al final del proceso?",
+          "¿La migración a nube se plantea como industrialización y no como punto de partida?",
+          "¿Esta secuencia local -> web estable -> cloud final es coherente con el alcance real?"
+        ]
+      },
+      {
+        title: "6. Diseño, narrativa y experiencia",
+        questions: [
+          "¿La interfaz ayuda a entender el índice y no solo a mostrarlo?",
+          "¿El diseño puede sostener una narrativa clara para el TFM?",
+          "¿La estructura visual explica diferencias entre score global y drivers?",
+          "¿La página puede mostrar comparativas sin volverse confusa?",
+          "¿La solución visual transmite seriedad analítica?",
+          "¿Las explicaciones de variables, fuentes y confianza están bien integradas?",
+          "¿El usuario podría distinguir entre dato raw y resultado interpretado?",
+          "¿La experiencia transmite trazabilidad y rigor metodológico?",
+          "¿El diseño es suficientemente sólido como para una demo final?",
+          "¿La narrativa de producto y la de TFM están alineadas?"
+        ]
+      },
+      {
+        title: "7. Factibilidad técnica",
+        questions: [
+          "¿El stack elegido para la web es simple de mantener?",
+          "¿La elección tecnológica favorece velocidad de construcción?",
+          "¿El sistema puede entregar una versión demostrable sin sobreingeniería?",
+          "¿El modelo de datos soporta bien la visualización web prevista?",
+          "¿La parte de scrapers y ETL está acotada para no bloquear todo el proyecto?",
+          "¿La web puede consumir los datos curados de forma clara y estable?",
+          "¿La estrategia técnica prioriza el producto real frente al perfeccionismo arquitectónico?",
+          "¿Hay una separación razonable entre captura, curación y visualización?",
+          "¿El despliegue final puede resolverse sin rehacer la aplicación?",
+          "¿La solución puede defenderse como técnicamente viable en el tiempo del TFM?"
+        ]
+      },
+      {
+        title: "8. Valor final y defensa",
+        questions: [
+          "¿El proyecto genera una salida útil, no solo interesante?",
+          "¿La web deja claro qué aporta frente a leer datos sueltos en varias fuentes?",
+          "¿La defensa del TFM gana fuerza con este formato web-first?",
+          "¿Se puede explicar fácilmente por qué no se priorizó móvil desde el inicio?",
+          "¿La versión final será suficiente aunque no incluya Expo Go?",
+          "¿La solución demuestra criterio de producto, no solo ejecución técnica?",
+          "¿El proyecto puede cerrarse con un resultado sólido antes del final del calendario?",
+          "¿La propuesta es creíble como TFM y como demostrador de producto?",
+          "¿La secuencia de trabajo ayuda a llegar a septiembre con una entrega defendible?",
+          "¿Después de responder estas 60 preguntas, el proyecto sigue teniendo sentido claro?"
+        ]
+      }
+    ];
+
+    const sectionRoot = document.getElementById("sections");
+    const scoreValue = document.getElementById("score-value");
+    const scoreNote = document.getElementById("score-note");
+    const storageKey = "iseu-validacion-60-preguntas-v1";
+
+    function loadSavedAnswers() {
+      try {
+        return JSON.parse(localStorage.getItem(storageKey)) || {};
+      } catch (error) {
+        return {};
+      }
+    }
+
+    function saveAnswers() {
+      const saved = {};
+      document.querySelectorAll('input[type="radio"]:checked').forEach((input) => {
+        saved[input.name] = input.value;
+      });
+
+      try {
+        localStorage.setItem(storageKey, JSON.stringify(saved));
+      } catch (error) {
+        console.warn("No se pudieron guardar las respuestas.", error);
+      }
+    }
+
+    function restoreAnswers() {
+      const saved = loadSavedAnswers();
+      Object.entries(saved).forEach(([name, value]) => {
+        const input = document.querySelector(`input[name="${name}"][value="${value}"]`);
+        if (input) input.checked = true;
+      });
+    }
+
+    function clearSavedAnswers() {
+      try {
+        localStorage.removeItem(storageKey);
+      } catch (error) {
+        console.warn("No se pudieron limpiar las respuestas guardadas.", error);
+      }
+    }
+
+    function render() {
+      let count = 0;
+      sectionRoot.innerHTML = sections.map((section, sectionIndex) => {
+        const htmlQuestions = section.questions.map((question, questionIndex) => {
+          count += 1;
+          const key = `q-${count}`;
+          return `
+            <article class="question">
+              <div>
+                <strong>Pregunta ${count}</strong>
+                <p>${question}</p>
+              </div>
+              <div class="answers">
+                <label><input type="radio" name="${key}" value="2"><span>Si</span></label>
+                <label><input type="radio" name="${key}" value="1"><span>Parcial</span></label>
+                <label><input type="radio" name="${key}" value="0"><span>No</span></label>
+              </div>
+            </article>
+          `;
+        }).join("");
+
+        return `
+          <section class="section">
+            <div class="section-head">
+              <h3>${section.title}</h3>
+              <small>${section.questions.length} preguntas</small>
+            </div>
+            <div class="questions">${htmlQuestions}</div>
+          </section>
+        `;
+      }).join("");
+    }
+
+    function updateScore() {
+      const answers = [...document.querySelectorAll('input[type="radio"]:checked')];
+      const total = answers.reduce((sum, input) => sum + Number(input.value), 0);
+      const maxScore = document.querySelectorAll(".question").length * 2;
+      const ratio = maxScore > 0 ? total / maxScore : 0;
+      scoreValue.textContent = `${total} / ${maxScore}`;
+
+      if (answers.length === 0) {
+        scoreNote.textContent = "Aún no hay respuestas. Empieza a marcar preguntas para ver la lectura global.";
+        return;
+      }
+
+      if (ratio >= 0.75) {
+        scoreNote.textContent = "La propuesta parece bien alineada con el problema. La prioridad pasa a ser ejecución y calidad de entrega.";
+      } else if (ratio >= 0.5) {
+        scoreNote.textContent = "La base del proyecto es razonable, pero todavía hay áreas que necesitan mejor definición o mejor defensa.";
+      } else {
+        scoreNote.textContent = "Todavía hay señales fuertes de desalineación. Conviene revisar foco, utilidad real, dato o narrativa antes de seguir.";
+      }
+    }
+
+    render();
+    restoreAnswers();
+    updateScore();
+
+    document.addEventListener("change", (event) => {
+      if (event.target.matches('input[type="radio"]')) {
+        saveAnswers();
+        updateScore();
+      }
+    });
+
+    document.getElementById("mark-yes").addEventListener("click", () => {
+      document.querySelectorAll('.answers input[value="2"]').forEach((input) => { input.checked = true; });
+      saveAnswers();
+      updateScore();
+    });
+
+    document.getElementById("clear-all").addEventListener("click", () => {
+      document.querySelectorAll('input[type="radio"]').forEach((input) => { input.checked = false; });
+      clearSavedAnswers();
+      updateScore();
+    });
+
+    document.getElementById("export-pdf").addEventListener("click", () => {
+      window.print();
+    });
+  </script>
+</body>
+</html>

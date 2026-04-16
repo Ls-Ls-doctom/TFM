@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Esquema de datos ISEU+ · Barcelona</title>
+  <style>
+    :root {
+      --bg: #f6f1e7;
+      --ink: #183430;
+      --muted: #60706d;
+      --line: #a9b4b1;
+      --line-active: #0d6b57;
+      --parent-bg: #e8f1fb;
+      --parent-ink: #1e63ad;
+      --child-bg: #eef1f2;
+      --child-ink: #5d676c;
+      --card: #ffffff;
+      --pk-bg: #fff1c8;
+      --pk-ink: #8a5a00;
+      --fk-bg: #dff4ee;
+      --fk-ink: #0c6752;
+      --bcn-bg: #fce4ec;
+      --bcn-ink: #880e4f;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background:
+        radial-gradient(circle at top left, rgba(13, 107, 87, 0.08), transparent 26%),
+        linear-gradient(180deg, #fbf8f2 0%, var(--bg) 100%);
+      color: var(--ink);
+      font-family: Georgia, "Times New Roman", serif;
+    }
+
+    .page {
+      max-width: 1860px;
+      margin: 0 auto;
+      padding: 24px 28px 36px;
+    }
+
+    .eyebrow {
+      font: 700 12px/1 "Trebuchet MS", sans-serif;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: #0d6b57;
+      margin-bottom: 8px;
+    }
+
+    h1 {
+      margin: 0 0 10px;
+      font-size: 2.5rem;
+      line-height: 1;
+    }
+
+    .intro {
+      margin: 0 0 14px;
+      max-width: 980px;
+      line-height: 1.6;
+      color: var(--muted);
+    }
+
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 18px;
+      font: 13px/1.2 "Trebuchet MS", sans-serif;
+    }
+
+    .legend span {
+      padding: 7px 11px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.72);
+      border: 1px solid rgba(24, 52, 48, 0.08);
+    }
+
+    .diagram {
+      position: relative;
+      width: 1760px;
+      height: 1120px;
+      margin: 0 auto;
+    }
+
+    .connections {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+      z-index: 1;
+    }
+
+    .conn {
+      fill: none;
+      stroke: var(--line);
+      stroke-width: 2.4;
+      stroke-linecap: square;
+      stroke-linejoin: miter;
+      cursor: pointer;
+      transition: opacity 160ms ease, stroke 160ms ease, stroke-width 160ms ease;
+    }
+
+    .conn.active {
+      stroke: var(--line-active);
+      stroke-width: 3.6;
+    }
+
+    .conn.muted {
+      opacity: 0.08;
+    }
+
+    .table {
+      position: absolute;
+      background: var(--card);
+      border: 1px solid rgba(24, 52, 48, 0.12);
+      border-radius: 6px;
+      overflow: hidden;
+      box-shadow: 0 10px 28px rgba(24, 52, 48, 0.10);
+      z-index: 3;
+      transition: opacity 160ms ease, transform 160ms ease, box-shadow 160ms ease;
+    }
+
+    .table.active {
+      transform: translateY(-3px);
+      box-shadow: 0 16px 36px rgba(24, 52, 48, 0.16);
+    }
+
+    .table.muted {
+      opacity: 0.14;
+    }
+
+    .table-head {
+      padding: 7px 10px;
+      text-align: center;
+      font: 800 12px/1 "Trebuchet MS", sans-serif;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      border-bottom: 1px solid rgba(24, 52, 48, 0.10);
+    }
+
+    .table.parent .table-head {
+      background: var(--parent-bg);
+      color: var(--parent-ink);
+    }
+
+    .table.child .table-head {
+      background: var(--child-bg);
+      color: var(--child-ink);
+    }
+
+    .table.bcn .table-head {
+      background: var(--bcn-bg);
+      color: var(--bcn-ink);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #fff;
+      font-size: 12px;
+    }
+
+    td {
+      padding: 5px 8px;
+      border-bottom: 1px solid rgba(24, 52, 48, 0.08);
+      vertical-align: middle;
+      background: #fff;
+    }
+
+    tr:last-child td { border-bottom: 0; }
+
+    tr.field.active td {
+      background: rgba(13, 107, 87, 0.10);
+    }
+
+    tr.field.muted td {
+      opacity: 0.45;
+    }
+
+    .type {
+      width: 34px;
+      color: #52605d;
+      font: 11px/1 "Trebuchet MS", sans-serif;
+    }
+
+    .name {
+      font-weight: 600;
+      width: 150px;
+    }
+
+    .meta {
+      width: 68px;
+      text-align: center;
+      font: 11px/1 "Trebuchet MS", sans-serif;
+      white-space: nowrap;
+      color: #50605c;
+    }
+
+    .badge {
+      display: inline-block;
+      min-width: 32px;
+      padding: 2px 6px;
+      border-radius: 999px;
+      border: 1px solid transparent;
+      font-weight: 800;
+      letter-spacing: 0.03em;
+    }
+
+    .badge.pk {
+      background: var(--pk-bg);
+      border-color: #e6c46c;
+      color: var(--pk-ink);
+    }
+
+    .badge.fk {
+      background: var(--fk-bg);
+      border-color: #8ecfbf;
+      color: var(--fk-ink);
+    }
+
+    .tooltip {
+      position: fixed;
+      z-index: 40;
+      max-width: 360px;
+      padding: 14px 16px;
+      border-radius: 14px;
+      background: rgba(24, 52, 48, 0.95);
+      color: #f6fbfa;
+      box-shadow: 0 18px 50px rgba(0, 0, 0, 0.22);
+      pointer-events: none;
+      opacity: 0;
+      transform: translateY(8px);
+      transition: opacity 120ms ease, transform 120ms ease;
+    }
+
+    .tooltip.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .tooltip h2 {
+      margin: 0 0 8px;
+      font: 700 15px/1.2 "Trebuchet MS", sans-serif;
+    }
+
+    .tooltip p {
+      margin: 0;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .foot {
+      margin-top: 12px;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <div class="eyebrow">TFM · Esquema Barcelona</div>
+    <h1>Esquema de datos ISEU+ · Barcelona</h1>
+    <p class="intro">
+      Esquema enfocado exclusivamente en Barcelona como ciudad piloto. La tabla <strong>CIUDADES</strong> se sustituye por
+      <strong>DISTRITOS_BCN</strong> (los 10 distritos de Barcelona) para permitir análisis intra-urbano por zona.
+      Todos los scores, datos y métricas se calculan a nivel de distrito y a nivel agregado de ciudad.
+    </p>
+    <div class="legend">
+      <span>Azul = tabla madre</span>
+      <span>Gris = tabla hija</span>
+      <span>Rosa = dimensión geográfica Barcelona</span>
+      <span>Click en una línea para aislar esa relación</span>
+      <span>`Esc` o click en fondo para limpiar</span>
+    </div>
+
+    <section class="diagram" id="diagram">
+      <svg class="connections" id="connections" viewBox="0 0 1760 1120"></svg>
+      <div id="tables"></div>
+    </section>
+
+    <p class="foot">
+      Versión simplificada para Barcelona. La granularidad por distrito permite comparar Eixample vs Gràcia vs Ciutat Vella, etc.,
+      sin necesidad de la tabla genérica de ciudades. El score global ISEU+ Barcelona se obtiene agregando los 10 distritos.
+    </p>
+  </main>
+
+  <aside class="tooltip" id="tooltip"></aside>
+
+  <script>
+    const HEADER_H = 30;
+    const ROW_H = 26;
+
+    const tables = [
+      {
+        id: "variables", title: "VARIABLES", kind: "parent", x: 70, y: 165, width: 300,
+        fields: [
+          ["int", "id", "pk"],
+          ["string", "nombre", ""],
+          ["int", "pilar_id", "fk"],
+          ["int", "polaridad", "1 | -1"],
+          ["float", "peso", ""],
+          ["string", "unidad", ""],
+          ["bool", "es_mvp", ""],
+          ["enum", "viabilidad", "Alta | Media | Baja"],
+          ["string", "metodo_obtencion", "API | CSV | Scraper | Manual"],
+          ["bool", "es_proxy", ""]
+        ]
+      },
+      {
+        id: "pilares", title: "PILARES", kind: "parent", x: 845, y: 60, width: 250,
+        fields: [
+          ["int", "id", "pk"],
+          ["string", "nombre", ""],
+          ["float", "peso", ""],
+          ["int", "orden", ""]
+        ]
+      },
+      {
+        id: "fuentes", title: "FUENTES", kind: "parent", x: 520, y: 210, width: 320,
+        fields: [
+          ["int", "id", "pk"],
+          ["string", "nombre", ""],
+          ["string", "url_base", ""],
+          ["enum", "tipo", "API | REST | CSV | SCRAPER | MANUAL"],
+          ["string", "frecuencia", ""],
+          ["bool", "automatizable", ""],
+          ["enum", "estado_extraccion", "OK | PENDIENTE | FASE2"]
+        ]
+      },
+      {
+        id: "distritos", title: "DISTRITOS_BCN", kind: "bcn", x: 1180, y: 165, width: 280,
+        fields: [
+          ["int", "id", "pk"],
+          ["string", "nombre", "Eixample, Gràcia…"],
+          ["int", "codigo_distrito", "01–10"],
+          ["float", "superficie_km2", ""],
+          ["int", "poblacion", ""],
+          ["float", "densidad_hab_km2", ""]
+        ]
+      },
+      {
+        id: "variable_fuente", title: "VARIABLE_FUENTE", kind: "child", x: 35, y: 590, width: 230,
+        fields: [
+          ["int", "variable_id", "fk"],
+          ["int", "fuente_id", "fk"],
+          ["bool", "es_principal", ""],
+          ["int", "prioridad", "1 = primera opcion"]
+        ]
+      },
+      {
+        id: "log_ingesta", title: "LOG_INGESTA", kind: "child", x: 640, y: 525, width: 260,
+        fields: [
+          ["int", "id", "pk"],
+          ["int", "fuente_id", "fk"],
+          ["int", "variable_id", "fk"],
+          ["int", "distrito_id", "fk"],
+          ["string", "estado", "OK | ERROR | PARCIAL"],
+          ["int", "registros_insertados", ""],
+          ["string", "mensaje_error", ""],
+          ["timestamp", "fecha_ejecucion", ""]
+        ]
+      },
+      {
+        id: "datos_raw", title: "DATOS_RAW", kind: "child", x: 1115, y: 540, width: 260,
+        fields: [
+          ["int", "id", "pk"],
+          ["int", "variable_id", "fk"],
+          ["int", "distrito_id", "fk"],
+          ["int", "fuente_id", "fk"],
+          ["date", "fecha", ""],
+          ["float", "valor", ""],
+          ["bool", "es_proxy", ""],
+          ["bool", "es_agregado_ciudad", "true = dato BCN global"],
+          ["timestamp", "ingestado_en", ""]
+        ]
+      },
+      {
+        id: "datos_curados", title: "DATOS_CURADOS", kind: "child", x: 575, y: 830, width: 310,
+        fields: [
+          ["int", "id", "pk"],
+          ["int", "raw_id", "fk"],
+          ["int", "variable_id", "fk"],
+          ["int", "distrito_id", "fk"],
+          ["date", "fecha", ""],
+          ["float", "valor_normalizado", ""],
+          ["float", "score_variable", ""],
+          ["float", "z_robusto", ""],
+          ["float", "score_confianza", "desde confianza"],
+          ["bool", "es_proxy", "desde confianza"],
+          ["bool", "es_agregado_ciudad", "true = BCN global"]
+        ]
+      },
+      {
+        id: "scores_pilar", title: "SCORES_PILAR", kind: "child", x: 1490, y: 530, width: 230,
+        fields: [
+          ["int", "id", "pk"],
+          ["int", "pilar_id", "fk"],
+          ["int", "distrito_id", "fk"],
+          ["date", "fecha", ""],
+          ["float", "score", ""],
+          ["int", "num_variables_validas", ""],
+          ["bool", "es_agregado_ciudad", "true = BCN global"]
+        ]
+      },
+      {
+        id: "scores_iseu", title: "SCORES_ISEU_BCN", kind: "child", x: 1470, y: 880, width: 250,
+        fields: [
+          ["int", "id", "pk"],
+          ["int", "distrito_id", "fk"],
+          ["date", "fecha", ""],
+          ["float", "score_global", ""],
+          ["float", "variacion_mensual", ""],
+          ["float", "score_confianza", ""],
+          ["bool", "es_agregado_ciudad", "true = BCN global"]
+        ]
+      }
+    ];
+
+    const relations = [
+      {
+        id: "pilares_variables",
+        from: ["pilares", "id", "left"],
+        to: ["variables", "pilar_id", "right"],
+        relation: "Uno a muchos",
+        why: "Un pilar agrupa varias variables. VARIABLES.pilar_id depende de PILARES.id.",
+        via: [[760, 100], [760, 255], [390, 255]]
+      },
+      {
+        id: "variables_variable_fuente",
+        from: ["variables", "id", "left"],
+        to: ["variable_fuente", "variable_id", "top"],
+        relation: "Muchos a muchos",
+        why: "VARIABLE_FUENTE es la tabla puente que resuelve la relacion N:M entre VARIABLES y FUENTES.",
+        via: [[40, 204], [40, 615], [150, 615]]
+      },
+      {
+        id: "fuentes_variable_fuente",
+        from: ["fuentes", "id", "left"],
+        to: ["variable_fuente", "fuente_id", "right"],
+        relation: "Muchos a muchos",
+        why: "Cada fuente puede servir para varias variables y cada variable puede usar varias fuentes.",
+        via: [[470, 240], [420, 240], [420, 642], [270, 642]]
+      },
+      {
+        id: "fuentes_log",
+        from: ["fuentes", "id", "bottom"],
+        to: ["log_ingesta", "fuente_id", "top"],
+        relation: "Uno a muchos",
+        why: "Una fuente puede tener muchas ejecuciones de ingesta registradas.",
+        via: [[570, 425], [570, 555], [760, 555]]
+      },
+      {
+        id: "variables_log",
+        from: ["variables", "id", "right"],
+        to: ["log_ingesta", "variable_id", "left"],
+        relation: "Uno a muchos",
+        why: "Una variable puede aparecer en muchos eventos de ingesta y auditoría.",
+        via: [[395, 204], [610, 204], [610, 607]]
+      },
+      {
+        id: "distritos_log",
+        from: ["distritos", "id", "left"],
+        to: ["log_ingesta", "distrito_id", "right"],
+        relation: "Uno a muchos",
+        why: "Un mismo distrito puede tener múltiples cargas o errores asociados.",
+        via: [[1155, 204], [1030, 204], [1030, 633], [905, 633]]
+      },
+      {
+        id: "variables_raw",
+        from: ["variables", "id", "right"],
+        to: ["datos_raw", "variable_id", "left"],
+        relation: "Uno a muchos",
+        why: "Una variable puede tener muchas observaciones raw a lo largo del tiempo y por distrito.",
+        via: [[395, 204], [680, 204], [680, 596], [1090, 596]]
+      },
+      {
+        id: "fuentes_raw",
+        from: ["fuentes", "id", "right"],
+        to: ["datos_raw", "fuente_id", "left"],
+        relation: "Uno a muchos",
+        why: "Una fuente puede generar muchos registros en la capa raw.",
+        via: [[865, 240], [930, 240], [930, 648], [1090, 648]]
+      },
+      {
+        id: "distritos_raw",
+        from: ["distritos", "id", "bottom"],
+        to: ["datos_raw", "distrito_id", "top"],
+        relation: "Uno a muchos",
+        why: "Cada distrito concentra muchas observaciones raw en distintas fechas y variables.",
+        via: [[1298, 340], [1298, 570], [1245, 570]]
+      },
+      {
+        id: "raw_curados",
+        from: ["datos_raw", "id", "left"],
+        to: ["datos_curados", "raw_id", "right"],
+        relation: "Uno a muchos",
+        why: "DATOS_CURADOS.raw_id mantiene la trazabilidad respecto al dato original de entrada.",
+        via: [[1090, 570], [1015, 570], [1015, 912], [890, 912]]
+      },
+      {
+        id: "variables_curados",
+        from: ["variables", "id", "bottom"],
+        to: ["datos_curados", "variable_id", "left"],
+        relation: "Uno a muchos",
+        why: "La tabla curada sigue dependiendo de la definición metodológica de la variable.",
+        via: [[164, 435], [164, 945], [550, 945]]
+      },
+      {
+        id: "distritos_curados",
+        from: ["distritos", "id", "bottom"],
+        to: ["datos_curados", "distrito_id", "right"],
+        relation: "Uno a muchos",
+        why: "Cada distrito puede tener muchos datos curados y puntuados.",
+        via: [[1298, 340], [1298, 990], [890, 990]]
+      },
+      {
+        id: "pilares_scores_pilar",
+        from: ["pilares", "id", "right"],
+        to: ["scores_pilar", "pilar_id", "left"],
+        relation: "Uno a muchos",
+        why: "Cada pilar puede generar muchos subíndices por fecha y distrito de Barcelona.",
+        via: [[1120, 100], [1540, 100], [1540, 612], [1465, 612]]
+      },
+      {
+        id: "distritos_scores_pilar",
+        from: ["distritos", "id", "right"],
+        to: ["scores_pilar", "distrito_id", "left"],
+        relation: "Uno a muchos",
+        why: "Los scores de pilar se calculan para cada distrito de Barcelona.",
+        via: [[1485, 204], [1605, 204], [1605, 638], [1465, 638]]
+      },
+      {
+        id: "distritos_scores_iseu",
+        from: ["distritos", "id", "bottom"],
+        to: ["scores_iseu", "distrito_id", "left"],
+        relation: "Uno a muchos",
+        why: "El score global ISEU+ se calcula por distrito y también como agregado Barcelona.",
+        via: [[1365, 340], [1365, 940], [1445, 940]]
+      }
+    ];
+
+    const tableMap = Object.fromEntries(tables.map((table) => [table.id, table]));
+    const diagram = document.getElementById("diagram");
+    const tablesRoot = document.getElementById("tables");
+    const svg = document.getElementById("connections");
+    const tooltip = document.getElementById("tooltip");
+    let activeRelation = null;
+
+    function metaBadge(meta) {
+      if (meta === "pk") return '<span class="badge pk">PK</span>';
+      if (meta === "fk") return '<span class="badge fk">FK</span>';
+      return meta || "";
+    }
+
+    function renderTables() {
+      tablesRoot.innerHTML = tables.map((table) => {
+        const rows = table.fields.map(([type, name, meta]) => `
+          <tr class="field" data-table="${table.id}" data-field="${name}">
+            <td class="type">${type}</td>
+            <td class="name">${name}</td>
+            <td class="meta">${metaBadge(meta)}</td>
+          </tr>
+        `).join("");
+
+        const height = HEADER_H + table.fields.length * ROW_H + 2;
+        return `
+          <article class="table ${table.kind}" data-table-card="${table.id}" style="left:${table.x}px;top:${table.y}px;width:${table.width}px;height:${height}px;">
+            <div class="table-head">${table.title}</div>
+            <table>${rows}</table>
+          </article>
+        `;
+      }).join("");
+    }
+
+    function getFieldIndex(tableId, fieldName) {
+      return tableMap[tableId].fields.findIndex((field) => field[1] === fieldName);
+    }
+
+    function getAnchor(tableId, fieldName, side) {
+      const table = tableMap[tableId];
+      const fieldIndex = getFieldIndex(tableId, fieldName);
+      const y = table.y + HEADER_H + fieldIndex * ROW_H + ROW_H / 2;
+
+      if (side === "left") return [table.x, y];
+      if (side === "right") return [table.x + table.width, y];
+      if (side === "top") return [table.x + table.width / 2, table.y];
+      return [table.x + table.width / 2, table.y + HEADER_H + table.fields.length * ROW_H];
+    }
+
+    function pathForRelation(rel) {
+      const start = getAnchor(...rel.from);
+      const end = getAnchor(...rel.to);
+      const points = [start, ...rel.via, end];
+      return points.map((point, index) => `${index === 0 ? "M" : "L"} ${point[0]} ${point[1]}`).join(" ");
+    }
+
+    function renderConnections() {
+      svg.innerHTML = relations.map((rel) => `
+        <path
+          class="conn"
+          data-rel="${rel.id}"
+          data-title="${rel.relation}: ${rel.from[0]}.${rel.from[1]} → ${rel.to[0]}.${rel.to[1]}"
+          data-body="${rel.why}"
+          d="${pathForRelation(rel)}"
+        ></path>
+      `).join("");
+    }
+
+    function showTooltip(title, body, x, y) {
+      tooltip.innerHTML = `<h2>${title}</h2><p>${body}</p>`;
+      tooltip.classList.add("visible");
+      const pad = 16;
+      const maxX = window.innerWidth - tooltip.offsetWidth - pad;
+      const maxY = window.innerHeight - tooltip.offsetHeight - pad;
+      tooltip.style.left = `${Math.min(Math.max(pad, x + 18), maxX)}px`;
+      tooltip.style.top = `${Math.min(Math.max(pad, y + 18), maxY)}px`;
+    }
+
+    function hideTooltip() {
+      tooltip.classList.remove("visible");
+    }
+
+    function clearState() {
+      document.querySelectorAll(".active, .muted").forEach((node) => {
+        node.classList.remove("active", "muted");
+      });
+    }
+
+    function applySelection(relId) {
+      clearState();
+      if (!relId) return;
+
+      const rel = relations.find((item) => item.id === relId);
+      const activePath = document.querySelector(`[data-rel="${relId}"]`);
+      const fromCard = document.querySelector(`[data-table-card="${rel.from[0]}"]`);
+      const toCard = document.querySelector(`[data-table-card="${rel.to[0]}"]`);
+      const fromRow = document.querySelector(`[data-table="${rel.from[0]}"][data-field="${rel.from[1]}"]`);
+      const toRow = document.querySelector(`[data-table="${rel.to[0]}"][data-field="${rel.to[1]}"]`);
+
+      document.querySelectorAll(".conn").forEach((path) => {
+        if (path !== activePath) path.classList.add("muted");
+      });
+
+      document.querySelectorAll(".table").forEach((card) => {
+        if (card !== fromCard && card !== toCard) card.classList.add("muted");
+      });
+
+      [fromCard, toCard, fromRow, toRow, activePath].forEach((item) => item && item.classList.add("active"));
+
+      [fromCard, toCard].forEach((card) => {
+        card.querySelectorAll("tr.field").forEach((row) => {
+          if (row !== fromRow && row !== toRow) row.classList.add("muted");
+        });
+      });
+    }
+
+    function setRelation(relId) {
+      activeRelation = activeRelation === relId ? null : relId;
+      applySelection(activeRelation);
+    }
+
+    renderTables();
+    renderConnections();
+
+    svg.addEventListener("mouseover", (event) => {
+      const path = event.target.closest(".conn");
+      if (!path || activeRelation) return;
+      const relId = path.dataset.rel;
+      applySelection(relId);
+      showTooltip(path.dataset.title, path.dataset.body, event.clientX, event.clientY);
+    });
+
+    svg.addEventListener("mousemove", (event) => {
+      const path = event.target.closest(".conn");
+      if (!path) return;
+      showTooltip(path.dataset.title, path.dataset.body, event.clientX, event.clientY);
+    });
+
+    svg.addEventListener("mouseout", (event) => {
+      const path = event.target.closest(".conn");
+      if (!path || activeRelation) return;
+      clearState();
+      hideTooltip();
+    });
+
+    svg.addEventListener("click", (event) => {
+      const path = event.target.closest(".conn");
+      if (!path) return;
+      event.stopPropagation();
+      setRelation(path.dataset.rel);
+      if (!activeRelation) hideTooltip();
+    });
+
+    diagram.addEventListener("click", (event) => {
+      if (event.target.closest(".conn")) return;
+      activeRelation = null;
+      clearState();
+      hideTooltip();
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key !== "Escape") return;
+      activeRelation = null;
+      clearState();
+      hideTooltip();
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,165 @@
+{
+  "timestamp": "2026-04-01T22:29:13",
+  "scrapers_ejecutados": [
+    "ine",
+    "bcn",
+    "ree",
+    "idescat",
+    "mitma",
+    "empleo"
+  ],
+  "resultados": {
+    "ine": {
+      "ipc_general_barcelona": {
+        "estado": "OK",
+        "filas": 24
+      },
+      "ipc_alimentos_barcelona": {
+        "estado": "OK",
+        "filas": 24
+      },
+      "salario_medio_cataluna": {
+        "estado": "ERROR",
+        "filas": 0
+      },
+      "tasa_paro_cataluna": {
+        "estado": "OK",
+        "filas": 18
+      },
+      "tasa_empleo_cataluna": {
+        "estado": "OK",
+        "filas": 18
+      },
+      "ventas_retail_cataluna": {
+        "estado": "ERROR",
+        "filas": 0
+      },
+      "ocupacion_hotelera_barcelona": {
+        "estado": "ERROR",
+        "filas": 0
+      },
+      "creacion_empresas_barcelona": {
+        "estado": "ERROR",
+        "filas": 0
+      }
+    },
+    "bcn": {
+      "_error": "URL can't contain control characters. '/data/api/action/package_search?q=preu lloguer habitatge districte&rows=5' (found at least ' ')"
+    },
+    "ree": {
+      "ree_precio": {
+        "estado": "OK",
+        "filas": 240
+      },
+      "ree_demanda": {
+        "estado": "OK",
+        "filas": 3
+      }
+    },
+    "idescat": {
+      "poblacion": {
+        "estado": "OK",
+        "nombre": "Població",
+        "barcelona": "1713247",
+        "referencia": "2025"
+      },
+      "crecimiento_poblacion": {
+        "estado": "OK",
+        "nombre": "Creixement total de la població",
+        "barcelona": "15.91",
+        "referencia": "2024"
+      },
+      "vab_servicios": {
+        "estado": "OK",
+        "nombre": "VAB serveis",
+        "barcelona": "73729.4",
+        "referencia": "2023 (p)"
+      },
+      "vab_industria": {
+        "estado": "OK",
+        "nombre": "VAB indústria",
+        "barcelona": "4762.0",
+        "referencia": "2023 (p)"
+      },
+      "vab_construccion": {
+        "estado": "OK",
+        "nombre": "VAB construcció",
+        "barcelona": "3004.4",
+        "referencia": "2023 (p)"
+      },
+      "vab_comercio": {
+        "estado": "OK",
+        "nombre": "VAB comerç",
+        "barcelona": "9831.3",
+        "referencia": "2023 (p)"
+      },
+      "vab_hostaleria": {
+        "estado": "OK",
+        "nombre": "VAB hostaleria",
+        "barcelona": "7251.5",
+        "referencia": "2023 (p)"
+      },
+      "hoteles": {
+        "estado": "OK",
+        "nombre": "Hotels",
+        "barcelona": "751",
+        "referencia": "2024"
+      },
+      "plazas_hotel": {
+        "estado": "OK",
+        "nombre": "Places d'hotels",
+        "barcelona": "82827",
+        "referencia": "2024"
+      },
+      "viviendas_principales": {
+        "estado": "OK",
+        "nombre": "Habitatges familiars principals",
+        "barcelona": "671178",
+        "referencia": "2021"
+      },
+      "ibi_cuota": {
+        "estado": "OK",
+        "nombre": "IBI. Quota íntegra",
+        "barcelona": "829660903",
+        "referencia": "2024"
+      },
+      "ibi_recibos": {
+        "estado": "OK",
+        "nombre": "IBI. Rebuts",
+        "barcelona": "1170624",
+        "referencia": "2024"
+      },
+      "espacios_deportivos": {
+        "estado": "OK",
+        "nombre": "Espais esportius",
+        "barcelona": "5112",
+        "referencia": "2024"
+      }
+    },
+    "mitma": {
+      "precio_m2_venta": {
+        "estado": "ERROR",
+        "filas": 0
+      }
+    },
+    "empleo": {
+      "sepe_paro": {
+        "estado": "MANUAL",
+        "filas": 0,
+        "nota": "Descarga manual XLSX desde portal SEPE"
+      },
+      "ss_afiliacion": {
+        "estado": "MANUAL",
+        "filas": 0,
+        "nota": "Descarga manual o usar Open Data BCN"
+      }
+    }
+  },
+  "resumen": {
+    "total_ok": 19,
+    "total_error": 6,
+    "total_manual": 2,
+    "variables_mvp": 25,
+    "variables_mvp_con_scraper": 25
+  }
+}
