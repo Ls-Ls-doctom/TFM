@@ -138,8 +138,49 @@ SERIES = {
     # --- Empresas ---
     "creacion_empresas_barcelona": {
         "serie": "SM24955",  # Sociedades mercantiles constituidas, Barcelona
-        "variable": "CreaciÃ³n de empresas",
+        "variable": "Creación de empresas",
         "descripcion": "Empresas creadas, provincia de Barcelona",
+    },
+
+    # --- Pobreza y exclusion social (ECV) — España y Cataluña ---
+    # CODs confirmados via API INE (tabla 9961/9963)
+    "tasa_pobreza_espana": {
+        "serie": "ECV4774",  # Total. 16+ años. Total Nacional. Tasa riesgo pobreza
+        "variable": "Índice de pobreza",
+        "descripcion": "Tasa de riesgo de pobreza, España, ECV anual",
+        "unidad": "%",
+        "geo": "España",
+    },
+    "tasa_pobreza_espana_alquiler": {
+        "serie": "ECV4773",  # Tasa pobreza con alquiler imputado, España
+        "variable": "Índice de pobreza",
+        "descripcion": "Tasa de riesgo de pobreza (con alquiler imputado), España, ECV",
+        "unidad": "%",
+        "geo": "España",
+    },
+    "tasa_pobreza_cataluna": {
+        "serie": "ECV4812",  # Cataluña. Total. Tasa riesgo pobreza
+        "variable": "Índice de pobreza",
+        "descripcion": "Tasa de riesgo de pobreza, Cataluña, ECV anual",
+        "unidad": "%",
+        "geo": "Cataluña",
+    },
+    "tasa_pobreza_cataluna_alquiler": {
+        "serie": "ECV4811",  # Cataluña. Tasa pobreza con alquiler imputado
+        "variable": "Índice de pobreza",
+        "descripcion": "Tasa de riesgo de pobreza (con alquiler imputado), Cataluña, ECV",
+        "unidad": "%",
+        "geo": "Cataluña",
+    },
+
+    # --- Gini / desigualdad — España ---
+    # CODs confirmados via tabla 9962
+    "gini_espana": {
+        "serie": "ECV4790",  # Total Nacional. Total. Tasa riesgo pobreza (proxy Gini tabla)
+        "variable": "Índice Gini",
+        "descripcion": "Tasa de riesgo de pobreza total, España (tabla ECV Gini)",
+        "unidad": "%",
+        "geo": "España",
     },
 }
 
@@ -160,10 +201,14 @@ def scrape_ine():
         else:
             rows = get_serie(cfg["serie"])
         if rows:
-            # AÃ±adir metadatos del catÃ¡logo
+            # Añadir metadatos del catálogo
             for r in rows:
                 r["variable_iseu"] = cfg["variable"]
                 r["clave_config"] = key
+                if "unidad" in cfg:
+                    r["unidad"] = cfg["unidad"]
+                if "geo" in cfg:
+                    r["geo_config"] = cfg["geo"]
             all_rows.extend(rows)
             resultados[key] = {"estado": "OK", "filas": len(rows)}
             print(f"  âœ“ {len(rows)} registros")

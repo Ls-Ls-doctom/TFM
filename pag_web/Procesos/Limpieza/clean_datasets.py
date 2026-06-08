@@ -139,22 +139,24 @@ def clean_ine() -> dict[str, Any]:
 
     df = read_csv(path)
     df = clean_dataframe(df)
-    df["fecha"] = pd.to_datetime(df.get("fecha"), unit="ms", errors="coerce")
+    df["fecha"] = pd.to_datetime(df.get("fecha"), errors="coerce")
     df["valor"] = to_number(df.get("valor"))
     df["fuente"] = "INE"
     out = CLEAN_DIR / "ine_limpio.csv"
     write_clean_csv(df, out)
 
+    geo_col = df["geo_config"] if "geo_config" in df.columns else infer_geo(df.get("nombre", ""))
+    unit_col = df["unidad"] if "unidad" in df.columns else ""
     facts = pd.DataFrame(
         {
             "source": "INE",
             "dataset": df.get("clave_config", ""),
             "variable": df.get("variable_iseu", ""),
             "metric": df.get("nombre", ""),
-            "geo": infer_geo(df.get("nombre", "")),
+            "geo": geo_col,
             "period": df["fecha"].dt.date.astype(str),
             "value": df["valor"],
-            "unit": df.get("unidad", ""),
+            "unit": unit_col,
             "quality": "media",
             "notes": "Serie INE normalizada desde API Tempus.",
             "raw_file": relative(path),

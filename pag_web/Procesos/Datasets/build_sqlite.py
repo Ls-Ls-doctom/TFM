@@ -326,6 +326,7 @@ def derive_bcn_seguridad(conn: sqlite3.Connection) -> pd.DataFrame:
             'pag_web\\Procesos\\Datasets\\limpios\\bcn_seguridad_limpio.csv' AS raw_file,
             MAX(extraido_en) AS extracted_at
         FROM detalle_bcn_seguridad
+        WHERE nk_any IS NOT NULL AND mes_any IS NOT NULL
         GROUP BY nom_districte, nk_any, mes_any
         """,
         conn,
@@ -591,6 +592,9 @@ def derive_bcn_ruido_poblacion(conn: sqlite3.Connection) -> pd.DataFrame:
             MAX(extraido_en) AS extracted_at
         FROM detalle_bcn_ruido_poblacion
         WHERE percentatge_poblacio_exposada IS NOT NULL
+          AND font_soroll IS NOT NULL
+          AND periode_horari IS NOT NULL
+          AND rang IS NOT NULL
         GROUP BY font_soroll, periode_horari, rang, percentatge_poblacio_exposada
         """,
         conn,
