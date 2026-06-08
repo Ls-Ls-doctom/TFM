@@ -230,6 +230,25 @@
       .question { grid-template-columns: 1fr; }
       .written-answer { width: 100%; }
     }
+
+    @media print {
+      body { background: #fff !important; }
+      .page { padding: 0; max-width: 100%; }
+      .actions { display: none !important; }
+      .legend { display: none; }
+      .panel, .section, .question { box-shadow: none; break-inside: avoid; }
+      .written-answer {
+        border: 1px solid #ccc;
+        min-height: 60px;
+        width: 100% !important;
+        font-size: 12px;
+      }
+    }
+
+    .btn-export {
+      background: #1f65ad;
+      color: white;
+    }
   </style>
 </head>
 <body>
@@ -254,6 +273,7 @@
           Escribe la respuesta o evidencia que vaya generando la app para cada pregunta. Lo que escribas se guarda automáticamente en este navegador.
         </div>
         <div class="actions">
+          <button id="export-pdf" class="btn-export">Exportar a PDF</button>
           <button id="clear-all" class="secondary">Limpiar respuestas</button>
         </div>
       </div>
@@ -489,6 +509,10 @@
       document.querySelectorAll(".written-answer").forEach((textarea) => { textarea.value = ""; });
       clearSavedAnswers();
       updateScore();
+    });
+
+    document.getElementById("export-pdf").addEventListener("click", () => {
+      window.print();
     });
   </script>
 </body>

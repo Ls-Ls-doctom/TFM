@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="es" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ISEU+ Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Manrope:wght@600;700;800&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,300..700,0..1,0&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="Assets/CSS/styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" aria-label="Panel ISEU">
+      <div class="brand-row">
+        <div class="brand-mark" aria-hidden="true">
+          <img src="https://images.unsplash.com/photo-1518005020951-eccb494ad742?auto=format&fit=crop&w=120&q=70" alt="">
+        </div>
+        <div>
+          <p class="brand-name">ISEU+</p>
+          <p class="brand-subtitle">Panel urbano</p>
+        </div>
+      </div>
+
+      <nav class="primary-nav" aria-label="Pantallas principales">
+        <a class="screen-tab is-active" href="dashboard.html">
+          <span class="material-symbols-outlined">space_dashboard</span>
+          Dashboard
+        </a>
+        <a class="screen-tab" href="chatbot.html">
+          <span class="material-symbols-outlined">forum</span>
+          Chatbot
+        </a>
+      </nav>
+
+      <div class="update-card" aria-label="Actualizacion de datos">
+        <div class="update-card__title">
+          <span class="material-symbols-outlined">sync</span>
+          Datos recopilados
+        </div>
+        <time id="lastUpdateTime" datetime="">Cargando datos...</time>
+        <p id="pipelineStatus">Revisando fuentes disponibles.</p>
+      </div>
+
+      <div class="sidebar-footer">
+        <div class="source-status">
+          <span class="pulse-dot"></span>
+          Datos activos
+        </div>
+        <p>INE, REE, MITMA/MIVAU, SEPE, Idescat y Open Data BCN.</p>
+      </div>
+    </aside>
+
+    <main class="main-layout">
+      <header class="topbar">
+        <button class="icon-button menu-button" type="button" aria-label="Abrir menu">
+          <span class="material-symbols-outlined">menu</span>
+        </button>
+        <span class="topbar-spacer" aria-hidden="true"></span>
+        <div class="topbar-actions">
+          <button class="icon-button" type="button" aria-label="Actualizar dashboard" id="refreshDashboard">
+            <span class="material-symbols-outlined">database</span>
+          </button>
+          <a class="icon-button" href="chatbot.html" aria-label="Ir al chatbot">
+            <span class="material-symbols-outlined">forum</span>
+          </a>
+        </div>
+      </header>
+
+      <section class="dashboard-screen screen is-active" id="dashboardScreen" aria-label="Dashboard de datos">
+        <div class="dashboard-header">
+          <div>
+            <p class="eyebrow">Indice de Salud Economica Urbana</p>
+            <h1>Dashboard de visualizacion de datos</h1>
+            <p class="welcome-copy">Resumen automatico de fuentes recopiladas, calidad de carga y variables listas para consultar.</p>
+          </div>
+          <a class="primary-action" href="chatbot.html">
+            <span class="material-symbols-outlined">forum</span>
+            Preguntar al chatbot
+          </a>
+        </div>
+
+        <div class="kpi-grid" aria-label="Resumen de datos">
+          <article class="kpi-card">
+            <span>Indicadores</span>
+            <strong id="kpiIndicators">--</strong>
+          </article>
+          <article class="kpi-card">
+            <span>Fuentes activas</span>
+            <strong id="kpiSources">--</strong>
+          </article>
+          <article class="kpi-card">
+            <span>Variables</span>
+            <strong id="kpiVariables">--</strong>
+          </article>
+          <article class="kpi-card">
+            <span>Filas detalle</span>
+            <strong id="kpiDetails">--</strong>
+          </article>
+        </div>
+
+        <section class="dashboard-panel selection-panel" aria-label="Detalle seleccionado">
+          <div class="panel-heading">
+            <h2>Detalle interactivo</h2>
+            <button class="clear-selection" type="button" id="clearSelection">Limpiar seleccion</button>
+          </div>
+          <div id="selectionDetail" class="selection-detail">
+            <p>Selecciona una fuente, barra, punto o variable para ver una lectura rapida y filtrar la tabla.</p>
+          </div>
+        </section>
+
+        <div class="dashboard-grid">
+          <section class="dashboard-panel source-panel" aria-label="Filas por fuente">
+            <div class="panel-heading">
+              <h2>Fuentes recopiladas</h2>
+            <span id="databaseStatus">Base de datos activa</span>
+            </div>
+            <div id="sourcePie" class="source-pie-wrap" aria-label="Porcentaje de datos por fuente"></div>
+            <div id="sourceChart" class="source-chart"></div>
+          </section>
+
+          <section class="dashboard-panel" aria-label="Ultimos indicadores cargados">
+            <div class="panel-heading">
+              <h2>Ultimos indicadores</h2>
+              <span>fuente, periodo, calidad</span>
+            </div>
+            <div class="data-table-wrap dashboard-table">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Variable</th>
+                    <th>Territorio</th>
+                    <th>Valor</th>
+                    <th>Fuente</th>
+                  </tr>
+                </thead>
+                <tbody id="latestRows">
+                  <tr><td colspan="4">Cargando datos...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+        </div>
+
+        <div class="visual-grid" aria-label="Graficos resumen">
+          <section class="dashboard-panel compact-panel" aria-label="Calidad de datos">
+            <div class="panel-heading">
+              <h2>Calidad de datos</h2>
+              <span>distribucion</span>
+            </div>
+            <div id="qualityChart" class="compact-chart"></div>
+          </section>
+
+          <section class="dashboard-panel compact-panel" aria-label="Variables con mas registros">
+            <div class="panel-heading">
+              <h2>Variables principales</h2>
+              <span>top registros</span>
+            </div>
+            <div id="topVariablesChart" class="compact-chart"></div>
+          </section>
+
+          <section class="dashboard-panel compact-panel" aria-label="Actualidad temporal">
+            <div class="panel-heading">
+              <h2>Actualidad temporal</h2>
+              <span>por ano</span>
+            </div>
+            <div id="periodChart" class="compact-chart"></div>
+          </section>
+
+          <section class="dashboard-panel compact-panel" aria-label="Cobertura por fuente">
+            <div class="panel-heading">
+              <h2>Cobertura por fuente</h2>
+              <span>variables</span>
+            </div>
+            <div id="coverageChart" class="compact-chart"></div>
+          </section>
+        </div>
+
+        <div class="analytics-grid" aria-label="Graficos analiticos ampliados">
+          <section class="dashboard-panel analytics-panel" aria-label="Barras por ano">
+            <div class="panel-heading">
+              <h2>Registros por ano</h2>
+              <span>barras</span>
+            </div>
+            <div id="yearBarsChart" class="vertical-bars"></div>
+            <p class="chart-explainer">Este grafico ayuda a ver si la base se concentra en anos recientes o si hay series historicas largas.</p>
+          </section>
+
+          <section class="dashboard-panel analytics-panel" aria-label="Dispersion de variables">
+            <div class="panel-heading">
+              <h2>Volumen vs actualidad</h2>
+              <span>dispersion</span>
+            </div>
+            <div id="variableScatterChart" class="scatter-plot"></div>
+            <p class="chart-explainer">Cada punto es una variable: cuanto mas arriba, mas registros; cuanto mas a la derecha, mas actual es su ultimo periodo.</p>
+          </section>
+
+          <section class="dashboard-panel analytics-panel" aria-label="Comparativa por fuente">
+            <div class="panel-heading">
+              <h2>Registros y cobertura</h2>
+              <span>comparativa</span>
+            </div>
+            <div id="sourceCompareChart" class="comparison-bars"></div>
+            <p class="chart-explainer">Compara volumen de registros con cantidad de variables aportadas para detectar fuentes profundas frente a fuentes mas diversas.</p>
+          </section>
+        </div>
+
+        <section class="dashboard-panel" aria-label="Catalogo de variables">
+          <div class="panel-heading">
+            <h2>Catalogo consultable</h2>
+            <span id="variableCountLabel">Variables normalizadas</span>
+          </div>
+          <div id="variableChips" class="variable-chips"></div>
+        </section>
+      </section>
+    </main>
+  </div>
+
+  <script src="Assets/JS/app.js"></script>
+</body>
+</html>

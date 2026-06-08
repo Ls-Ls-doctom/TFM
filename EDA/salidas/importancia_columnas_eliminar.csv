@@ -1,0 +1,21 @@
+dataset,column,null_pct,non_null,unique,model_importance_score,model_importance_level,final_recommendation,importance_reasons,sample
+bcn_equipamientos_limpio.csv,addresses_roadtype_name,100.0,0,0,0,muy_baja,eliminar,posible_categoria; metadato_secundario; practicamente_vacia; muy_poca_cobertura; sin_variabilidad,
+bcn_equipamientos_limpio.csv,addresses_type,100.0,0,0,0,muy_baja,eliminar,practicamente_vacia; muy_poca_cobertura; sin_variabilidad,
+bcn_equipamientos_limpio.csv,end_date,100.0,0,0,0,muy_baja,eliminar,posible_fecha; metadato_secundario; practicamente_vacia; muy_poca_cobertura; sin_variabilidad,
+bcn_equipamientos_limpio.csv,estimated_dates,100.0,0,0,0,muy_baja,eliminar,posible_fecha; metadato_secundario; practicamente_vacia; muy_poca_cobertura; sin_variabilidad,
+bcn_equipamientos_limpio.csv,start_date,100.0,0,0,0,muy_baja,eliminar,posible_fecha; metadato_secundario; practicamente_vacia; muy_poca_cobertura; sin_variabilidad,
+bcn_equipamientos_limpio.csv,timetable,100.0,0,0,0,muy_baja,eliminar,metadato_secundario; practicamente_vacia; muy_poca_cobertura; sin_variabilidad,
+bcn_turismo_limpio.csv,addresses_roadtype_name,100.0,0,0,0,muy_baja,eliminar,posible_categoria; metadato_secundario; practicamente_vacia; muy_poca_cobertura; sin_variabilidad,
+bcn_turismo_limpio.csv,addresses_type,100.0,0,0,0,muy_baja,eliminar,practicamente_vacia; muy_poca_cobertura; sin_variabilidad,
+bcn_turismo_limpio.csv,end_date,100.0,0,0,0,muy_baja,eliminar,posible_fecha; metadato_secundario; practicamente_vacia; muy_poca_cobertura; sin_variabilidad,
+bcn_turismo_limpio.csv,estimated_dates,100.0,0,0,0,muy_baja,eliminar,posible_fecha; metadato_secundario; practicamente_vacia; muy_poca_cobertura; sin_variabilidad,
+bcn_turismo_limpio.csv,institution_name,100.0,0,0,0,muy_baja,eliminar,posible_categoria; practicamente_vacia; muy_poca_cobertura; sin_variabilidad,
+bcn_turismo_limpio.csv,start_date,100.0,0,0,0,muy_baja,eliminar,posible_fecha; metadato_secundario; practicamente_vacia; muy_poca_cobertura; sin_variabilidad,
+bcn_turismo_limpio.csv,timetable,100.0,0,0,0,muy_baja,eliminar,metadato_secundario; practicamente_vacia; muy_poca_cobertura; sin_variabilidad,
+bcn_licencias_limpio.csv,nom_mercat,99.97,15,4,0,muy_baja,eliminar,posible_categoria; metadato_secundario; practicamente_vacia; muy_poca_cobertura,MONTSERRAT | MONTSERRAT | MONTSERRAT
+bcn_licencias_limpio.csv,nom_galeria,99.82,77,9,0,muy_baja,eliminar,posible_categoria; metadato_secundario; practicamente_vacia; muy_poca_cobertura,NOU BOULEVARD | NOU BOULEVARD | CENTRE COMERCIAL DAVID
+bcn_licencias_limpio.csv,nom_ccomercial,99.78,99,6,0,muy_baja,eliminar,posible_categoria; metadato_secundario; practicamente_vacia; muy_poca_cobertura,El Triangle | El Triangle | Arenas de Barcelona
+bcn_zonas_verdes_limpio.csv,catalogacio,99.46,180,1,0,muy_baja,eliminar,metadato_secundario; muy_vacia; sin_variabilidad,INTERÈS LOCAL | INTERÈS LOCAL | INTERÈS LOCAL
+bcn_licencias_limpio.csv,lletra_inicial,97.48,1109,23,0,muy_baja,eliminar,metadato_secundario; muy_vacia,E | B | B
+bcn_licencias_limpio.csv,lletra_final,97.14,1258,23,0,muy_baja,eliminar,metadato_secundario; muy_vacia,E | B | B
+bcn_zonas_verdes_limpio.csv,tipus_aigua,95.98,1342,2,0,muy_baja,eliminar,posible_categoria; metadato_secundario; muy_vacia,POTABLE | POTABLE | POTABLE

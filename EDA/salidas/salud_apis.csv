@@ -1,0 +1,12 @@
+metric,value,status,note
+raw_rows,390212,OK,Filas recuperadas en archivos raw perfilables.
+clean_rows,413440,OK,Filas normalizadas en CSV limpios.
+sql_indicator_rows,279048,OK,Filas cargadas en la tabla analitica indicadores.
+sql_detail_rows,413440,OK,Filas cargadas en tablas detalle SQL.
+sql_detail_tables,17,OK,Tablas detalle creadas desde CSV limpios.
+api_total_ok,1,OK,Extracciones API correctas.
+api_total_error,0,OK,Errores de extraccion.
+api_total_manual,1,AVISO,Fuentes documentadas como manuales.
+sql_pipeline,OK,OK,Estado de limpieza y carga SQLite dentro de run_all.
+api_empleo,1 ok / 0 err / 1 manual,OK,Resultado por conector.
+cleaning_status,0,OK,Transformaciones de limpieza con estado distinto de OK/SIN_DATOS.

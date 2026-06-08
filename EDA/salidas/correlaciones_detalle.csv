@@ -1,0 +1,89 @@
+dataset,left_column,right_column,correlation,abs_correlation,overlap_rows,interpretation
+bcn_movilidad_limpio.csv,bikesinusage,mechanicalbikesinusage,0.9999,0.9999,8055,positiva muy fuerte
+bcn_turismo_limpio.csv,addresses_end_street_number,addresses_start_street_number,0.9999,0.9999,40,positiva muy fuerte
+bcn_equipamientos_limpio.csv,addresses_end_street_number,addresses_start_street_number,0.9992,0.9992,495,positiva muy fuerte
+sepe_paro_limpio.csv,paro_total,mujeres_45_mas,0.9989,0.9989,89026,positiva muy fuerte
+sepe_paro_limpio.csv,paro_total,mujeres_25_44,0.9986,0.9986,81018,positiva muy fuerte
+sepe_paro_limpio.csv,paro_total,sector_servicios,0.9979,0.9979,93723,positiva muy fuerte
+sepe_paro_limpio.csv,hombres_25_44,sector_servicios,0.9979,0.9979,79120,positiva muy fuerte
+sepe_paro_limpio.csv,paro_total,hombres_45_mas,0.9972,0.9972,88783,positiva muy fuerte
+sepe_paro_limpio.csv,paro_total,hombres_25_44,0.9969,0.9969,79420,positiva muy fuerte
+sepe_paro_limpio.csv,mujeres_25_44,mujeres_45_mas,0.9969,0.9969,78710,positiva muy fuerte
+sepe_paro_limpio.csv,hombres_45_mas,sector_servicios,0.9967,0.9967,88048,positiva muy fuerte
+sepe_paro_limpio.csv,hombres_25_44,hombres_45_mas,0.9965,0.9965,76668,positiva muy fuerte
+sepe_paro_limpio.csv,hombres_menor_25,mujeres_menor_25,0.9963,0.9963,53156,positiva muy fuerte
+sepe_paro_limpio.csv,mujeres_45_mas,sector_servicios,0.9962,0.9962,88687,positiva muy fuerte
+bcn_licencias_limpio.csv,num_policia_inicial,num_policia_final,0.9956,0.9956,43991,positiva muy fuerte
+sepe_paro_limpio.csv,mujeres_25_44,sector_servicios,0.9955,0.9955,80864,positiva muy fuerte
+sepe_paro_limpio.csv,hombres_25_44,mujeres_25_44,0.9953,0.9953,73521,positiva muy fuerte
+sepe_paro_limpio.csv,hombres_45_mas,mujeres_45_mas,0.9953,0.9953,84467,positiva muy fuerte
+sepe_paro_limpio.csv,hombres_25_44,mujeres_45_mas,0.993,0.993,77079,positiva muy fuerte
+sepe_paro_limpio.csv,hombres_45_mas,mujeres_25_44,0.9928,0.9928,78169,positiva muy fuerte
+bcn_equipamientos_limpio.csv,geo_epgs_25831_x,geo_epgs_25831_y,0.9923,0.9923,2721,positiva muy fuerte
+sepe_contratos_limpio.csv,hombres_temporal_inicial,mujeres_temporal_inicial,0.99,0.99,62794,positiva muy fuerte
+sepe_contratos_limpio.csv,contratos_total,mujeres_temporal_inicial,0.989,0.989,68786,positiva muy fuerte
+sepe_contratos_limpio.csv,contratos_total,hombres_temporal_inicial,0.9888,0.9888,72651,positiva muy fuerte
+sepe_contratos_limpio.csv,contratos_total,sector_servicios,0.9885,0.9885,72659,positiva muy fuerte
+sepe_paro_limpio.csv,hombres_menor_25,mujeres_25_44,0.987,0.987,61164,positiva muy fuerte
+sepe_paro_limpio.csv,mujeres_45_mas,sector_construccion,0.9868,0.9868,66156,positiva muy fuerte
+sepe_paro_limpio.csv,paro_total,sector_construccion,0.9861,0.9861,67138,positiva muy fuerte
+sepe_paro_limpio.csv,paro_total,hombres_menor_25,0.9846,0.9846,63158,positiva muy fuerte
+sepe_paro_limpio.csv,mujeres_25_44,sector_construccion,0.9844,0.9844,63888,positiva muy fuerte
+sepe_paro_limpio.csv,mujeres_menor_25,mujeres_25_44,0.9829,0.9829,58763,positiva muy fuerte
+sepe_paro_limpio.csv,hombres_45_mas,sector_construccion,0.9824,0.9824,66537,positiva muy fuerte
+sepe_contratos_limpio.csv,mujeres_temporal_inicial,sector_servicios,0.9821,0.9821,66726,positiva muy fuerte
+sepe_paro_limpio.csv,hombres_menor_25,mujeres_45_mas,0.9816,0.9816,62507,positiva muy fuerte
+sepe_paro_limpio.csv,sector_construccion,sector_servicios,0.9796,0.9796,66724,positiva muy fuerte
+sepe_paro_limpio.csv,hombres_menor_25,sector_servicios,0.9783,0.9783,63073,positiva muy fuerte
+sepe_paro_limpio.csv,hombres_menor_25,hombres_25_44,0.9781,0.9781,60518,positiva muy fuerte
+sepe_paro_limpio.csv,mujeres_menor_25,sin_empleo_anterior,0.978,0.978,53707,positiva muy fuerte
+sepe_paro_limpio.csv,paro_total,mujeres_menor_25,0.9776,0.9776,60184,positiva muy fuerte
+sepe_paro_limpio.csv,hombres_25_44,sector_construccion,0.9774,0.9774,63691,positiva muy fuerte
+sepe_paro_limpio.csv,hombres_menor_25,sector_construccion,0.9763,0.9763,55770,positiva muy fuerte
+sepe_paro_limpio.csv,hombres_menor_25,sin_empleo_anterior,0.9757,0.9757,55342,positiva muy fuerte
+sepe_paro_limpio.csv,mujeres_menor_25,mujeres_45_mas,0.9753,0.9753,59716,positiva muy fuerte
+sepe_paro_limpio.csv,hombres_menor_25,hombres_45_mas,0.9737,0.9737,62320,positiva muy fuerte
+sepe_paro_limpio.csv,mujeres_menor_25,sector_construccion,0.9726,0.9726,53805,positiva muy fuerte
+sepe_paro_limpio.csv,sector_construccion,sin_empleo_anterior,0.971,0.971,55502,positiva muy fuerte
+sepe_paro_limpio.csv,mujeres_25_44,sin_empleo_anterior,0.9702,0.9702,61164,positiva muy fuerte
+sepe_paro_limpio.csv,mujeres_menor_25,sector_servicios,0.9695,0.9695,60142,positiva muy fuerte
+sepe_paro_limpio.csv,hombres_25_44,mujeres_menor_25,0.9685,0.9685,58230,positiva muy fuerte
+sepe_contratos_limpio.csv,hombres_temporal_inicial,sector_servicios,0.9669,0.9669,67191,positiva muy fuerte
+sepe_paro_limpio.csv,paro_total,sin_empleo_anterior,0.9664,0.9664,63150,positiva muy fuerte
+sepe_paro_limpio.csv,mujeres_45_mas,sin_empleo_anterior,0.9649,0.9649,62534,positiva muy fuerte
+sepe_paro_limpio.csv,hombres_45_mas,mujeres_menor_25,0.9626,0.9626,59466,positiva muy fuerte
+sepe_paro_limpio.csv,hombres_45_mas,sin_empleo_anterior,0.9561,0.9561,62324,positiva muy fuerte
+sepe_paro_limpio.csv,hombres_25_44,sin_empleo_anterior,0.9549,0.9549,60379,positiva muy fuerte
+sepe_paro_limpio.csv,sector_servicios,sin_empleo_anterior,0.9524,0.9524,62926,positiva muy fuerte
+sepe_contratos_limpio.csv,contratos_total,sector_construccion,0.9459,0.9459,39456,positiva muy fuerte
+sepe_paro_limpio.csv,mujeres_45_mas,sector_industria,0.931,0.931,71001,positiva muy fuerte
+sepe_paro_limpio.csv,hombres_45_mas,sector_industria,0.9303,0.9303,70771,positiva muy fuerte
+sepe_paro_limpio.csv,paro_total,sector_industria,0.9286,0.9286,72069,positiva muy fuerte
+sepe_contratos_limpio.csv,sector_construccion,sector_servicios,0.9261,0.9261,37877,positiva muy fuerte
+sepe_contratos_limpio.csv,hombres_temporal_inicial,sector_construccion,0.925,0.925,39330,positiva muy fuerte
+sepe_paro_limpio.csv,mujeres_25_44,sector_industria,0.9249,0.9249,68148,positiva muy fuerte
+sepe_contratos_limpio.csv,mujeres_temporal_inicial,sector_construccion,0.9241,0.9241,37783,positiva muy fuerte
+sepe_paro_limpio.csv,hombres_25_44,sector_industria,0.9215,0.9215,67748,positiva muy fuerte
+sepe_paro_limpio.csv,sector_industria,sector_servicios,0.9154,0.9154,71589,positiva muy fuerte
+sepe_paro_limpio.csv,hombres_menor_25,sector_industria,0.9023,0.9023,57931,positiva muy fuerte
+sepe_paro_limpio.csv,sector_industria,sector_construccion,0.8982,0.8982,59575,positiva fuerte
+sepe_paro_limpio.csv,mujeres_menor_25,sector_industria,0.8871,0.8871,55758,positiva fuerte
+sepe_paro_limpio.csv,sector_industria,sin_empleo_anterior,0.887,0.887,57424,positiva fuerte
+sepe_contratos_limpio.csv,hombres_temporal_inicial,sector_industria,0.861,0.861,40445,positiva fuerte
+sepe_contratos_limpio.csv,mujeres_temporal_inicial,sector_industria,0.8595,0.8595,39234,positiva fuerte
+sepe_contratos_limpio.csv,contratos_total,sector_industria,0.8427,0.8427,40809,positiva fuerte
+sepe_contratos_limpio.csv,sector_industria,sector_servicios,0.8036,0.8036,38970,positiva fuerte
+bcn_transporte_limpio.csv,import_fraccio,import_maxim,0.8002,0.8002,27,positiva fuerte
+bcn_movilidad_limpio.csv,electricalbikesinusage,bikesinusage,0.789,0.789,8055,positiva fuerte
+bcn_movilidad_limpio.csv,electricalbikesinusage,mechanicalbikesinusage,0.7823,0.7823,8055,positiva fuerte
+sepe_paro_limpio.csv,mujeres_menor_25,sector_agricultura,0.7778,0.7778,54079,positiva fuerte
+sepe_paro_limpio.csv,sector_agricultura,sin_empleo_anterior,0.7727,0.7727,55542,positiva fuerte
+sepe_contratos_limpio.csv,sector_industria,sector_construccion,0.7681,0.7681,28891,positiva fuerte
+sepe_paro_limpio.csv,hombres_menor_25,sector_agricultura,0.7442,0.7442,55900,positiva fuerte
+sepe_paro_limpio.csv,sector_agricultura,sector_construccion,0.7288,0.7288,57609,positiva fuerte
+sepe_paro_limpio.csv,mujeres_25_44,sector_agricultura,0.716,0.716,65454,positiva fuerte
+sepe_paro_limpio.csv,mujeres_45_mas,sector_agricultura,0.7005,0.7005,67747,positiva fuerte
+sepe_paro_limpio.csv,paro_total,sector_agricultura,0.6977,0.6977,68948,positiva fuerte
+sepe_paro_limpio.csv,hombres_45_mas,sector_agricultura,0.6664,0.6664,67996,positiva fuerte
+sepe_paro_limpio.csv,hombres_25_44,sector_agricultura,0.6658,0.6658,65043,positiva fuerte
+sepe_paro_limpio.csv,sector_agricultura,sector_servicios,0.6627,0.6627,68532,positiva fuerte

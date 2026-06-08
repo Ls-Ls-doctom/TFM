@@ -1,0 +1,42 @@
+file,path,suffix,size_mb,rows,columns,notes
+empleo_log.json,api_clients\data\empleo\empleo_log.json,.json,0.001,4,,"json_dict_keys=fuente,timestamp,resultados,nota"
+sepe_contratos_raw.csv,api_clients\data\empleo\sepe_contratos_raw.csv,.csv,21.115,97538,23.0,
+sepe_descargas.json,api_clients\data\empleo\sepe_descargas.json,.json,0.005,12,,
+sepe_paro_raw.csv,api_clients\data\empleo\sepe_paro_raw.csv,.csv,21.673,98156,24.0,
+sepe_municipios_2025_05.xls,api_clients\data\empleo\sepe_xls\sepe_municipios_2025_05.xls,.xls,3.524,107,,"sheets=PORTADA,Indice,PARO A CORUÑA,CONTRATOS A CORUÑA, PARO ALBACETE,CONTRATOS ALBACETE,PARO ALICANTE,CONTRATOS ALICANTE"
+sepe_municipios_2025_06.xls,api_clients\data\empleo\sepe_xls\sepe_municipios_2025_06.xls,.xls,3.662,107,,"sheets=PORTADA,Indice,PARO A CORUÑA,CONTRATOS A CORUÑA,PARO ALBACETE,CONTRATOS ALBACETE ,PARO ALICANTE,CONTRATOS ALICANTE"
+sepe_municipios_2025_07.xls,api_clients\data\empleo\sepe_xls\sepe_municipios_2025_07.xls,.xls,3.515,107,,"sheets=PORTADA,Indice,PARO A CORUÑA,CONTRATOS A CORUÑA,PARO ALBACETE,CONTRATOS ALBACETE,PARO ALICANTE,CONTRATOS ALICANTE"
+sepe_municipios_2025_08.xls,api_clients\data\empleo\sepe_xls\sepe_municipios_2025_08.xls,.xls,3.542,107,,"sheets=PORTADA,Indice,PARO A CORUÑA,CONTRATOS A CORUÑA,PARO ALBACETE,CONTRATOS ALBACETE,PARO ALICANTE,CONTRATOS ALICANTE"
+sepe_municipios_2025_09.xls,api_clients\data\empleo\sepe_xls\sepe_municipios_2025_09.xls,.xls,3.341,107,,"sheets=PORTADA,Indice,PARO A CORUÑA,CONTRATOS A CORUÑA,PARO ALBACETE, CONTRATOS ALBACETE,PARO ALICANTE, CONTRATOS ALICANTE"
+sepe_municipios_2025_10.xls,api_clients\data\empleo\sepe_xls\sepe_municipios_2025_10.xls,.xls,3.523,107,,"sheets=PORTADA,Indice,PARO A CORUÑA,CONTRATOS CORUÑA,PARO ALBACETE,CONTRATOS ALBACETE,PARO ALICANTE,CONTRATOS ALICANTE"
+sepe_municipios_2025_11.xls,api_clients\data\empleo\sepe_xls\sepe_municipios_2025_11.xls,.xls,3.543,107,,"sheets=PORTADA,Indice,PARO A CORUÑA,CONTRATOS CORUÑA,PARO ALBACETE,CONTRATOS ALBACETE,PARO ALICANTE,CONTRATOS ALICANTE"
+sepe_municipios_2025_12.xls,api_clients\data\empleo\sepe_xls\sepe_municipios_2025_12.xls,.xls,3.55,107,,"sheets=PORTADA,Indice,PARO A CORUÑA,CONTRATOS CORUÑA,PARO ALBACETE,CONTRATOS ALBACETE,PARO ALICANTE,CONTRATOS ALICANTE"
+sepe_municipios_2026_01.xls,api_clients\data\empleo\sepe_xls\sepe_municipios_2026_01.xls,.xls,3.54,107,,"sheets=PORTADA,Indice,PARO A CORUÑA,CONTRATOS CORUÑA,PARO ALBACETE,CONTRATOS ALBACETE,PARO ALICANTE,CONTRATOS ALICANTE"
+sepe_municipios_2026_02.xls,api_clients\data\empleo\sepe_xls\sepe_municipios_2026_02.xls,.xls,3.321,107,,"sheets=PORTADA,Indice,PARO A CORUÑA,CONTRATOS CORUÑA,PARO ALBACETE,CONTRATOS ALBACETE,PARO ALICANTE,CONTRATOS ALICANTE"
+sepe_municipios_2026_03.xls,api_clients\data\empleo\sepe_xls\sepe_municipios_2026_03.xls,.xls,3.523,107,,"sheets=PORTADA,Indice,PARO A CORUÑA,CONTRATOS CORUÑA,PARO ALBACETE,CONTRATOS ALBACETE,PARO ALICANTE,CONTRATOS ALICANTE"
+sepe_municipios_2026_04.xls,api_clients\data\empleo\sepe_xls\sepe_municipios_2026_04.xls,.xls,3.315,107,,"sheets=PORTADA,Indice,PARO A CORUÑA,CONTRATOS CORUÑA,PARO ALBACETE,CONTRATOS ALBACETE,PARO ALICANTE,CONTRATOS ALICANTE"
+idescat_log.json,api_clients\data\idescat\idescat_log.json,.json,0.002,5,,"json_dict_keys=fuente,municipio,timestamp,indicadores_configurados,resultados"
+idescat_raw.csv,api_clients\data\idescat\idescat_raw.csv,.csv,0.003,13,13.0,
+idescat_raw.json,api_clients\data\idescat\idescat_raw.json,.json,0.007,13,,
+ine_log.json,api_clients\data\ine\ine_log.json,.json,0.001,5,,"json_dict_keys=fuente,timestamp,nult,series_configuradas,resultados"
+ine_raw.csv,api_clients\data\ine\ine_raw.csv,.csv,0.17,1059,8.0,
+ine_raw.json,api_clients\data\ine\ine_raw.json,.json,0.339,1059,,
+informe_ejecucion.json,api_clients\data\informe_ejecucion.json,.json,0.001,6,,"json_dict_keys=timestamp,apis_ejecutadas,resultados,pipeline_sql,pipeline_eda,resumen"
+mitma_log.json,api_clients\data\mitma\mitma_log.json,.json,0.0,3,,"json_dict_keys=fuente,timestamp,resultados"
+precio_m2_venta_raw.xls,api_clients\data\mitma\precio_m2_venta_raw.xls,.xls,3.721,84,,"sheets=T1A2005,T2A2005 ,T3A2005 ,T4A2005  ,T1A2006 ,T2A2006 ,T3A2006 ,T4A2006  "
+2017_hab_od.gpkg,api_clients\data\opendata_bcn\2017_hab_od.gpkg,.gpkg,0.285,10,8.0,layer=2017_hab_od; crs=EPSG:25831
+2017_taxa_lloguer_od.gpkg,api_clients\data\opendata_bcn\2017_taxa_lloguer_od.gpkg,.gpkg,0.957,1068,4.0,layer=taxa_lloguer_od; crs=EPSG:25831
+bcn_aire_raw.csv,api_clients\data\opendata_bcn\bcn_aire_raw.csv,.csv,3.051,15041,7.0,
+bcn_catalogo.json,api_clients\data\opendata_bcn\bcn_catalogo.json,.json,0.076,10,,"json_dict_keys=bcn_alquiler,bcn_aire,bcn_zonas_verdes,bcn_turismo,bcn_movilidad,bcn_licencias,bcn_equipamientos,bcn_seguridad"
+bcn_equipamientos_raw.csv,api_clients\data\opendata_bcn\bcn_equipamientos_raw.csv,.csv,1.187,2722,44.0,
+bcn_licencias_raw.csv,api_clients\data\opendata_bcn\bcn_licencias_raw.csv,.csv,18.527,44000,53.0,
+bcn_log.json,api_clients\data\opendata_bcn\bcn_log.json,.json,0.001,6,,"json_dict_keys=fuente,timestamp,page_size,max_records,datasets_buscados,resultados"
+bcn_movilidad_raw.csv,api_clients\data\opendata_bcn\bcn_movilidad_raw.csv,.csv,0.678,8055,9.0,
+bcn_poblacion_raw.csv,api_clients\data\opendata_bcn\bcn_poblacion_raw.csv,.csv,0.267,2136,13.0,
+bcn_seguridad_raw.csv,api_clients\data\opendata_bcn\bcn_seguridad_raw.csv,.csv,1.824,8072,24.0,
+bcn_transporte_raw.csv,api_clients\data\opendata_bcn\bcn_transporte_raw.csv,.csv,0.004,27,15.0,
+bcn_turismo_raw.csv,api_clients\data\opendata_bcn\bcn_turismo_raw.csv,.csv,0.197,446,44.0,
+bcn_zonas_verdes_raw.csv,api_clients\data\opendata_bcn\bcn_zonas_verdes_raw.csv,.csv,10.563,33389,25.0,
+ree_demanda_raw.csv,api_clients\data\ree\ree_demanda_raw.csv,.csv,0.003,29,5.0,
+ree_log.json,api_clients\data\ree\ree_log.json,.json,0.0,5,,"json_dict_keys=fuente,timestamp,start_date,end_date,resultados"
+ree_precios_raw.csv,api_clients\data\ree\ree_precios_raw.csv,.csv,8.009,77323,6.0,

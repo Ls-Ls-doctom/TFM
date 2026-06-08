@@ -1,0 +1,23 @@
+# Entorno virtual
+.venv/
+
+# Cache Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Bases de datos SQLite (regenerables con build_sqlite.py)
+*.sqlite
+*.db
+
+# Datos raw descargados por los scripts API (regenerables con api_clients/run_all.py)
+api_clients/data/
+
+# Datos limpios generados por clean_datasets.py (regenerables)
+pag_web/Procesos/Datasets/limpios/
+
+# Archivos temporales y de sistema
+.DS_Store
+Thumbs.db
+*.tmp

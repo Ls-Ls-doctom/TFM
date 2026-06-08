@@ -223,6 +223,27 @@
       .question { grid-template-columns: 1fr; }
       .answers { justify-content: flex-start; }
     }
+
+    @media print {
+      body { background: #fff !important; }
+      .page { padding: 0; max-width: 100%; }
+      .actions { display: none !important; }
+      .panel, .section, .question { box-shadow: none; break-inside: avoid; }
+      .answers input:checked + span {
+        background: var(--accent-soft);
+        color: var(--accent);
+        border-color: rgba(15,106,87,.24);
+        font-weight: 900;
+      }
+      .answers input:not(:checked) + span {
+        opacity: 0.3;
+      }
+    }
+
+    .btn-export {
+      background: #1f65ad;
+      color: white;
+    }
   </style>
 </head>
 <body>
@@ -243,6 +264,7 @@
           `No` o `Parcial`, eso indica que el proyecto aún no está atacando bien el problema original o que la narrativa necesita ajuste.
         </div>
         <div class="actions">
+          <button id="export-pdf" class="btn-export">Exportar a PDF</button>
           <button id="mark-yes">Marcar todo Sí</button>
           <button id="clear-all" class="secondary">Limpiar respuestas</button>
         </div>
@@ -507,6 +529,10 @@
       document.querySelectorAll('input[type="radio"]').forEach((input) => { input.checked = false; });
       clearSavedAnswers();
       updateScore();
+    });
+
+    document.getElementById("export-pdf").addEventListener("click", () => {
+      window.print();
     });
   </script>
 </body>
