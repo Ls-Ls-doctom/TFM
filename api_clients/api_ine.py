@@ -182,6 +182,85 @@ SERIES = {
         "unidad": "%",
         "geo": "España",
     },
+
+    # --- Renta media (ECV tabla 49145) — España y Cataluña ---
+    # CODs confirmados: renta neta media por persona
+    "renta_media_espana": {
+        "serie": "ECV3943",  # Total Nacional. Renta neta media por persona
+        "variable": "Ingreso disponible per cápita",
+        "descripcion": "Renta neta media por persona, España, ECV",
+        "unidad": "EUR/persona",
+        "geo": "España",
+    },
+    "renta_media_cataluna": {
+        "serie": "ECV3907",  # Cataluña. Renta neta media por persona
+        "variable": "Ingreso disponible per cápita",
+        "descripcion": "Renta neta media por persona, Cataluña, ECV",
+        "unidad": "EUR/persona",
+        "geo": "Cataluña",
+    },
+    "renta_uc_espana": {
+        "serie": "ECV3942",  # Total Nacional. Renta media por unidad de consumo
+        "variable": "Ingreso disponible per cápita",
+        "descripcion": "Renta media por unidad de consumo, España, ECV",
+        "unidad": "EUR/UC",
+        "geo": "España",
+    },
+    "renta_uc_cataluna": {
+        "serie": "ECV3906",  # Cataluña. Renta media por unidad de consumo
+        "variable": "Ingreso disponible per cápita",
+        "descripcion": "Renta media por unidad de consumo, Cataluña, ECV",
+        "unidad": "EUR/UC",
+        "geo": "Cataluña",
+    },
+
+    # --- EPF — Gasto medio por hogar (tabla 14505) — Cataluña ---
+    # CODs confirmados: gasto total índice general
+    "epf_gasto_hogar_cataluna": {
+        "serie": "EPF394682",  # Base 2006. Anual. Cataluña. Gasto medio por hogar
+        "variable": "Gasto medio por hogar",
+        "descripcion": "Gasto medio por hogar anual, Cataluña, EPF",
+        "unidad": "EUR/hogar",
+        "geo": "Cataluña",
+    },
+    "epf_gasto_persona_cataluna": {
+        "serie": "EPF394681",  # Base 2006. Anual. Cataluña. Gasto medio por persona
+        "variable": "Gasto medio por hogar",
+        "descripcion": "Gasto medio por persona anual, Cataluña, EPF",
+        "unidad": "EUR/persona",
+        "geo": "Cataluña",
+    },
+
+    # --- IPV — Índice Precios Vivienda (tabla 49300) — España y Cataluña ---
+    # CODs confirmados: media anual general y variación anual
+    "ipv_general_espana": {
+        "serie": "IPV1009",  # Nacional. Media anual. General
+        "variable": "Precio vivienda m2",
+        "descripcion": "Índice de Precios de Vivienda, media anual, España",
+        "unidad": "índice",
+        "geo": "España",
+    },
+    "ipv_variacion_espana": {
+        "serie": "IPV1069",  # Nacional. Variación anual. General
+        "variable": "Precio vivienda m2",
+        "descripcion": "Variación anual del IPV, España",
+        "unidad": "%",
+        "geo": "España",
+    },
+    "ipv_general_cataluna": {
+        "serie": "IPV982",  # Cataluña. Media anual. General
+        "variable": "Precio vivienda m2",
+        "descripcion": "Índice de Precios de Vivienda, media anual, Cataluña",
+        "unidad": "índice",
+        "geo": "Cataluña",
+    },
+    "ipv_variacion_cataluna": {
+        "serie": "IPV1042",  # Cataluña. Variación anual. General
+        "variable": "Precio vivienda m2",
+        "descripcion": "Variación anual del IPV, Cataluña",
+        "unidad": "%",
+        "geo": "Cataluña",
+    },
 }
 
 
