@@ -619,6 +619,17 @@ Por este motivo, el pipeline no debe interpretarse como una pérdida de datos, s
 
 El pipeline se incorporó dentro de la carpeta \texttt{api\_clients/intento 3/}. La estructura nueva permite ejecutar cada fase de forma independiente o lanzar todo el flujo mediante un orquestador general.
 
+\begin{figure}[htbp]
+\caption{Estructura local del pipeline reproducible ISEU+}
+\label{fig:screenshot-pipeline-tree}
+\centering
+\includegraphics[width=\textwidth]{screenshot-pipeline-tree.png}
+\vspace{0.4em}
+\begin{flushleft}
+\small Nota. Captura generada a partir de la estructura real de scripts del repositorio local.
+\end{flushleft}
+\end{figure}
+
 \begin{longtable}{>{\raggedright\arraybackslash}p{0.34\textwidth} >{\raggedright\arraybackslash}p{0.56\textwidth}}
 \toprule
 \textbf{Script} & \textbf{Función dentro del pipeline} \\
@@ -656,6 +667,17 @@ python "api_clients\intento 3\pipeline\02_clean_silver.py"
 python "api_clients\intento 3\pipeline\03_build_gold.py"
 python "api_clients\intento 3\pipeline\04_build_sqlite.py"
 \end{verbatim}
+
+\begin{figure}[htbp]
+\caption{Ejecución local del pipeline Bronze, Silver, Gold y SQLite}
+\label{fig:screenshot-pipeline-run}
+\centering
+\includegraphics[width=\textwidth]{screenshot-pipeline-run.png}
+\vspace{0.4em}
+\begin{flushleft}
+\small Nota. La captura resume una ejecución local del flujo completo, incluyendo inventario Bronze, generación Silver, construcción Gold y carga de SQLite.
+\end{flushleft}
+\end{figure}
 
 \subsection{Resultados de recolección e inventario Bronze}
 
@@ -761,6 +783,17 @@ El uso de SQLite en local permite validar esta lógica sin desplegar todavía se
 
 La ejecución actual generó 3.975 indicadores Gold y los cargó en la base SQLite ubicada en \texttt{data\_lake/gold/}\newline\texttt{iseu\_indicadores.sqlite}. La tabla principal se denomina \texttt{indicators}; además, se crea \texttt{indicator\_catalog}, que resume variables, categorías, unidades y fuentes disponibles.
 
+\begin{figure}[htbp]
+\caption{Consulta SQL sobre la tabla de indicadores Gold}
+\label{fig:screenshot-sqlite-query}
+\centering
+\includegraphics[width=\textwidth]{screenshot-sqlite-query.png}
+\vspace{0.4em}
+\begin{flushleft}
+\small Nota. La consulta valida que la base SQLite concentra los indicadores finales por ciudad, variable, periodo, fuente y categoría.
+\end{flushleft}
+\end{figure}
+
 \begin{table}[htbp]
 \caption{Indicadores Gold cargados en SQLite por ciudad}
 \label{tab:gold-ciudades}
@@ -818,6 +851,17 @@ WHERE city = 'Valencia'
   AND variable = 'unemployed_registered'
 ORDER BY date;
 \end{verbatim}
+
+\begin{figure}[htbp]
+\caption{Flujo de consulta del chat hacia SQL y respuesta web}
+\label{fig:screenshot-chat-sql-flow}
+\centering
+\includegraphics[width=\textwidth]{screenshot-chat-sql-flow.png}
+\vspace{0.4em}
+\begin{flushleft}
+\small Nota. El chat funciona como capa semántica: interpreta la pregunta, genera SQL controlado, consulta la tabla \texttt{indicators} y devuelve una respuesta trazable.
+\end{flushleft}
+\end{figure}
 
 Esta arquitectura separa tres responsabilidades: el data lake conserva los datos originales, el pipeline construye indicadores confiables y el modelo conversacional actúa como capa semántica para transformar lenguaje natural en SQL. Para mejorar esta capa será necesario incorporar un diccionario semántico de variables, donde términos como ``paro'', ``desempleo'' o ``personas sin trabajo'' apunten a \texttt{unemployed\_registered}.
 
