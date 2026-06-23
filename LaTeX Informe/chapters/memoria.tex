@@ -237,6 +237,42 @@ La capa Gold contiene los resultados analíticos: scores por variable, scores po
 
 Finalmente, la aplicación web y el chat se conectan a una capa de interpretación de preguntas. El modelo interpretador transforma consultas en lenguaje natural en consultas SQL, que pasan por un validador y optimizador antes de ejecutarse sobre Redshift. Esta capa protege el sistema frente a consultas costosas, errores de agregación o preguntas que intenten utilizar datos incompletos.
 
+\section{Justificación del almacenamiento SQL para consultas conversacionales}
+
+La decisión de cargar la capa Gold en una base SQL responde a una necesidad central del proyecto: permitir que una pregunta escrita en lenguaje natural pueda transformarse en una consulta estructurada, trazable y reproducible. Aunque los datos originales se encuentren en CSV, JSON, GeoJSON, XLS o catálogos abiertos, esos formatos no son adecuados para que una interfaz conversacional responda de manera consistente. El chat no debería tener que leer cientos de archivos raw, interpretar columnas distintas en cada fuente y decidir en tiempo real cómo combinar indicadores. Esa lógica debe resolverse antes, durante el pipeline de datos.
+
+SQL actúa como una capa intermedia entre el modelo de lenguaje y el data lake. El modelo no consulta directamente la capa Bronze, sino una estructura analítica ya normalizada. Esto reduce la ambigüedad, mejora el rendimiento y permite controlar mejor las respuestas. Por ejemplo, si el usuario pregunta por ``paro'', el sistema puede mapear esa intención a la variable \texttt{unemployed\_registered}; si pregunta por ``contratos'', puede consultar \texttt{contracts\_registered}; y si pregunta por población, puede utilizar \texttt{population\_total}. El modelo conversacional no inventa la estructura del dato, sino que utiliza un catálogo de variables ya definido.
+
+Otra ventaja de SQL es la auditabilidad. Cada respuesta generada por la web puede asociarse a una consulta concreta, a una tabla, a una fecha de carga y a una fuente. Esto es importante porque ISEU+ no busca únicamente generar texto, sino producir respuestas defendibles basadas en datos oficiales. Si una respuesta indica que una ciudad tiene más desempleo que otra, el sistema debe poder explicar qué variable utilizó, de qué fuente procede, en qué periodo se midió y qué filtros se aplicaron.
+
+Desde el punto de vista técnico, SQL también permite aplicar restricciones antes de ejecutar una consulta. En una arquitectura AWS, la consulta generada por el modelo pasaría por una capa de validación que comprobaría que solo se consultan tablas permitidas, que las columnas existen, que la consulta no modifica datos y que el coste de ejecución es razonable. Esta validación es más difícil si el modelo opera directamente sobre archivos sueltos.
+
+Por tanto, la base SQL no sustituye al data lake. El data lake conserva el volumen, la trazabilidad y los archivos originales. La base SQL representa la capa optimizada para consumo analítico y conversacional. En local, esta función se valida con SQLite. En la arquitectura final, el equivalente natural sería Amazon Redshift o Athena sobre tablas catalogadas, dependiendo del volumen final y del patrón de consultas.
+
+\section{Flujo de consulta desde la página web}
+
+La aplicación web prevista para ISEU+ funcionaría como una capa de acceso ciudadano al modelo de datos. El usuario no necesitaría conocer nombres de columnas, fuentes oficiales o sintaxis SQL. En lugar de eso, escribiría una pregunta en lenguaje natural, por ejemplo: ``¿Cómo ha evolucionado el paro en Valencia desde 2015?'' o ``¿Qué ciudad tiene más contratos registrados?''.
+
+El flujo lógico de una consulta se compone de varias etapas. Primero, la interfaz web captura la pregunta y la envía al componente conversacional. Después, el modelo interpreta la intención de la pregunta: identifica si se trata de empleo, población, renta, movilidad u otra categoría. A continuación, detecta las entidades relevantes, como ciudad, periodo temporal, variable solicitada y tipo de comparación. Con esta información, el sistema busca en el catálogo semántico qué variable del modelo corresponde a la pregunta.
+
+Una vez identificada la variable, el modelo genera una sentencia SQL contra la tabla analítica. Esa consulta no se ejecuta directamente sin control. Antes debe pasar por una capa de validación que comprueba que sea una consulta de solo lectura, que utilice tablas permitidas y que no incluya operaciones peligrosas o innecesariamente costosas. Si la consulta es válida, se ejecuta sobre el almacén SQL y devuelve un resultado estructurado.
+
+Finalmente, el modelo transforma el resultado SQL en una respuesta comprensible para el usuario. Esta respuesta puede incluir una frase explicativa, una tabla resumida o un gráfico en la página web. Lo importante es que el texto final no se basa únicamente en conocimiento general del modelo, sino en una consulta concreta sobre la base de datos ISEU+.
+
+El flujo puede resumirse de la siguiente forma:
+
+\begin{verbatim}
+Pregunta del usuario
+  -> interpretación semántica
+  -> mapeo a variable ISEU+
+  -> generación SQL
+  -> validación de consulta
+  -> ejecución en SQLite/Redshift
+  -> respuesta textual, tabla o gráfico
+\end{verbatim}
+
+Este diseño permite separar el razonamiento lingüístico del almacenamiento de datos. El modelo de lenguaje aporta flexibilidad para entender preguntas humanas, mientras que SQL aporta precisión, estructura y trazabilidad. Esta separación es especialmente importante en un proyecto de datos públicos, donde las respuestas deben ser explicables y no depender únicamente de generación textual.
+
 \section{Decisiones de diseño}
 
 La arquitectura se ha diseñado priorizando cuatro criterios: trazabilidad, escalabilidad, separación de responsabilidades y capacidad de reproceso. La trazabilidad es necesaria porque cada indicador debe poder relacionarse con su fuente original, fecha de descarga y proceso de transformación. La escalabilidad permite incorporar nuevas ciudades, fuentes o variables sin rediseñar todo el sistema. La separación de responsabilidades evita mezclar datos brutos, datos limpios y métricas finales en un mismo espacio. Por último, la capacidad de reproceso permite corregir errores o actualizar reglas de negocio sin perder el histórico.
@@ -575,6 +611,10 @@ Una vez estabilizada la recolección de datos del \texttt{intento 3}, se impleme
 
 La lógica implementada sigue el patrón Bronze, Silver y Gold. La capa Bronze conserva los datos descargados sin transformación. La capa Silver limpia y normaliza las fuentes prioritarias. La capa Gold genera una tabla común de indicadores preparada para consultas SQL. Finalmente, estos indicadores se cargan en una base SQLite local, que representa el equivalente funcional de un futuro data warehouse analítico en AWS.
 
+Esta separación es importante porque el proyecto maneja dos necesidades distintas. Por un lado, necesita conservar volumen y detalle para justificar el proceso de ingesta y permitir reprocesos. Por otro lado, necesita una capa consultable y estable para que el chat de la página web pueda responder preguntas sin ambigüedad. Si todos los archivos raw se cargaran directamente en el chat o en una única tabla sin normalización, el sistema tendría dificultades para saber qué columnas representan una variable, qué unidad utiliza cada dato o qué nivel territorial corresponde a cada registro.
+
+Por este motivo, el pipeline no debe interpretarse como una pérdida de datos, sino como una organización por niveles de uso. Bronze funciona como repositorio de evidencia y volumen. Silver funciona como zona de limpieza y detalle operativo. Gold funciona como capa semántica y analítica para consumo. La reducción de millones de registros raw a miles de indicadores Gold es una decisión metodológica: evita que las ciudades con más portales abiertos tengan más peso simplemente porque publican más archivos.
+
 \subsection{Scripts implementados}
 
 El pipeline se incorporó dentro de la carpeta \texttt{api\_clients/intento 3/}. La estructura nueva permite ejecutar cada fase de forma independiente o lanzar todo el flujo mediante un orquestador general.
@@ -648,6 +688,10 @@ Archivos GeoJSON & 24 \\
 
 Por fuente, Barcelona fue la ciudad con mayor cantidad de recursos descargados, seguida de Valencia y Zaragoza. Esta diferencia no se interpreta como mayor importancia analítica, sino como mayor disponibilidad de datos abiertos estructurados. Para evitar sesgos, el pipeline mantiene ese detalle en Bronze y Silver, pero agrega la información en Gold cuando se generan indicadores comparables.
 
+Este punto es relevante para la defensa del proyecto como sistema Big Data. El volumen no se mide únicamente por el número de filas finales en SQL, sino por el conjunto del ciclo de vida del dato: recolección masiva, almacenamiento raw, inventario automático, limpieza, normalización, reducción analítica y carga estructurada. En la ejecución actual se detectaron más de 6,5 millones de filas CSV en Bronze. Ese volumen queda disponible para auditoría y reproceso, aunque la capa Gold final contenga un número menor de indicadores.
+
+La estrategia evita confundir cantidad con calidad analítica. Por ejemplo, Barcelona aporta más de un millón de filas raw debido a la riqueza de su portal Open Data, mientras que otras ciudades ofrecen menos recursos estructurados. Si se cargaran todas esas filas como indicadores finales, cualquier análisis tendería a reflejar la abundancia documental de Barcelona más que una comparación urbana equilibrada. Por ello, el pipeline conserva el detalle en capas previas, pero calcula indicadores comparables para la capa de consulta.
+
 \begin{table}[htbp]
 \caption{Archivos Bronze por fuente principal}
 \label{tab:bronze-fuentes}
@@ -696,6 +740,10 @@ El resultado de Silver queda almacenado en \texttt{data\_lake/silver/}. Esta cap
 
 La existencia de una tabla Silver municipal con 161.275 filas muestra que el sistema conserva detalle operativo. Sin embargo, ese volumen no se traslada directamente a Gold, ya que hacerlo produciría un sesgo hacia las ciudades con más datos abiertos disponibles, especialmente Barcelona. Por ello, la capa Gold aplica agregaciones por ciudad, fecha y variable.
 
+Silver cumple una función intermedia crítica. No es todavía la capa que consulta directamente el chat, pero tampoco es dato bruto. En esta zona se resuelven problemas técnicos como codificaciones distintas, separadores CSV diferentes, nombres de columnas heterogéneos, fechas en distintos formatos, valores numéricos escritos como texto y duplicados. También se filtran las ciudades objetivo para las fuentes nacionales, de modo que los datos de SEPE o INE puedan compararse con las fuentes municipales.
+
+En la implementación actual, SEPE se filtra a las ciudades piloto para variables de empleo, INE se utiliza para población municipal, MITMA aporta relación territorial y los portales municipales aportan recursos prioritarios. Esta selección inicial permite obtener un pipeline funcional y defendible sin pretender resolver todos los datasets posibles en una sola iteración. El diseño, sin embargo, deja abierta la incorporación progresiva de nuevas reglas de limpieza.
+
 \subsection{Capa Gold y base SQLite}
 
 La capa Gold se genera con un esquema universal de indicadores:
@@ -706,6 +754,10 @@ quality_score, category, unit
 \end{verbatim}
 
 Este esquema permite que la página web y el chat consulten los datos de forma consistente sin tener que conocer la estructura original de cada fuente. Por ejemplo, una pregunta sobre el paro en Valencia puede traducirse a una consulta SQL sobre la variable \texttt{unemployed\_registered}. Una pregunta sobre contratos puede consultar \texttt{contracts\_registered}, y una pregunta de población puede usar \texttt{population\_total}.
+
+La tabla Gold funciona como contrato de datos entre el pipeline y la capa conversacional. Mientras las fuentes originales pueden cambiar columnas, idiomas o formatos, la tabla Gold mantiene nombres estables. Esta estabilidad es necesaria para generar SQL desde lenguaje natural, porque el modelo debe conocer un vocabulario acotado de variables, categorías y unidades. Sin esta capa, cada pregunta obligaría al sistema a resolver de nuevo qué archivo abrir, qué columna usar y cómo interpretar el valor.
+
+El uso de SQLite en local permite validar esta lógica sin desplegar todavía servicios cloud. SQLite no pretende ser la solución final de escalabilidad, sino una representación local del data warehouse. Permite probar consultas, verificar que el esquema funciona, alimentar la página web de desarrollo y revisar cómo respondería el chat ante preguntas reales. En AWS, esta misma capa se podría materializar en Redshift para consultas analíticas de alto rendimiento, o en Athena si se decide consultar directamente archivos en S3 mediante Glue Catalog.
 
 La ejecución actual generó 3.975 indicadores Gold y los cargó en la base SQLite ubicada en \texttt{data\_lake/gold/}\newline\texttt{iseu\_indicadores.sqlite}. La tabla principal se denomina \texttt{indicators}; además, se crea \texttt{indicator\_catalog}, que resume variables, categorías, unidades y fuentes disponibles.
 
@@ -769,11 +821,21 @@ ORDER BY date;
 
 Esta arquitectura separa tres responsabilidades: el data lake conserva los datos originales, el pipeline construye indicadores confiables y el modelo conversacional actúa como capa semántica para transformar lenguaje natural en SQL. Para mejorar esta capa será necesario incorporar un diccionario semántico de variables, donde términos como ``paro'', ``desempleo'' o ``personas sin trabajo'' apunten a \texttt{unemployed\_registered}.
 
+En una implementación web, el chat no debería tener permisos libres sobre toda la base. La solución propuesta es que el modelo genere consultas dentro de un conjunto controlado de tablas y columnas. La aplicación puede disponer de una lista blanca de variables, fuentes y ciudades admitidas. Si la pregunta del usuario no puede mapearse a una variable disponible, el sistema debería responder que no cuenta con datos suficientes, en lugar de construir una consulta especulativa.
+
+También es importante conservar la consulta SQL generada junto con la respuesta. Esto permitiría auditar qué dato se utilizó para contestar, repetir la consulta si se actualiza la base y detectar errores de interpretación. En un contexto académico y de análisis público, esta trazabilidad aporta valor porque permite explicar las respuestas del sistema, no solo generarlas.
+
+La salida de la consulta puede transformarse en distintos formatos dentro de la web. Una pregunta de evolución temporal puede convertirse en un gráfico de líneas; una comparación entre ciudades puede mostrarse como tabla ordenada o gráfico de barras; y una pregunta de resumen puede devolver una explicación textual acompañada de la fuente y el periodo analizado. Por tanto, el SQL no es el resultado final visible para el usuario, sino el mecanismo interno que asegura que la respuesta del chat se base en datos reales.
+
 \subsection{Decisión pendiente sobre el alcance SQL}
 
 Aunque la base SQLite actual contiene 3.975 indicadores comparables, el volumen bruto procesado es mucho mayor. Bronze contiene más de 6,5 millones de filas CSV detectadas y Silver conserva tablas detalladas, especialmente la tabla municipal prioritaria. Por tanto, el proyecto ya trabaja con una lógica de Big Data en la fase de ingesta y procesamiento, aunque la capa Gold se haya reducido deliberadamente a indicadores agregados para facilitar consultas y evitar sesgos.
 
 Queda como decisión metodológica pendiente si la base SQL final debe contener solo la tabla \texttt{indicators} o si también debe incorporar una tabla de detalle, por ejemplo \texttt{fact\_observations}, con registros Silver normalizados. La primera opción es más simple y adecuada para el chat. La segunda opción refuerza el volumen analítico y permite consultas más detalladas, pero exige mayor control de rendimiento, calidad y semántica de columnas. Esta decisión se consultará con el profesor antes de consolidar la versión final del repositorio.
+
+Una solución intermedia podría mantener dos niveles SQL. El primero sería \texttt{indicators}, optimizado para preguntas frecuentes y comparaciones limpias entre ciudades. El segundo sería una tabla de observaciones normalizadas, destinada a análisis más detallado, auditoría y consultas avanzadas. De esta manera, el chat ciudadano utilizaría por defecto la tabla de indicadores, mientras que los procesos internos o análisis técnicos podrían acceder a mayor granularidad cuando fuera necesario.
+
+Esta decisión afecta directamente al equilibrio entre simplicidad, volumen y explicabilidad. Una tabla SQL pequeña es más fácil de consultar y controlar, pero puede parecer limitada frente al volumen raw recolectado. Una tabla SQL grande refuerza la idea de Big Data, pero requiere una semántica más elaborada para que el modelo no confunda registros operativos con indicadores comparables. Por ello, se plantea revisar este punto con el profesor antes de fijar la versión final del modelo de datos.
 
 \chapter{Conclusiones}
 
