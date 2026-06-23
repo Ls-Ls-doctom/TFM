@@ -1,0 +1,53 @@
+{
+  "generated_at": "2026-06-23T21:35:43",
+  "gold_dir": "data_lake\\gold",
+  "indicator_file": "data_lake\\gold\\indicators.csv",
+  "rows_total": 3975,
+  "rows_by_city": {
+    "Barcelona": 579,
+    "Bilbao": 561,
+    "Madrid": 561,
+    "Malaga": 562,
+    "Sevilla": 562,
+    "Valencia": 586,
+    "Zaragoza": 564
+  },
+  "rows_by_variable": {
+    "contracts_registered": 1242,
+    "income": 15,
+    "income_median": 15,
+    "income_per_household": 6,
+    "income_per_person": 6,
+    "job_seekers": 1372,
+    "mobility_resources_records": 3,
+    "population_total": 35,
+    "unemployed_registered": 1281
+  },
+  "sources": [
+    {
+      "file": "data_lake\\silver\\ine\\poblacion_municipal.csv",
+      "rows_used": 35,
+      "note": "INE poblacion total municipal"
+    },
+    {
+      "file": "data_lake\\silver\\sepe\\paro_registrado.csv",
+      "rows_used": 1281,
+      "note": "SEPE unemployed_registered agregado por ciudad/mes"
+    },
+    {
+      "file": "data_lake\\silver\\sepe\\contratos_registrados.csv",
+      "rows_used": 1242,
+      "note": "SEPE contracts_registered agregado por ciudad/mes"
+    },
+    {
+      "file": "data_lake\\silver\\sepe\\demandantes_empleo.csv",
+      "rows_used": 1372,
+      "note": "SEPE job_seekers agregado por ciudad/mes"
+    },
+    {
+      "file": "data_lake\\silver\\municipios\\municipal_prioritario.csv",
+      "rows_used": 45,
+      "note": "Municipal prioritario extraido a indicadores"
+    }
+  ]
+}

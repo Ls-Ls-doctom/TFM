@@ -1,0 +1,8 @@
+# Datos generados por el pipeline. Se regeneran ejecutando los .py.
+/data_lake/
+
+# Caches locales de Python.
+__pycache__/
+APIS/__pycache__/
+APIS/municipios/__pycache__/
+pipeline/__pycache__/

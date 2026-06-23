@@ -1,0 +1,42 @@
+{
+  "timestamp": "2026-06-23T21:25:30",
+  "apis_ejecutadas": [
+    "ine",
+    "mitma",
+    "sepe",
+    "catalogos",
+    "aemet"
+  ],
+  "resultados": {
+    "ine": {
+      "status": "OK",
+      "resources_ok": 6,
+      "resources_total": 6,
+      "manifest": "D:\\Proyectos\\TFM\\api_clients\\intento 3\\data_lake\\bronze\\apis\\ine\\manifest_raw.json"
+    },
+    "mitma": {
+      "status": "OK",
+      "resources_ok": 3,
+      "resources_total": 3,
+      "manifest": "D:\\Proyectos\\TFM\\api_clients\\intento 3\\data_lake\\bronze\\apis\\mitma\\manifest_raw.json"
+    },
+    "sepe": {
+      "status": "OK",
+      "resources_ok": 50,
+      "resources_total": 50,
+      "manifest": "D:\\Proyectos\\TFM\\api_clients\\intento 3\\data_lake\\bronze\\apis\\sepe\\manifest_raw.json"
+    },
+    "catalogos": {
+      "status": "OK",
+      "resources_ok": 9,
+      "resources_total": 9,
+      "manifest": "D:\\Proyectos\\TFM\\api_clients\\intento 3\\data_lake\\bronze\\apis\\catalogos\\manifest_raw.json"
+    },
+    "aemet": {
+      "status": "SKIPPED_AUTH",
+      "resources_ok": 0,
+      "resources_total": 2,
+      "manifest": "D:\\Proyectos\\TFM\\api_clients\\intento 3\\data_lake\\bronze\\apis\\aemet\\manifest_raw.json"
+    }
+  }
+}

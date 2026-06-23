@@ -1,0 +1,33 @@
+{
+  "timestamp": "2026-06-23T20:37:33",
+  "municipios_ejecutados": [
+    "barcelona",
+    "valencia",
+    "malaga",
+    "zaragoza"
+  ],
+  "resultados": {
+    "barcelona": {
+      "status": "OK",
+      "queries_ok": 13,
+      "queries_total": 13,
+      "output": "D:\\Proyectos\\TFM\\api_clients\\intento 3\\data_lake\\bronze\\municipios\\barcelona\\catalog_search_raw.json"
+    },
+    "valencia": {
+      "status": "OK",
+      "queries_ok": 12,
+      "queries_total": 13,
+      "output": "D:\\Proyectos\\TFM\\api_clients\\intento 3\\data_lake\\bronze\\municipios\\valencia\\catalog_search_raw.json"
+    },
+    "malaga": {
+      "status": "OK",
+      "queries_ok": 13,
+      "queries_total": 13,
+      "output": "D:\\Proyectos\\TFM\\api_clients\\intento 3\\data_lake\\bronze\\municipios\\malaga\\catalog_search_raw.json"
+    },
+    "zaragoza": {
+      "status": "OK",
+      "output": "D:\\Proyectos\\TFM\\api_clients\\intento 3\\data_lake\\bronze\\municipios\\zaragoza\\catalog_raw.json"
+    }
+  }
+}

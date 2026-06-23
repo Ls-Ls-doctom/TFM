@@ -1,0 +1,796 @@
+\chapter*{Abstract}
+\addcontentsline{toc}{chapter}{Abstract}
+
+\paragraph*{¿Qué problema aborda el proyecto?}
+ISEU+ aborda la dificultad de analizar y comparar la situación económica de distintas localidades de España debido a la dispersión de los datos públicos. Aunque existen fuentes oficiales con información sobre empleo, coste de vida, vivienda, turismo, energía o actividad económica, estos datos se encuentran repartidos entre distintos organismos, formatos y niveles territoriales, lo que dificulta su integración y análisis conjunto.
+
+\paragraph*{¿Cuál es el objetivo del trabajo?}
+El objetivo del trabajo es diseñar una plataforma de análisis económico urbano basada en Big Data, capaz de recopilar, limpiar, normalizar y estructurar datos oficiales para convertirlos en indicadores comparables entre localidades españolas. El sistema se plantea como una base de datos trazable y preparada para su posterior ejecución en una arquitectura AWS.
+
+\paragraph*{¿Qué resultados se esperan obtener?}
+El proyecto espera obtener una estructura de datos que permita comparar ciudades y municipios mediante indicadores relacionados con empleo, coste de vida, vivienda, turismo, energía y actividad económica. El modelo está diseñado desde el inicio para comparar localidades de toda España y responder preguntas ciudadanas como dónde hay más oportunidades laborales, qué ciudades presentan mayor presión turística o cómo varía el coste de vida entre territorios.
+
+\paragraph*{¿Qué conclusiones aporta el proyecto?}
+ISEU+ demuestra la importancia de organizar y transformar datos públicos dispersos en información útil para el análisis territorial. El valor principal del proyecto no se encuentra en una interfaz concreta, sino en la construcción de una plataforma de datos capaz de apoyar comparaciones entre localidades y facilitar una toma de decisiones más informada.
+
+\chapter*{Agradecimientos}
+\addcontentsline{toc}{chapter}{Agradecimientos}
+
+Este capítulo es opcional.
+
+\chapter*{Acrónimos}
+\addcontentsline{toc}{chapter}{Acrónimos}
+
+FPU: Floating Point Unit.
+
+ICT: Infraestructura Común de Telecomunicaciones.
+
+OFDM: Orthogonal Frequency Division Multiplexing.
+
+TFG: Trabajo Final de Grado.
+
+En este capítulo se listan los acrónimos que aparecen en el documento, por orden alfabético. Ya no se desplegarán de nuevo en el resto del documento. Si los acrónimos provienen de palabras escritas en un idioma diferente al del documento, se escribirá en cursiva.
+
+\chapter{Introducción}
+
+Este Trabajo Final de Máster presenta el desarrollo de ISEU+ (Índice de Salud Económica Urbana), una plataforma de análisis económico urbano orientada a evaluar y comparar la situación de distintas localidades de España a partir de datos oficiales. El proyecto se plantea con alcance nacional y está pensado para comparar ciudades y municipios de España, como Madrid, Barcelona, Valencia, Sevilla, Málaga, Bilbao, Zaragoza u otras localidades con características económicas y urbanas diferentes.
+
+ISEU+ busca integrar información socioeconómica dispersa en diferentes fuentes públicas para construir una visión más clara de la salud económica urbana. El sistema se apoya en indicadores relacionados con empleo, coste de vida, dinamismo económico, vivienda, turismo, accesibilidad, bienestar y entorno empresarial, con el objetivo de facilitar comparaciones entre territorios y responder preguntas ciudadanas basadas en datos.
+
+La fase actual del proyecto consiste en desarrollar y validar el sistema en un entorno local. En esta etapa se prioriza la identificación de fuentes fiables, la creación de conectores, la limpieza de datos, la estructuración de variables y la validación del modelo analítico. Una vez comprobado que el sistema funciona correctamente y que los datos son consistentes, el proyecto migrará a una arquitectura en la nube, donde los procesos podrán automatizarse, escalarse y desplegarse como producto web.
+
+El objetivo principal no es únicamente construir una interfaz o un chatbot, sino desarrollar una base de datos trazable y una metodología de análisis que permita comparar ciudades de forma responsable. La interfaz conversacional se plantea como una capa de acceso para que el usuario pueda realizar preguntas en lenguaje natural, mientras que el núcleo del trabajo se encuentra en el modelo de datos, la calidad de las fuentes y la capacidad del sistema para generar respuestas explicables.
+
+\chapter{Contexto, Objetivos y Validación}
+
+\section{Contexto y Motivación}
+
+ISEU+ nace de la necesidad de recopilar, integrar y analizar datos socioeconómicos de distintas localidades de España. Aunque existen numerosas fuentes oficiales con información pública, los datos se encuentran dispersos entre organismos, formatos y niveles territoriales diferentes. Esta fragmentación dificulta realizar comparaciones entre ciudades y extraer conclusiones útiles sobre empleo, coste de vida, vivienda, turismo, energía o actividad económica.
+
+Desde la perspectiva de Big Data, el reto principal del proyecto consiste en construir un flujo completo de tratamiento de datos: identificación de fuentes, extracción mediante APIs o descargas oficiales, limpieza, normalización, almacenamiento estructurado y preparación para análisis comparativo. El objetivo es transformar datos públicos heterogéneos en una base de información coherente, trazable y útil para evaluar la salud económica urbana.
+
+\begin{longtable}{>{\raggedright\arraybackslash}p{0.08\textwidth} >{\raggedright\arraybackslash}p{0.36\textwidth} >{\raggedright\arraybackslash}p{0.46\textwidth}}
+\toprule
+\textbf{Fuente} & \textbf{Tipo de información} & \textbf{Uso dentro de ISEU+} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Fuente} & \textbf{Tipo de información} & \textbf{Uso dentro de ISEU+} \\
+\midrule
+\endhead
+INE & IPC, empleo, población e indicadores económicos & Comparación territorial y análisis socioeconómico \\
+Idescat & Datos económicos y demográficos autonómicos & Datos de referencia para Cataluña y contraste con fuentes estatales \\
+REE & Precios eléctricos y demanda energética & Análisis del impacto energético \\
+MITMA / MIVAU & Vivienda, transporte y datos territoriales & Evaluación de vivienda y accesibilidad \\
+SEPE: Seguridad Social & Paro registrado, afiliación y empleo & Análisis del mercado laboral \\
+Open Data municipales & Datos locales publicados por ayuntamientos & Incorporación de indicadores urbanos específicos \\
+\bottomrule
+\end{longtable}
+
+El proyecto se plantea con una arquitectura orientada a AWS, donde los procesos de extracción, almacenamiento, transformación y análisis podrán automatizarse y escalarse. De este modo, ISEU+ se concibe como una plataforma de datos capaz de integrar información pública de distintas fuentes y convertirla en indicadores comparables para el análisis económico urbano.
+
+\section{Objetivos del Proyecto}
+
+El objetivo general de ISEU+ es desarrollar una plataforma de análisis económico urbano basada en datos oficiales, capaz de recopilar, integrar y comparar información socioeconómica de distintas localidades de España. El proyecto busca transformar datos públicos dispersos en indicadores estructurados que permitan analizar empleo, coste de vida, vivienda, energía, turismo, actividad económica y otros factores relacionados con la salud económica urbana.
+
+Para alcanzar este objetivo general, se plantean los siguientes objetivos específicos:
+
+Identificar y seleccionar fuentes oficiales relevantes para el análisis socioeconómico de localidades españolas.
+
+Diseñar procesos de extracción de datos mediante APIs, descargas oficiales u otros mecanismos documentados.
+
+Limpiar, normalizar y estructurar datos heterogéneos en un modelo común preparado para el análisis comparativo.
+
+Construir un pipeline de datos orientado a su posterior ejecución en una arquitectura AWS.
+
+Definir indicadores que permitan comparar ciudades en dimensiones como empleo, coste de vida, vivienda, turismo, energía y actividad económica.
+
+Validar el sistema mediante preguntas ciudadanas que representen consultas reales sobre distintas localidades de España.
+
+El alcance del proyecto se centra en el diseño y desarrollo de una base de datos analítica para comparar territorios. El modelo se plantea para trabajar con localidades españolas y permitir comparativas entre ciudades con características económicas y urbanas diferentes.
+
+\section{Validación: Preguntas de investigación respondidas}
+
+Para validar la utilidad práctica de ISEU+, se han definido 30 preguntas representativas que el sistema debería ser capaz de responder una vez consolidada la capa de datos. Estas preguntas no se presentan como resultados definitivos ya extraídos, sino como una guía de validación funcional y metodológica. El objetivo es comprobar si las fuentes seleccionadas, los conectores locales, el modelo de datos y la futura capa de consulta permiten transformar datos oficiales dispersos en respuestas claras, trazables y comprensibles.
+
+En esta fase del proyecto, las preguntas sirven para orientar la investigación de datos: ayudan a identificar qué variables son necesarias, qué fuentes deben priorizarse, qué indicadores requieren limpieza o normalización y qué limitaciones pueden aparecer por falta de granularidad territorial o frecuencia de actualización. Por tanto, cada respuesta esperada describe cómo debería contestar el sistema, qué tipo de dato debería utilizar y qué fuente sería la más adecuada para sostener la respuesta.
+
+\subsection{Bloque A: Inflación y Coste de Vida}
+
+\begin{longtable}{>{\raggedright\arraybackslash}p{0.08\textwidth} >{\raggedright\arraybackslash}p{0.36\textwidth} >{\raggedright\arraybackslash}p{0.46\textwidth}}
+\toprule
+\textbf{Nº} & \textbf{Pregunta} & \textbf{Respuesta esperada} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Nº} & \textbf{Pregunta} & \textbf{Respuesta esperada} \\
+\midrule
+\endhead
+1 & ¿Dónde hay más oportunidades de empleo, en Madrid, Barcelona, Valencia o Sevilla? & El sistema debería comparar indicadores laborales equivalentes entre ciudades o provincias, como tasa de paro, afiliación, ocupación o evolución reciente del empleo. La respuesta debería explicar qué territorio presenta mejores señales laborales y advertir si algún dato solo está disponible a nivel provincial o autonómico. \\
+2 & ¿En qué ciudad española está bajando más el paro últimamente? & El sistema debería analizar la evolución reciente del paro en varias ciudades o provincias y ordenar los territorios según la reducción observada. También debería diferenciar entre mejora puntual y tendencia sostenida. \\
+3 & ¿Dónde parece más fácil encontrar trabajo para vivir: Málaga, Zaragoza, Bilbao o Alicante? & El sistema debería comparar empleo, paro y, si es posible, coste de vida o vivienda, ya que una ciudad con más empleo no siempre ofrece mejores condiciones reales para vivir. \\
+4 & ¿Qué ciudades tienen un mercado laboral más estable durante todo el año? & El sistema debería detectar si el empleo depende mucho de temporadas, como verano, turismo o campañas agrícolas, y señalar qué ciudades muestran menos variación estacional. \\
+5 & ¿Qué zonas dependen más del turismo para generar empleo? & El sistema debería comparar empleo en hostelería, turismo o servicios relacionados entre ciudades como Palma, Benidorm, Málaga, Barcelona, Sevilla o Las Palmas, explicando si existe dependencia sectorial. \\
+\bottomrule
+\end{longtable}
+
+\subsection{Bloque B: Costo de Vida y Vivienda}
+
+\begin{longtable}{>{\raggedright\arraybackslash}p{0.08\textwidth} >{\raggedright\arraybackslash}p{0.36\textwidth} >{\raggedright\arraybackslash}p{0.46\textwidth}}
+\toprule
+\textbf{Nº} & \textbf{Pregunta} & \textbf{Respuesta esperada} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Nº} & \textbf{Pregunta} & \textbf{Respuesta esperada} \\
+\midrule
+\endhead
+6 & ¿Dónde sale más caro vivir, en Barcelona, Madrid, San Sebastián, Málaga o Valencia? & El sistema debería comparar indicadores de coste de vida disponibles, como IPC territorial, alquiler, precio de vivienda, IBI u otros datos relacionados. La respuesta debería explicar qué ciudad parece más cara y qué indicador pesa más en esa conclusión. \\
+7 & ¿En qué ciudad se ha encarecido más la vivienda en los últimos años? & El sistema debería analizar la evolución del precio de compra o alquiler en distintas ciudades y señalar dónde el aumento ha sido más fuerte. \\
+8 & ¿Dónde cuesta más alquilar en relación con los ingresos, en Madrid, Barcelona, Palma o Málaga? & El sistema debería relacionar precios de alquiler con renta o salario disponible, indicando dónde el esfuerzo económico para alquilar parece más alto. \\
+9 & ¿Qué ciudades parecen más asequibles para vivir si tengo un salario medio? & El sistema debería combinar coste de vivienda, salarios o renta disponible y otros costes básicos para ofrecer una comparación orientativa, no una recomendación absoluta. \\
+10 & ¿La compra del supermercado está subiendo igual en todas las zonas de España? & El sistema debería comparar la evolución del IPC general y de alimentos por comunidades o provincias, explicando si la inflación afecta de forma desigual al territorio. \\
+\bottomrule
+\end{longtable}
+
+\subsection{Economía Local y Sectores Productivos}
+
+\begin{longtable}{>{\raggedright\arraybackslash}p{0.08\textwidth} >{\raggedright\arraybackslash}p{0.36\textwidth} >{\raggedright\arraybackslash}p{0.46\textwidth}}
+\toprule
+\textbf{Nº} & \textbf{Pregunta} & \textbf{Respuesta esperada} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Nº} & \textbf{Pregunta} & \textbf{Respuesta esperada} \\
+\midrule
+\endhead
+11 & ¿De qué vive principalmente cada ciudad: turismo, industria, comercio, servicios o construcción? & El sistema debería identificar el peso de los sectores económicos en diferentes ciudades o territorios y explicar cuál es la actividad dominante. \\
+12 & ¿Qué ciudad depende más del turismo: Palma, Barcelona, Benidorm, Málaga o Las Palmas? & El sistema debería comparar indicadores turísticos como plazas hoteleras, peso de hostelería, visitantes o empleo turístico, señalando si existe una concentración elevada. \\
+13 & ¿Qué ciudades tienen más peso industrial, Bilbao, Zaragoza, Vigo, Valladolid o Valencia? & El sistema debería comparar el peso de la industria mediante VAB sectorial, empleo industrial o indicadores disponibles, explicando qué territorios tienen una estructura más industrial. \\
+14 & ¿Dónde tiene más peso el comercio, en Sevilla, Valencia, Madrid o Alicante? & El sistema debería comparar indicadores de actividad comercial y explicar qué ciudades muestran mayor dependencia o dinamismo del comercio. \\
+15 & ¿Qué ciudades tienen una economía más diversificada? & El sistema debería analizar la distribución sectorial y señalar qué territorios dependen menos de un único sector económico. \\
+\bottomrule
+\end{longtable}
+
+\subsection{Bloque D: Turismo y Presión Urbana}
+
+\begin{longtable}{>{\raggedright\arraybackslash}p{0.08\textwidth} >{\raggedright\arraybackslash}p{0.36\textwidth} >{\raggedright\arraybackslash}p{0.46\textwidth}}
+\toprule
+\textbf{Nº} & \textbf{Pregunta} & \textbf{Respuesta esperada} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Nº} & \textbf{Pregunta} & \textbf{Respuesta esperada} \\
+\midrule
+\endhead
+16 & ¿En qué ciudades hay más presión turística sobre los residentes? & El sistema debería calcular ratios como plazas hoteleras por habitante, visitantes por residente o peso del alojamiento turístico, comparando ciudades como Palma, Barcelona, Málaga, Sevilla, Granada, Valencia o San Sebastián. \\
+17 & ¿Hay demasiados hoteles en relación con la población local en algunas ciudades? & El sistema debería relacionar plazas hoteleras y población residente para detectar territorios con alta concentración turística. \\
+18 & ¿Qué ciudades reciben más turismo en comparación con su tamaño? & El sistema debería comparar visitantes, pernoctaciones o plazas turísticas en relación con población, no solo en valores absolutos. \\
+19 & ¿El turismo genera más riqueza que otros sectores en ciudades como Palma, Málaga o Barcelona? & El sistema debería comparar el peso económico de turismo y hostelería con otros sectores, explicando límites del dato cuando el turismo esté repartido entre varias actividades. \\
+20 & ¿Qué ciudades podrían estar más expuestas a una caída del turismo? & El sistema debería identificar territorios con alta dependencia turística y explicar que una mayor concentración sectorial implica más vulnerabilidad ante cambios en la demanda turística. \\
+\bottomrule
+\end{longtable}
+
+\subsection{Bloque E: Energía, Transporte y Vida Diaria}
+
+\begin{longtable}{>{\raggedright\arraybackslash}p{0.08\textwidth} >{\raggedright\arraybackslash}p{0.36\textwidth} >{\raggedright\arraybackslash}p{0.46\textwidth}}
+\toprule
+\textbf{Nº} & \textbf{Pregunta} & \textbf{Respuesta esperada} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Nº} & \textbf{Pregunta} & \textbf{Respuesta esperada} \\
+\midrule
+\endhead
+21 & ¿La electricidad afecta igual al coste de vida en todas las ciudades? & El sistema debería explicar que el precio eléctrico es común en gran parte del mercado, pero su impacto puede variar según renta, clima, consumo doméstico o estructura de hogares. \\
+22 & ¿Dónde puede pesar más el gasto energético, en ciudades frías como Burgos o León o en ciudades cálidas como Sevilla o Córdoba? & El sistema debería combinar precio de energía con variables climáticas o de consumo, si están disponibles, para estimar presión energética relativa. \\
+23 & ¿Qué ciudades tienen mejor acceso al transporte público para vivir sin coche? & El sistema debería comparar indicadores de transporte público, movilidad o cobertura urbana cuando existan datos disponibles y homogéneos. \\
+24 & ¿Dónde puede ser más caro desplazarse cada día para trabajar? & El sistema debería combinar distancia, transporte, movilidad y coste si los datos están disponibles, indicando limitaciones cuando no haya información homogénea. \\
+25 & ¿Qué ciudades tienen mejores condiciones urbanas para vivir, más allá del empleo? & El sistema debería integrar variables como zonas verdes, transporte, vivienda, seguridad, aire o servicios, explicando que la calidad urbana no depende solo de la economía. \\
+\bottomrule
+\end{longtable}
+
+\subsection{Bloque F: Comparación General y Decisión Ciudadana}
+
+\begin{longtable}{>{\raggedright\arraybackslash}p{0.08\textwidth} >{\raggedright\arraybackslash}p{0.36\textwidth} >{\raggedright\arraybackslash}p{0.46\textwidth}}
+\toprule
+\textbf{Nº} & \textbf{Pregunta} & \textbf{Respuesta esperada} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Nº} & \textbf{Pregunta} & \textbf{Respuesta esperada} \\
+\midrule
+\endhead
+26 & Si quiero mudarme, ¿qué ciudad española parece ofrecer mejor equilibrio entre empleo y coste de vida? & El sistema debería comparar empleo, salarios o renta, vivienda y coste de vida para ofrecer una lectura equilibrada entre oportunidades y gastos. \\
+27 & ¿Qué ciudad está mejorando más económicamente en los últimos años? & El sistema debería analizar la evolución de varios indicadores, como empleo, actividad económica, población, vivienda y turismo, para detectar mejora sostenida. \\
+28 & ¿Qué ciudades parecen más difíciles para empezar una vida independiente? & El sistema debería observar coste de vivienda, empleo, salarios y presión urbana para identificar territorios donde la emancipación puede ser más complicada. \\
+29 & ¿Qué ciudad se parece más a otra en su situación económica y urbana? & El sistema debería comparar perfiles de indicadores entre ciudades, no solo rankings, para detectar similitudes en estructura económica, coste de vida o presión turística. \\
+30 & ¿Dónde viviría mejor una persona según sus prioridades: empleo, vivienda, tranquilidad o servicios? & El sistema debería permitir ponderar prioridades del usuario y explicar qué ciudades encajan mejor según los indicadores disponibles, aclarando que no se trata de una recomendación absoluta sino de una ayuda basada en datos. \\
+\bottomrule
+\end{longtable}
+
+\chapter{Arquitectura de Datos Propuesta}
+
+La arquitectura de datos de ISEU+ se plantea como una solución escalable orientada a AWS, capaz de integrar fuentes públicas heterogéneas, transformar los datos en indicadores comparables y ofrecer resultados consultables por usuarios finales. Su diseño responde al alcance nacional del proyecto: las fuentes pueden incorporar datos de ciudades, municipios, provincias, comunidades autónomas o series estatales, siempre que exista trazabilidad entre el origen y el indicador final.
+
+El objetivo de esta arquitectura no es únicamente almacenar información, sino construir un flujo completo de datos que permita pasar de registros públicos dispersos a indicadores analíticos útiles. Para ello, se separan las responsabilidades de ingesta, validación, transformación, agregación, almacenamiento analítico y visualización. Esta separación facilita el mantenimiento del sistema, permite auditar cada etapa y reduce el riesgo de que errores en una fuente concreta afecten a todo el análisis.
+
+\section{Visión general}
+
+El flujo se organiza en capas de procesamiento que separan la ingesta, la curación, el cálculo analítico y la consulta. Esta separación permite conservar los datos originales, aplicar reglas de limpieza de forma controlada y generar métricas finales sin perder la posibilidad de auditar el proceso. La arquitectura también contempla zonas de error para aislar registros defectuosos y facilitar reprocesos posteriores.
+
+La lógica general sigue un patrón medallion, compuesto por una capa Bronze para datos brutos, una capa Silver para datos curados y una capa Gold para métricas analíticas. Este patrón resulta adecuado para ISEU+ porque las fuentes públicas suelen tener distintos formatos, frecuencias de actualización y niveles territoriales. Por ejemplo, algunas variables pueden llegar a nivel municipal, otras a nivel provincial y otras solo a nivel autonómico o estatal. La arquitectura permite almacenar esa granularidad original y documentar posteriormente qué transformaciones son necesarias para hacer comparaciones responsables.
+
+A nivel funcional, el sistema parte de fuentes oficiales y archivos complementarios, programa procesos periódicos de ingesta, valida los datos recibidos y los transforma en datasets comparables. Después calcula indicadores y scores que se almacenan en un modelo analítico preparado para consultas. Finalmente, una capa de interpretación de preguntas y visualización permite que el usuario consulte resultados en forma de tablas, gráficos o reportes.
+
+\section{Arquitectura AWS actualizada}
+
+La nueva arquitectura de ISEU+ se estructura como una plataforma cloud de datos urbanos basada en servicios gestionados de AWS. El punto de entrada son las fuentes externas: APIs públicas, portales Open Data municipales, archivos CSV o JSON oficiales, cargas manuales y, solo cuando sea viable, procesos de web scraping. Estas fuentes se ejecutan de forma periódica mediante Amazon EventBridge, con una planificación mensual pensada para actualizar indicadores urbanos sin depender de una ejecución manual.
+
+La ingesta se resuelve mediante funciones AWS Lambda que actúan como recolectores. Cada Lambda puede representar una familia de fuentes: conectores nacionales, conectores regionales o conectores municipales. Esta división es coherente con la estrategia definida para el proyecto: primero se consultan fuentes nacionales, después fuentes regionales y finalmente portales municipales como Open Data BCN, Madrid Datos Abiertos, Valencia, Málaga, Zaragoza, Bilbao o Sevilla cuando una variable no existe con suficiente granularidad en fuentes estatales.
+
+Los datos descargados se almacenan inicialmente en Amazon S3 dentro de la zona Bronze o Raw Data Zone. Esta capa conserva los archivos originales, los JSON recibidos, los CSV descargados y los logs de ejecución. Su función no es ofrecer datos listos para análisis, sino mantener una copia trazable y reproducible de lo recibido desde cada fuente. Si una API cambia, si una descarga falla o si se detecta un error de transformación, esta capa permite volver al dato original.
+
+Sobre la capa Bronze actúa AWS Glue Crawler, encargado de detectar esquemas, registrar datasets en el catálogo y alertar de posibles cambios de estructura. A continuación, AWS Glue ejecuta procesos de limpieza, validación y normalización que generan la capa Silver. En esta fase se validan distritos y ciudades, se normalizan variables, se estandarizan formatos, se unifican catálogos y se corrigen diferencias de unidades, fechas o nombres de campo.
+
+La capa Gold contiene los resultados analíticos: scores por variable, scores por pilar, score global ISEU+, métricas finales y agregaciones por distrito, ciudad o región. Estos resultados se almacenan en S3 Gold y posteriormente se cargan en Amazon Redshift, que funciona como data warehouse SQL. Redshift permite organizar el modelo dimensional, optimizar consultas, crear vistas materializadas y responder preguntas analíticas de forma rápida.
+
+Finalmente, la aplicación web y el chat se conectan a una capa de interpretación de preguntas. El modelo interpretador transforma consultas en lenguaje natural en consultas SQL, que pasan por un validador y optimizador antes de ejecutarse sobre Redshift. Esta capa protege el sistema frente a consultas costosas, errores de agregación o preguntas que intenten utilizar datos incompletos.
+
+\section{Decisiones de diseño}
+
+La arquitectura se ha diseñado priorizando cuatro criterios: trazabilidad, escalabilidad, separación de responsabilidades y capacidad de reproceso. La trazabilidad es necesaria porque cada indicador debe poder relacionarse con su fuente original, fecha de descarga y proceso de transformación. La escalabilidad permite incorporar nuevas ciudades, fuentes o variables sin rediseñar todo el sistema. La separación de responsabilidades evita mezclar datos brutos, datos limpios y métricas finales en un mismo espacio. Por último, la capacidad de reproceso permite corregir errores o actualizar reglas de negocio sin perder el histórico.
+
+Otra decisión relevante es mantener una distinción clara entre procesamiento operativo y consumo analítico. Amazon S3 actúa como almacenamiento flexible para las capas de datos, mientras que Redshift se reserva para consultas analíticas estructuradas. De este modo, el sistema puede conservar archivos originales y, al mismo tiempo, ofrecer una base optimizada para comparaciones entre territorios.
+
+\section{Capas de procesamiento}
+
+\begin{itemize}
+\item \textbf{Fuentes y ejecución}: el sistema incorpora APIs públicas, archivos manuales y procesos de extracción web. La ejecución periódica se plantea mediante Amazon EventBridge y funciones AWS Lambda para automatizar la ingesta. Esta capa debe registrar cuándo se ejecuta cada proceso, qué fuente se consulta y si la descarga finaliza correctamente.
+\item \textbf{Bronze Raw Layer}: Amazon S3 almacena los datos brutos, los logs de ingesta y los archivos originales en JSON, CSV u otros formatos de origen. Esta capa conserva la evidencia inicial del dato recibido y permite reconstruir el procesamiento si una regla de limpieza cambia en el futuro.
+\item \textbf{Catálogo y detección de esquema}: AWS Glue Crawler identifica la estructura de los datasets, detecta cambios de esquema y facilita que los datos puedan ser consultados o transformados de forma más sistemática. Este punto es importante porque las fuentes públicas pueden modificar columnas, nombres o formatos sin previo aviso.
+\item \textbf{Silver Curated Layer}: AWS Glue limpia, normaliza, valida y estandariza los datos. En esta fase se tratan nulos, formatos, catálogos, fechas, unidades, duplicados y posibles incompatibilidades entre fuentes. El objetivo es obtener variables homogéneas y preparadas para comparación territorial.
+\item \textbf{Gold Analytics Layer}: se calculan scores por variable, pilar y puntuación global ISEU+. La agregación puede realizarse por distrito, ciudad, provincia, comunidad autónoma o región, dependiendo de la granularidad disponible. Esta capa contiene los resultados listos para análisis y visualización.
+\item \textbf{Almacenamiento analítico}: Amazon Redshift actúa como data warehouse SQL para consultas rápidas, vistas materializadas y análisis dimensional. Aquí se organizarían tablas de hechos, dimensiones territoriales, dimensiones temporales y métricas finales.
+\item \textbf{Capa de consulta y visualización}: el modelo interpretador transforma preguntas de usuario en consultas, con validación y optimización antes de ejecutar SQL. La salida se presenta mediante resultados tabulares, gráficos, reportes o una aplicación web de consulta.
+\end{itemize}
+
+\section{Estrategia jerárquica de fuentes}
+
+La arquitectura se ha ajustado para evitar que el sistema quede sesgado hacia una sola ciudad. La estrategia de recolección se organiza en tres niveles. En primer lugar se priorizan fuentes nacionales como INE, SEPE, MITMA/MIVAU, AEMET, MITECO o datos.gob.es, ya que permiten cubrir muchas ciudades con una misma metodología. En segundo lugar se consideran fuentes regionales cuando aportan mayor detalle para una comunidad autónoma concreta. En tercer lugar se incorporan fuentes municipales, especialmente cuando la variable depende de información urbana local, como movilidad, ruido, equipamientos, zonas verdes o tráfico.
+
+Dentro de esta estrategia, los portales municipales no sustituyen a las fuentes nacionales, sino que las complementan. Por ejemplo, una variable de empleo debe obtenerse preferentemente desde SEPE o INE si existe cobertura municipal o provincial comparable. En cambio, variables como estaciones de calidad del aire, equipamientos públicos, bicicletas compartidas o incidencias de tráfico pueden depender de portales municipales. Esta separación permite que ISEU+ sea multiciudad sin convertir Barcelona en el caso dominante del modelo.
+
+\section{Relación con el entorno local}
+
+La implementación local desarrollada en el proyecto funciona como una validación previa de esta arquitectura cloud. Las carpetas de conectores API equivalen a la capa de ingesta, los datasets descargados representan la zona Bronze, los procesos de limpieza se corresponden con la capa Silver y la base SQLite utilizada en local anticipa el papel que tendría un almacén analítico como Redshift. Esta equivalencia permite avanzar de forma incremental: primero se comprueba que los datos pueden obtenerse, limpiarse y consultarse en local; después, esos mismos procesos pueden migrarse a servicios gestionados de AWS.
+
+Esta aproximación reduce el riesgo del proyecto, porque no obliga a desplegar toda la infraestructura cloud desde el inicio. En su lugar, permite validar fuentes, estructura de carpetas, reglas de limpieza, consultas y preguntas ciudadanas con un coste menor. Una vez estabilizados los procesos, la migración a AWS consistiría en sustituir componentes locales por servicios equivalentes, manteniendo la misma lógica funcional.
+
+\section{Gestión de errores y reproceso}
+
+El diseño contempla fallos frecuentes en pipelines de datos públicos: caídas de APIs, datos incompletos, archivos corruptos, duplicados, cambios de esquema, valores inválidos, errores de unión, métricas inconsistentes o consultas costosas. Para evitar que estos problemas contaminen las capas curadas y analíticas, la arquitectura incorpora zonas de error en S3 y un flujo de corrección/reproceso de datos.
+
+Cuando una ingesta falla o un registro no supera las validaciones, el dato no debería eliminarse directamente. En su lugar, se enviaría a una zona de error con información suficiente para diagnosticar el problema: fuente, fecha, tipo de error, regla incumplida y archivo afectado. Esta estrategia permite revisar errores sin perder información y facilita ejecutar reprocesos cuando se corrige la causa del fallo.
+
+\section{Gobernanza y calidad del dato}
+
+Para que ISEU+ pueda apoyar comparaciones entre ciudades españolas, la calidad del dato debe tratarse como una parte central de la arquitectura. Cada variable debería contar con metadatos mínimos: fuente, fecha de actualización, nivel territorial, unidad de medida, frecuencia, método de cálculo y limitaciones conocidas. Esta información es especialmente importante cuando se comparan indicadores que no siempre existen con la misma granularidad en todas las localidades.
+
+La arquitectura también debe permitir distinguir entre ausencia de dato, dato no aplicable y dato pendiente de actualización. Esta distinción evita conclusiones incorrectas y ayuda a que el sistema comunique sus límites de forma transparente. En un contexto de análisis económico urbano, tan importante como calcular un score es explicar con qué datos se ha calculado y qué restricciones presenta.
+
+\clearpage
+\begin{landscape}
+\begin{figure}[htbp]
+\caption{Arquitectura AWS propuesta para la plataforma ISEU+}
+\label{fig:arquitectura-datos}
+\centering
+\includegraphics[width=\linewidth,height=0.72\textheight,keepaspectratio]{arquitectura-datos.pdf}
+\vspace{0.4em}
+\begin{flushleft}
+\small Nota. El diagrama representa la arquitectura AWS actualizada: fuentes públicas, ejecución mensual con EventBridge, recolección mediante Lambda, almacenamiento S3 Bronze/Silver/Gold, transformaciones con Glue, catálogo de datos, zonas de error, Redshift, modelo dimensional y capa de consulta web.
+\end{flushleft}
+\end{figure}
+\end{landscape}
+\clearpage
+
+\chapter{Modelo y Flujo de Datos}
+
+Además de la arquitectura cloud, ISEU+ necesita un modelo lógico que explique cómo se organiza la información desde que se identifica una fuente hasta que se calculan los resultados finales. El diagrama de flujo de datos define esa estructura interna y permite conectar la capa técnica de AWS con las tablas, entidades y procesos que sostienen el análisis económico urbano.
+
+Este capítulo describe el recorrido del dato dentro del sistema. La idea principal es que cada valor utilizado por ISEU+ debe poder seguirse desde su fuente original, pasando por los registros de ingesta y las tablas de datos brutos, hasta llegar a las variables curadas y los scores finales. Esta trazabilidad es importante porque el proyecto compara territorios y, por tanto, necesita justificar qué fuente alimenta cada indicador, cómo se ha transformado y qué versión del cálculo se ha utilizado.
+
+\section{Principios del modelo de datos}
+
+El modelo se organiza alrededor de tres principios: separación entre catálogos y datos observados, conservación del histórico y control explícito de errores. Los catálogos describen elementos relativamente estables, como fuentes, variables, pilares, ciudades y distritos. Los datos observados representan valores concretos descargados o calculados en una fecha determinada. El histórico permite conservar versiones de scores y procesos, mientras que las tablas de errores documentan incidencias detectadas durante la ingesta o transformación.
+
+Esta separación evita que el sistema dependa de una única tabla monolítica. En lugar de mezclar fuentes, variables, territorios, valores y resultados, cada entidad cumple una función concreta. Esto facilita ampliar el sistema cuando se incorporen nuevas fuentes de datos, nuevas ciudades o nuevos indicadores económicos.
+
+\section{Modelo dimensional actualizado}
+
+El nuevo modelo de datos se define como un esquema multiciudad orientado a análisis y consulta. Su propósito es conectar tres necesidades del proyecto: conservar la trazabilidad del dato desde la fuente original, normalizar observaciones heterogéneas para que sean comparables y calcular resultados finales que puedan consultarse desde SQL o desde una interfaz conversacional.
+
+El modelo se organiza en tablas maestras, tablas de mapeo, tablas operativas de ingesta, tablas de datos y tablas analíticas. Las tablas maestras describen elementos relativamente estables, como fuentes, variables, pilares, ciudades y distritos. Las tablas de mapeo explican qué fuente alimenta cada variable y qué prioridad tiene cada origen. Las tablas operativas registran ejecuciones, metadatos y errores. Las tablas de datos separan la información raw de la información curada. Finalmente, las tablas analíticas almacenan scores por pilar, score global e histórico de cálculo.
+
+\begin{longtable}{>{\raggedright\arraybackslash}p{0.26\textwidth} >{\raggedright\arraybackslash}p{0.64\textwidth}}
+\toprule
+\textbf{Tabla / Entidad} & \textbf{Función dentro del modelo} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Tabla / Entidad} & \textbf{Función dentro del modelo} \\
+\midrule
+\endhead
+FUENTES & Catálogo de fuentes de datos. Registra nombre, tipo de acceso, descripción, endpoint, institución responsable, nivel territorial, cobertura geográfica, frecuencia, formato y fecha de registro. Permite distinguir fuentes nacionales, regionales y municipales. \\
+\texttt{METADATOS\_}\newline\texttt{FUENTE} & Describe la estructura esperada de cada fuente: campos, tipos de dato, obligatoriedad y fecha del último cambio. Sirve para detectar cambios de esquema antes de cargar datos incorrectos. \\
+PILARES & Define las dimensiones principales del índice ISEU+, su descripción y orden de presentación. Cada variable se asocia a un pilar para permitir el cálculo agregado. \\
+VARIABLES & Catálogo maestro de indicadores. Incluye descripción, unidad, tipo, sentido positivo o negativo, fuente principal y método de cálculo. Es la tabla que permite mantener una definición estable de cada variable aunque cambie el nombre del campo en una fuente externa. \\
+VARIABLE\_FUENTE & Tabla puente entre variables y fuentes. Permite que una variable tenga varias fuentes posibles y que una fuente alimente distintas variables. Conserva el nombre de variable en la fuente, el campo original, el método de extracción y la frecuencia de actualización. \\
+SOURCE\_PRIORITY & Define la prioridad de uso por variable y ciudad. Permite seleccionar primero una fuente nacional, luego una regional y finalmente una municipal, registrando la razón de la decisión y un score de calidad. \\
+CIUDADES & Catálogo de ciudades analizadas. Incluye país, región, población, zona horaria y fecha de creación. Funciona como dimensión territorial principal para comparación multiciudad. \\
+DISTRITOS & Catálogo de distritos o zonas internas de cada ciudad. Permite almacenar indicadores con granularidad urbana cuando el portal municipal lo permite. \\
+LOG\_INGESTA & Historial de cada ejecución de ingesta. Registra fuente, fecha, estado, registros leídos, aceptados y rechazados, archivo de origen y mensajes de error. \\
+DATOS\_RAW & Representa la capa Bronze. Guarda referencias al archivo original, formato recibido, número de registros, fecha de carga y hash del archivo. Su objetivo es conservar el dato bruto sin alterar. \\
+ERRORES\_DATOS & Tabla de auditoría para registros o procesos con error. Permite clasificar el tipo de error, describirlo, conservar el registro afectado y documentar la acción tomada. \\
+DATOS\_CURADOS & Representa la capa Silver. Contiene valores originales y normalizados, variable asociada, distrito, fuente, método de cálculo y calidad del dato. Es la base para comparaciones homogéneas. \\
+SCORES\_PILAR & Representa resultados Gold por pilar. Calcula un score entre 0 y 100 por ciudad, distrito, pilar y fecha, indicando cuántas variables válidas participaron. \\
+SCORES\_ISEU & Almacena el score final ISEU+ por ciudad o distrito. Incluye score global, clasificación, fecha y versión metodológica. \\
+\texttt{FACT\_SCORES\_}\newline\texttt{HISTORICO} & Conserva el histórico de cálculos, versiones, usuario o proceso responsable y notas. Permite auditar cambios metodológicos y reproducir resultados anteriores. \\
+\bottomrule
+\end{longtable}
+
+Esta estructura es más robusta que una tabla única de indicadores porque separa la definición conceptual de la variable, la fuente que la alimenta, el dato raw recibido, el dato curado y el resultado analítico final. Además, introduce una pieza clave para el alcance multiciudad: la tabla \texttt{SOURCE\_PRIORITY}. Gracias a ella, el sistema puede decidir de forma explícita qué fuente usar para cada ciudad y variable, evitando mezclar datos nacionales, regionales y municipales sin control metodológico.
+
+\section{Catálogos maestros}
+
+Las tablas maestras representan el vocabulario básico del sistema. La tabla de fuentes registra el origen de los datos, su tipo, institución responsable, URL o endpoint, formato y frecuencia de actualización. Esta tabla permite diferenciar entre APIs públicas, archivos CSV, scraping web o bases de datos externas.
+
+La tabla de variables define qué mide cada indicador: nombre, descripción, unidad, tipo, sentido del indicador y pilar principal. El campo de sentido resulta relevante porque no todas las variables se interpretan igual. En algunas métricas, un valor alto puede ser positivo, como empleo o renta; en otras, puede ser negativo, como paro, esfuerzo de alquiler o presión turística.
+
+La relación entre variables y fuentes se gestiona mediante una tabla intermedia. Esta tabla permite mapear una misma variable conceptual a diferentes nombres de campo según la fuente. Por ejemplo, una fuente puede llamar a una variable \texttt{paro\_registrado}, otra \texttt{desempleo} y otra presentar el dato dentro de una estructura más compleja. Este mapeo evita que los procesos de limpieza dependan de nombres rígidos y facilita incorporar nuevas fuentes sin alterar el modelo completo.
+
+\section{Territorios y niveles de análisis}
+
+El modelo distingue entre ciudades y distritos. La tabla de ciudades funciona como catálogo territorial principal e incluye información como nombre, país, región, población y zona horaria. La tabla de distritos se vincula a ciudades mediante una clave foránea e incorpora campos como nombre, código, tipo, población y superficie.
+
+Aunque el diagrama utiliza el concepto de distrito porque muchas métricas urbanas pueden analizarse a ese nivel, el diseño puede extenderse a otros niveles territoriales. Para el alcance nacional de ISEU+, esta flexibilidad es importante: algunas ciudades tienen distritos oficiales comparables, mientras que otras pueden requerir trabajar a nivel municipal, provincial o autonómico según la disponibilidad de datos.
+
+\section{Ingesta y datos brutos}
+
+La tabla de log de ingesta registra cada ejecución del sistema. Incluye la fuente consultada, fecha de ingesta, estado del proceso, registros leídos, registros aceptados, registros rechazados, archivo de origen y mensaje de error. Esta información permite saber si una descarga funcionó, cuántos datos se incorporaron y qué problemas aparecieron.
+
+Los datos brutos se almacenan en la tabla o zona de datos raw. Esta capa mantiene la referencia a la fuente y al log de ingesta, la ruta del archivo original, el formato recibido, la cantidad de registros, la fecha de carga y un hash del archivo. El hash ayuda a detectar cambios, duplicados o reprocesamientos sobre un mismo archivo.
+
+Mantener los datos raw sin transformar permite auditar el proceso y reconstruir resultados. Si una regla de normalización cambia, el sistema puede volver al archivo original y reprocesarlo sin depender de una descarga nueva.
+
+\section{Metadatos y validación}
+
+La tabla de metadatos de fuente describe la estructura esperada de cada origen: nombre de campo, tipo de dato, descripción, obligatoriedad y fecha del último cambio. Esta tabla es clave para detectar cambios de esquema. Si una API cambia el nombre de una columna o modifica el tipo de un campo, el sistema puede identificar la desviación antes de contaminar los datos curados.
+
+Los errores detectados durante la ingesta o transformación se registran en una tabla específica de errores. Cada error conserva la referencia al log de ingesta, el tipo de error, la descripción, el registro afectado, la acción tomada y la fecha. Este diseño permite revisar incidencias sin perder información y diferencia entre errores corregibles, errores que requieren intervención manual y registros que deben quedar excluidos del cálculo.
+
+\section{Datos curados y normalización}
+
+Los datos curados representan la capa Silver del modelo. Aquí cada observación se vincula con una variable, un territorio, una fecha y una fuente. Además del valor original, se conserva un valor normalizado, el método de cálculo y una puntuación de calidad del dato. Esta estructura permite comparar variables aunque provengan de fuentes con formatos o unidades diferentes.
+
+La normalización no consiste únicamente en cambiar formatos. También implica validar unidades, corregir fechas, unificar catálogos, resolver duplicados y decidir cómo tratar valores faltantes. En un sistema de análisis económico urbano, estas decisiones afectan directamente a la interpretación de resultados. Por eso el modelo conserva tanto el valor original como el valor normalizado.
+
+\section{Cálculo de scores}
+
+Los scores se organizan en dos niveles. Primero se calculan scores por pilar, vinculados a ciudad, distrito, pilar y fecha. Después se calcula un score global ISEU+, que resume el estado económico urbano de un territorio en una escala interpretable. El modelo incluye campos de versión del método para que los resultados puedan compararse incluso si la fórmula evoluciona durante el desarrollo del proyecto.
+
+La clasificación final permite traducir los scores numéricos a categorías más comprensibles, como A, B, C, D o E. Esta categorización puede ser útil para visualizaciones y reportes, siempre que se explique cómo se han definido los rangos y qué limitaciones tiene la comparación.
+
+\section{Histórico, auditoría y reproducibilidad}
+
+La tabla de histórico de scores conserva las versiones calculadas, fecha de cálculo, usuario o proceso responsable y notas asociadas. Esta capa es importante porque los indicadores públicos se actualizan con el tiempo y los resultados de ISEU+ pueden cambiar cuando se incorporan datos nuevos o se corrigen datos anteriores.
+
+Conservar el histórico evita sobrescribir resultados sin control. También permite responder preguntas como qué score tenía una ciudad en una fecha determinada, cuándo se recalculó un indicador o qué versión metodológica produjo un resultado concreto. Esta trazabilidad aporta rigor al proyecto y lo acerca a una arquitectura analítica profesional.
+
+\section{Relación entre flujo lógico y arquitectura AWS}
+
+El modelo lógico se corresponde con la arquitectura AWS descrita en el capítulo anterior. Las tablas de fuentes, variables, metadatos y territorios actúan como catálogos maestros. Los logs de ingesta y datos raw se alinean con la capa Bronze. Los datos curados y normalizados se corresponden con la capa Silver. Los scores por pilar, el score global y el histórico forman parte de la capa Gold y del almacenamiento analítico.
+
+Esta correspondencia permite que el proyecto local tenga una ruta clara de evolución hacia la nube. En local, las tablas pueden materializarse en SQLite o archivos procesados. En AWS, esas mismas entidades pueden almacenarse en S3, Glue Catalog y Redshift, manteniendo la lógica conceptual del sistema.
+
+\clearpage
+\begin{landscape}
+\begin{figure}[htbp]
+\caption{Modelo lógico y flujo de datos de ISEU+}
+\label{fig:flujo-datos}
+\centering
+\includegraphics[width=\linewidth,height=0.74\textheight,keepaspectratio]{flujo-datos.png}
+\vspace{0.4em}
+\begin{flushleft}
+\small Nota. El diagrama muestra el modelo de datos multiciudad de ISEU+: fuentes, metadatos de fuente, variables, pilares, ciudades, distritos, mapeos variable-fuente, prioridad de fuentes, logs de ingesta, datos raw, datos curados, errores, scores por pilar, score global e histórico de cálculo.
+\end{flushleft}
+\end{figure}
+\end{landscape}
+\clearpage
+
+\chapter{Capítulo 2: Creación del Entorno Local de Desarrollo y Validación}
+
+En este capítulo se describe la creación del entorno local utilizado para desarrollar y validar las primeras fases de ISEU+. Antes de llevar el proyecto a una arquitectura AWS, se ha construido una versión local que permite probar la ingesta de datos, la estructura de carpetas, los conectores API, el almacenamiento temporal, la limpieza de información y las primeras pruebas de interacción con el sistema.
+
+El objetivo de esta fase no es construir la versión final de la plataforma, sino comprobar que el flujo de datos funciona correctamente desde el origen hasta su preparación para el análisis. Para ello, se han organizado los componentes principales del proyecto en módulos diferenciados: conectores API, datos descargados, procesos de limpieza, datasets estructurados, página web de prueba y entorno conversacional local.
+
+\chapter{Estructura General del Proyecto}
+
+La estructura actual del proyecto se ha reorganizado alrededor del \texttt{intento 3}, que funciona como versión más ordenada de la capa de recolección. Esta versión separa los conectores generales de los conectores municipales y utiliza una estructura tipo lakehouse local, donde los datos descargados se almacenan inicialmente en una capa Bronze. Esta decisión permite mantener los archivos originales sin transformar y facilita que, en una fase posterior, puedan pasar por procesos Silver y Gold.
+
+\begin{longtable}{>{\raggedright\arraybackslash}p{0.36\textwidth} >{\raggedright\arraybackslash}p{0.56\textwidth}}
+\toprule
+\textbf{Carpeta / Archivo} & \textbf{Función dentro del proyecto} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Carpeta / Archivo} & \textbf{Función dentro del proyecto} \\
+\midrule
+\endhead
+api\_clients/intento 3/APIS/ & Contiene los conectores principales del intento 3. Incluye scripts para fuentes generales como INE, MITMA, SEPE, AEMET y catálogos, además de un orquestador \texttt{run\_all.py}. \\
+api\_clients/intento 3/APIS/municipios/ & Contiene los conectores municipales específicos. Cada archivo representa un portal Open Data de una ciudad: Barcelona, Madrid, Valencia, Málaga, Zaragoza, Bilbao y Sevilla. \\
+api\_clients/intento 3/data\_lake/bronze/ & Capa Bronze local. Guarda los datos raw tal como son descargados desde cada fuente, sin limpieza ni transformación. \\
+api\_clients/intento 3/data\_lake/bronze/apis/ & Almacena los datos crudos de las APIs nacionales o generales. Cada fuente tiene su propia subcarpeta: \texttt{ine}, \texttt{mitma}, \texttt{sepe}, \texttt{catalogos} y \texttt{aemet}. \\
+api\_clients/intento 3/data\_lake/bronze/municipios/ & Almacena los catálogos y resultados de búsqueda de los portales municipales. Cada ciudad tiene su propia subcarpeta. \\
+api\_clients/intento 3/reports/ & Guarda reportes de ejecución, como \texttt{apis\_run.json} y \texttt{municipios\_run.json}, donde se registra qué conectores se ejecutaron, qué salidas generaron y cuál fue su resultado. \\
+pag\_web/ & Contiene la página web de prueba utilizada para validar la interfaz inicial del sistema. \\
+pag\_web/Assets/ & Incluye archivos CSS y JavaScript de la interfaz web. \\
+pag\_web/Procesos/ & Contiene scripts relacionados con limpieza, análisis y preparación de datasets. \\
+pag\_web/Procesos/Datasets/ & Guarda los datos limpios, la base SQLite y los resúmenes de carga. \\
+pag\_web/LMlocal/ & Contiene las pruebas de conexión con LM Studio y el servidor local de consulta. \\
+datos de validacion/ & Incluye documentos HTML usados para probar preguntas, respuestas y validación funcional. \\
+plantillas/ & Contiene las plantillas utilizadas para la elaboración de la memoria del TFM. \\
+\bottomrule
+\end{longtable}
+
+Esta organización permite trabajar de forma modular. Los conectores del intento 3 se encargan de obtener datos y catálogos, la capa Bronze conserva las respuestas originales, los reportes permiten auditar las ejecuciones y la página web representa la futura capa de consumo. La estructura local replica parcialmente la arquitectura AWS descrita anteriormente: las APIs equivalen a la capa de ingesta, \texttt{data\_lake/bronze} equivale a S3 Bronze y los reportes locales anticipan los logs de ingesta.
+
+La capa Bronze local se ha organizado separando las fuentes nacionales o generales de las fuentes municipales. Esta división evita mezclar datos de distinta naturaleza y facilita aplicar la estrategia jerárquica descrita en la arquitectura: primero se consultan fuentes estatales o nacionales; después, si falta granularidad o una variable urbana concreta, se recurre a portales municipales. La estructura de salida queda definida de la siguiente forma:
+
+\begin{verbatim}
+api_clients/intento 3/data_lake/bronze/
+	apis/
+		ine/
+		mitma/
+		sepe/
+		catalogos/
+		aemet/
+	municipios/
+		barcelona/
+		madrid/
+		valencia/
+		sevilla/
+		bilbao/
+		malaga/
+		zaragoza/
+\end{verbatim}
+
+Cada carpeta de \texttt{apis/<fuente>} incluye los archivos raw descargados y un \texttt{manifest\_raw.json}. Este manifiesto registra la fuente, la fecha de ingesta, las URLs consultadas, el estado de cada recurso y las rutas de salida. De esta forma, la ejecución local no se limita a descargar archivos, sino que también deja una evidencia mínima para auditoría y reproceso.
+
+\section{Creación de los Conectores API}
+
+Uno de los pasos principales del intento 3 ha sido organizar la recolección en conectores independientes. Cada conector tiene una responsabilidad concreta: consultar una fuente, descargar el catálogo o los datos disponibles y guardar el resultado en la capa Bronze. Esta separación facilita depurar errores, añadir nuevas ciudades y mantener el criterio jerárquico definido en la arquitectura: fuentes nacionales primero y fuentes municipales como complemento cuando se requiere granularidad urbana.
+
+Los conectores nacionales se ejecutan mediante el orquestador \texttt{run\_all.py}. Este script permite lanzar todas las fuentes generales o seleccionar solo algunas por argumento. En la ejecución sin argumentos se consultan INE, MITMA/MIVAU, SEPE, datos.gob.es y AEMET. Las salidas se guardan en \texttt{data\_lake/bronze/apis/<fuente>/} y el resumen global se registra en \texttt{reports/apis\_run.json}.
+
+\begin{longtable}{>{\raggedright\arraybackslash}p{0.18\textwidth} >{\raggedright\arraybackslash}p{0.30\textwidth} >{\raggedright\arraybackslash}p{0.42\textwidth}}
+\toprule
+\textbf{API / Fuente} & \textbf{Datos o recursos capturados} & \textbf{Salida Bronze y estado de ejecución} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{API / Fuente} & \textbf{Datos o recursos capturados} & \textbf{Salida Bronze y estado de ejecución} \\
+\midrule
+\endhead
+INE & Instituto Nacional de Estadística. Se descargan tablas municipales de población por sexo y población por país de nacimiento, en CSV, XLSX y metadatos recientes. & Guarda los recursos en \texttt{bronze/apis/ine/} y registra \texttt{manifest\_raw.json}. Estado: OK, con 6 recursos descargados. \\
+MITMA / MIVAU & Open Data Movilidad. Se descarga el portal de referencia, documentación técnica y la relación territorial de distritos MITMA. & Guarda \texttt{portal\_opendata\_movilidad.html}, documentación PDF, \texttt{relaciones\_distrito\_mitma.csv} y \texttt{manifest\_raw.json}. Estado: OK, con 3 recursos descargados. \\
+SEPE & Datos abiertos de paro registrado, contratos registrados y demandantes de empleo por municipio, recuperados desde distribuciones oficiales publicadas en datos.gob.es y sede SEPE. & Guarda CSV anuales desde 2010 en \texttt{bronze/apis/sepe/}. Estado: OK, con 50 recursos descargados. \\
+Catálogos nacionales & API pública de datos.gob.es para localizar datasets relacionados con población, renta, empleo, vivienda, movilidad, calidad del aire, zonas verdes y accidentes. & Guarda búsquedas JSON por tema y \texttt{manifest\_raw.json} en \texttt{bronze/apis/catalogos/}. Estado: OK, con 9 búsquedas registradas. \\
+AEMET & AEMET OpenData. El conector queda preparado para descargar observación y predicción cuando exista una clave \texttt{AEMET\_API\_KEY}. & Guarda documentación de OpenData y \texttt{manifest\_raw.json}. Estado: \texttt{SKIPPED\_AUTH}, porque no se configuró clave de API. \\
+\bottomrule
+\end{longtable}
+
+La ejecución nacional se realiza con el siguiente comando:
+
+\begin{verbatim}
+python "api_clients\intento 3\APIS\run_all.py"
+\end{verbatim}
+
+También pueden ejecutarse fuentes concretas, por ejemplo:
+
+\begin{verbatim}
+python "api_clients\intento 3\APIS\run_all.py" ine sepe catalogos
+\end{verbatim}
+
+El resultado de la ejecución queda registrado en \texttt{reports/apis\_run.json}. En la prueba local realizada, INE, MITMA, SEPE y catálogos finalizaron correctamente. AEMET quedó pendiente de clave de API, por lo que no descarga datos meteorológicos reales hasta configurar \texttt{AEMET\_API\_KEY}. Esta información se conserva en Bronze para diferenciar entre una fuente correctamente descargada y una fuente que requiere credenciales externas.
+
+En la carpeta \texttt{APIS/municipios} se han creado conectores específicos para los portales Open Data de las ciudades piloto. El objetivo inicial de estos conectores no es todavía calcular indicadores finales, sino descubrir datasets disponibles, guardar los catálogos originales y preparar la futura selección de variables. Por tanto, esta etapa funciona como una ingesta Bronze de catálogos municipales.
+
+\begin{longtable}{>{\raggedright\arraybackslash}p{0.22\textwidth} >{\raggedright\arraybackslash}p{0.28\textwidth} >{\raggedright\arraybackslash}p{0.40\textwidth}}
+\toprule
+\textbf{Script} & \textbf{Fuente consultada} & \textbf{Salida generada} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Script} & \textbf{Fuente consultada} & \textbf{Salida generada} \\
+\midrule
+\endhead
+\texttt{api\_barcelona.py} & Open Data BCN & Ejecuta búsquedas sobre el catálogo CKAN usando términos ISEU+ como población, renta, vivienda, movilidad, tráfico, calidad del aire, ruido, zonas verdes, accidentes y equipamientos. Guarda \texttt{catalog\_search\_raw.json} en la carpeta Bronze de Barcelona. \\
+\texttt{api\_madrid.py} & Madrid Datos Abiertos & Descarga el catálogo oficial DCAT/RDF de Madrid. Guarda \texttt{catalog\_raw.rdf} y metadatos de catálogo en la carpeta Bronze de Madrid. \\
+\texttt{api\_valencia.py} & Open Data Valencia & Consulta el catálogo CKAN de Valencia mediante búsquedas temáticas. Guarda los resultados raw en la carpeta Bronze de Valencia. \\
+\texttt{api\_malaga.py} & Datos Abiertos Málaga & Consulta el catálogo CKAN de Málaga mediante los mismos términos urbanos. Guarda los resultados raw en la carpeta Bronze de Málaga. \\
+\texttt{api\_zaragoza.py} & Datos Abiertos Zaragoza & Descarga el catálogo JSON del portal de Zaragoza. Guarda el catálogo raw en la carpeta Bronze de Zaragoza. \\
+\texttt{api\_bilbao.py} & Bilbao Open Data & Descarga el catálogo o página base del portal como HTML cuando no existe una API CKAN homogénea. Guarda el HTML raw y sus metadatos en Bronze. \\
+\texttt{api\_sevilla.py} & IDE Sevilla Open Data & Descarga el catálogo o página base del portal espacial de Sevilla como HTML. Guarda el HTML raw y sus metadatos en Bronze. \\
+\texttt{run\_}\newline\texttt{municipios.py} & Orquestador municipal & Permite ejecutar una, varias o todas las APIs municipales y genera el reporte \texttt{reports/municipios\_run.json}. \\
+\bottomrule
+\end{longtable}
+
+Los resultados se guardan siguiendo una ruta común:
+
+\begin{verbatim}
+api_clients/intento 3/data_lake/bronze/municipios/<ciudad>/
+\end{verbatim}
+
+Tras ejecutar el orquestador municipal, se generan salidas raw separadas por ciudad y un informe global de ejecución. Entre los archivos producidos se encuentran:
+
+\begin{itemize}
+\item \texttt{data\_lake/bronze/municipios/barcelona/catalog\_search\_raw.json}
+\item \texttt{data\_lake/bronze/municipios/madrid/catalog\_raw.rdf}
+\item \texttt{data\_lake/bronze/municipios/madrid/catalog\_metadata.json}
+\item \texttt{data\_lake/bronze/municipios/valencia/catalog\_search\_raw.json}
+\item \texttt{data\_lake/bronze/municipios/malaga/catalog\_search\_raw.json}
+\item \texttt{data\_lake/bronze/municipios/zaragoza/catalog\_raw.json}
+\item \texttt{data\_lake/bronze/municipios/bilbao/catalog\_raw.html}
+\item \texttt{data\_lake/bronze/municipios/sevilla/catalog\_raw.html}
+\item \texttt{reports/municipios\_run.json}
+\end{itemize}
+
+La ejecución municipal se lanza con:
+
+\begin{verbatim}
+python "api_clients\intento 3\APIS\municipios\run_municipios.py"
+\end{verbatim}
+
+En la prueba local, Barcelona, Madrid, Valencia, Málaga y Zaragoza finalizaron correctamente. Sevilla y Bilbao quedaron como ejecuciones parciales porque sus portales se capturan como HTML y requieren un parser específico si se desea extraer datasets estructurados de forma automática. Aun así, el HTML raw y sus metadatos quedan conservados en la capa Bronze, manteniendo la trazabilidad de la fuente consultada.
+
+Esta forma de almacenamiento permite auditar de dónde procede cada dato y diferenciar claramente entre datos originales y datos procesados. En una fase posterior, los archivos Bronze servirán como entrada para la capa Silver, donde se seleccionarán datasets útiles, se normalizarán campos y se mapearán variables hacia el modelo de datos multiciudad.
+
+\begin{figure}[htbp]
+\caption{Estructura de la carpeta de clientes API del proyecto ISEU+}
+\label{fig:image2}
+\centering
+\includegraphics[width=0.9\textwidth]{image2.png}
+\vspace{0.4em}
+\begin{flushleft}
+\small Nota. Captura del entorno local de desarrollo del proyecto.
+\end{flushleft}
+\end{figure}
+
+Esta organización permite trabajar de forma modular. Los conectores se encargan de obtener los datos, los procesos de limpieza los transforman, los datasets preparados sirven como base de análisis y la página web permite comprobar cómo podría consultar la información un usuario final.
+
+\section{Pipeline reproducible de limpieza y carga SQL}
+
+Una vez estabilizada la recolección de datos del \texttt{intento 3}, se implementó un pipeline local reproducible para pasar desde datos brutos hasta una base SQL consultable. El objetivo de esta etapa fue ordenar el tratamiento de datos en capas, evitar que el repositorio dependa de archivos manuales y permitir que otra persona pueda ejecutar el proceso mediante scripts \texttt{.py}.
+
+La lógica implementada sigue el patrón Bronze, Silver y Gold. La capa Bronze conserva los datos descargados sin transformación. La capa Silver limpia y normaliza las fuentes prioritarias. La capa Gold genera una tabla común de indicadores preparada para consultas SQL. Finalmente, estos indicadores se cargan en una base SQLite local, que representa el equivalente funcional de un futuro data warehouse analítico en AWS.
+
+\subsection{Scripts implementados}
+
+El pipeline se incorporó dentro de la carpeta \texttt{api\_clients/intento 3/}. La estructura nueva permite ejecutar cada fase de forma independiente o lanzar todo el flujo mediante un orquestador general.
+
+\begin{longtable}{>{\raggedright\arraybackslash}p{0.34\textwidth} >{\raggedright\arraybackslash}p{0.56\textwidth}}
+\toprule
+\textbf{Script} & \textbf{Función dentro del pipeline} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Script} & \textbf{Función dentro del pipeline} \\
+\midrule
+\endhead
+\texttt{run\_pipeline.py} & Orquesta el flujo completo. Puede ejecutar las APIs, inventariar Bronze, generar Silver, construir Gold y crear SQLite. También permite usar \texttt{--skip-collect} para reutilizar datos ya descargados. \\
+\texttt{pipeline/01\_}\newline\texttt{inventory\_bronze.py} & Recorre la capa Bronze, identifica archivos, formatos, extensiones, tamaño, columnas y filas detectadas. Genera \texttt{reports/inventory\_bronze.json} y \texttt{reports/inventory\_bronze.csv}. \\
+\texttt{pipeline/02\_}\newline\texttt{clean\_silver.py} & Limpia fuentes prioritarias. Normaliza columnas, codificaciones, fechas y números. Filtra INE y SEPE a las ciudades objetivo. Genera tablas Silver por fuente. \\
+\texttt{pipeline/03\_}\newline\texttt{build\_gold.py} & Convierte Silver en indicadores comparables con un esquema común. Agrega los datos municipales para evitar que una ciudad pese más solo por tener más registros brutos. \\
+\texttt{pipeline/04\_}\newline\texttt{build\_sqlite.py} & Carga los indicadores Gold en SQLite y genera tablas auxiliares de catálogo. La salida principal es \texttt{data\_lake/gold/}\newline\texttt{iseu\_indicadores.sqlite}. \\
+\bottomrule
+\end{longtable}
+
+El flujo completo puede ejecutarse con:
+
+\begin{verbatim}
+python "api_clients\intento 3\run_pipeline.py"
+\end{verbatim}
+
+Cuando los datos Bronze ya existen, la etapa de recolección puede omitirse para repetir solo limpieza, Gold y SQL:
+
+\begin{verbatim}
+python "api_clients\intento 3\run_pipeline.py" --skip-collect
+\end{verbatim}
+
+También se puede ejecutar cada fase manualmente:
+
+\begin{verbatim}
+python "api_clients\intento 3\pipeline\01_inventory_bronze.py"
+python "api_clients\intento 3\pipeline\02_clean_silver.py"
+python "api_clients\intento 3\pipeline\03_build_gold.py"
+python "api_clients\intento 3\pipeline\04_build_sqlite.py"
+\end{verbatim}
+
+\subsection{Resultados de recolección e inventario Bronze}
+
+La capa Bronze quedó organizada en dos grandes grupos: fuentes nacionales o generales en \texttt{bronze/apis/} y fuentes municipales en \texttt{bronze/municipios/}. La ejecución local generó un volumen importante de archivos raw y metadatos de control. El inventario detectó 492 archivos en Bronze, con un tamaño aproximado de 1,07 GB y 6.519.513 filas CSV identificadas.
+
+\begin{table}[htbp]
+\caption{Resumen de la capa Bronze inventariada}
+\label{tab:bronze-inventario}
+\centering
+\begin{tabular}{lr}
+\toprule
+\textbf{Métrica} & \textbf{Valor} \\
+\midrule
+Archivos totales inventariados & 492 \\
+Tamaño aproximado Bronze & 1,07 GB \\
+Filas CSV detectadas & 6.519.513 \\
+Archivos en \texttt{bronze/apis} & 82 \\
+Archivos en \texttt{bronze/municipios} & 410 \\
+Archivos CSV & 319 \\
+Archivos JSON & 65 \\
+Archivos ZIP & 43 \\
+Archivos GeoJSON & 24 \\
+\bottomrule
+\end{tabular}
+\vspace{0.4em}
+\begin{flushleft}
+\small Nota. El inventario corresponde a la ejecución local registrada en \texttt{reports/inventory\_bronze.json}.
+\end{flushleft}
+\end{table}
+
+Por fuente, Barcelona fue la ciudad con mayor cantidad de recursos descargados, seguida de Valencia y Zaragoza. Esta diferencia no se interpreta como mayor importancia analítica, sino como mayor disponibilidad de datos abiertos estructurados. Para evitar sesgos, el pipeline mantiene ese detalle en Bronze y Silver, pero agrega la información en Gold cuando se generan indicadores comparables.
+
+\begin{table}[htbp]
+\caption{Archivos Bronze por fuente principal}
+\label{tab:bronze-fuentes}
+\centering
+\begin{tabular}{lr}
+\toprule
+\textbf{Fuente} & \textbf{Archivos} \\
+\midrule
+Barcelona Open Data & 255 \\
+Valencia Open Data & 81 \\
+Zaragoza Open Data & 73 \\
+SEPE & 57 \\
+Catálogos datos.gob.es & 10 \\
+INE & 9 \\
+MITMA & 4 \\
+AEMET & 2 \\
+Málaga Open Data & 1 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Capa Silver: datos limpios y seleccionados}
+
+La capa Silver no intenta limpiar todos los archivos descargados. La primera versión prioriza las fuentes con mayor utilidad para comparación multiciudad: INE para población, SEPE para empleo, MITMA para relación territorial y recursos municipales relevantes relacionados con renta, demografía, movilidad y sostenibilidad.
+
+El resultado de Silver queda almacenado en \texttt{data\_lake/silver/}. Esta capa mantiene más detalle que Gold y funciona como base intermedia para auditoría, futuras reglas de limpieza y ampliación del modelo. En la ejecución local se generaron siete tablas Silver.
+
+\begin{table}[htbp]
+\caption{Tablas generadas en la capa Silver}
+\label{tab:silver-resultados}
+\centering
+\begin{tabular}{lr}
+\toprule
+\textbf{Tabla Silver} & \textbf{Filas} \\
+\midrule
+\texttt{ine/poblacion\_municipal.csv} & 35 \\
+\texttt{ine/poblacion\_pais\_nacimiento\_total.csv} & 0 \\
+\texttt{sepe/paro\_registrado.csv} & 1.281 \\
+\texttt{sepe/contratos\_registrados.csv} & 1.242 \\
+\texttt{sepe/demandantes\_empleo.csv} & 1.372 \\
+\texttt{mitma/relaciones\_distrito\_mitma.csv} & 10.494 \\
+\texttt{municipios/municipal\_prioritario.csv} & 161.275 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+La existencia de una tabla Silver municipal con 161.275 filas muestra que el sistema conserva detalle operativo. Sin embargo, ese volumen no se traslada directamente a Gold, ya que hacerlo produciría un sesgo hacia las ciudades con más datos abiertos disponibles, especialmente Barcelona. Por ello, la capa Gold aplica agregaciones por ciudad, fecha y variable.
+
+\subsection{Capa Gold y base SQLite}
+
+La capa Gold se genera con un esquema universal de indicadores:
+
+\begin{verbatim}
+city, district, variable, value, date, source,
+quality_score, category, unit
+\end{verbatim}
+
+Este esquema permite que la página web y el chat consulten los datos de forma consistente sin tener que conocer la estructura original de cada fuente. Por ejemplo, una pregunta sobre el paro en Valencia puede traducirse a una consulta SQL sobre la variable \texttt{unemployed\_registered}. Una pregunta sobre contratos puede consultar \texttt{contracts\_registered}, y una pregunta de población puede usar \texttt{population\_total}.
+
+La ejecución actual generó 3.975 indicadores Gold y los cargó en la base SQLite ubicada en \texttt{data\_lake/gold/}\newline\texttt{iseu\_indicadores.sqlite}. La tabla principal se denomina \texttt{indicators}; además, se crea \texttt{indicator\_catalog}, que resume variables, categorías, unidades y fuentes disponibles.
+
+\begin{table}[htbp]
+\caption{Indicadores Gold cargados en SQLite por ciudad}
+\label{tab:gold-ciudades}
+\centering
+\begin{tabular}{lr}
+\toprule
+\textbf{Ciudad} & \textbf{Indicadores} \\
+\midrule
+Valencia & 586 \\
+Barcelona & 579 \\
+Zaragoza & 564 \\
+Málaga & 562 \\
+Sevilla & 562 \\
+Bilbao & 561 \\
+Madrid & 561 \\
+\bottomrule
+\end{tabular}
+\vspace{0.4em}
+\begin{flushleft}
+\small Nota. La distribución equilibrada se consigue agregando datos municipales en Gold, en lugar de cargar todos los registros detallados como indicadores finales.
+\end{flushleft}
+\end{table}
+
+\begin{table}[htbp]
+\caption{Indicadores Gold por variable principal}
+\label{tab:gold-variables}
+\centering
+\begin{tabular}{lr}
+\toprule
+\textbf{Variable} & \textbf{Filas} \\
+\midrule
+\texttt{job\_seekers} & 1.372 \\
+\texttt{unemployed\_registered} & 1.281 \\
+\texttt{contracts\_registered} & 1.242 \\
+\texttt{population\_total} & 35 \\
+\texttt{income} & 15 \\
+\texttt{income\_median} & 15 \\
+\texttt{income\_per\_household} & 6 \\
+\texttt{income\_per\_person} & 6 \\
+\texttt{mobility\_resources\_records} & 3 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Relación con la página web y el chat}
+
+La lógica de consumo prevista es que la página web no consulte directamente los archivos CSV o JSON originales. En su lugar, el chat debe interpretar la pregunta del usuario, identificar ciudad, variable y periodo, y generar una consulta SQL sobre la tabla \texttt{indicators}. De este modo, la respuesta se apoya en datos estructurados y trazables.
+
+Por ejemplo, una consulta como ``¿Cómo ha evolucionado el paro en Valencia?'' podría traducirse internamente a:
+
+\begin{verbatim}
+SELECT date, value
+FROM indicators
+WHERE city = 'Valencia'
+  AND variable = 'unemployed_registered'
+ORDER BY date;
+\end{verbatim}
+
+Esta arquitectura separa tres responsabilidades: el data lake conserva los datos originales, el pipeline construye indicadores confiables y el modelo conversacional actúa como capa semántica para transformar lenguaje natural en SQL. Para mejorar esta capa será necesario incorporar un diccionario semántico de variables, donde términos como ``paro'', ``desempleo'' o ``personas sin trabajo'' apunten a \texttt{unemployed\_registered}.
+
+\subsection{Decisión pendiente sobre el alcance SQL}
+
+Aunque la base SQLite actual contiene 3.975 indicadores comparables, el volumen bruto procesado es mucho mayor. Bronze contiene más de 6,5 millones de filas CSV detectadas y Silver conserva tablas detalladas, especialmente la tabla municipal prioritaria. Por tanto, el proyecto ya trabaja con una lógica de Big Data en la fase de ingesta y procesamiento, aunque la capa Gold se haya reducido deliberadamente a indicadores agregados para facilitar consultas y evitar sesgos.
+
+Queda como decisión metodológica pendiente si la base SQL final debe contener solo la tabla \texttt{indicators} o si también debe incorporar una tabla de detalle, por ejemplo \texttt{fact\_observations}, con registros Silver normalizados. La primera opción es más simple y adecuada para el chat. La segunda opción refuerza el volumen analítico y permite consultas más detalladas, pero exige mayor control de rendimiento, calidad y semántica de columnas. Esta decisión se consultará con el profesor antes de consolidar la versión final del repositorio.
+
+\chapter{Conclusiones}
+
+Contenido:
+
+\begin{itemize}
+\item Conclusiones del trabajo realizado.
+\item Puntos fuertes y puntos débiles del trabajo realizado.
+\item Limitaciones del trabajo realizado.
+\item Líneas de continuación del trabajo.
+\end{itemize}
+
+\chapter*{Referencias}
+\addcontentsline{toc}{chapter}{Referencias}
+\begin{thebibliography}{9}
+
+\bibitem{Referenciaaldocumento1} Referencia al documento 1.
+\bibitem{Referenciaaldocumento2} Referencia al documento 2.
+\bibitem{ltimareferenciaaadida} Última referencia añadida.
+\end{thebibliography}

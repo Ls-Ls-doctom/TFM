@@ -1,0 +1,862 @@
+{
+  "generated_at": "2026-06-23T21:35:28",
+  "silver_dir": "data_lake\\silver",
+  "tables_total": 7,
+  "rows_by_table": {
+    "ine/poblacion_municipal.csv": 35,
+    "ine/poblacion_pais_nacimiento_total.csv": 0,
+    "sepe/paro_registrado.csv": 1281,
+    "sepe/contratos_registrados.csv": 1242,
+    "sepe/demandantes_empleo.csv": 1372,
+    "mitma/relaciones_distrito_mitma.csv": 10494,
+    "municipios/municipal_prioritario.csv": 161275
+  },
+  "resources": [
+    {
+      "file": "data_lake\\bronze\\apis\\ine\\poblacion_municipio_sexo\\poblacion_municipio_sexo_csv_semicolon.csv",
+      "status": "OK",
+      "rows": 35,
+      "note": "INE poblacion municipal filtrada a ciudades objetivo"
+    },
+    {
+      "file": "data_lake\\bronze\\apis\\ine\\poblacion_municipio_pais_nacimiento\\poblacion_municipio_pais_nacimiento_csv_semicolon.csv",
+      "status": "OK",
+      "rows": 0,
+      "note": "INE poblacion por pais nacimiento filtrada"
+    },
+    {
+      "file": "data_lake\\bronze\\apis\\sepe\\paro_registrado\\resources\\2010_2010.csv",
+      "status": "OK",
+      "rows": 84,
+      "note": "SEPE paro_registrado filtrado a ciudades objetivo"
+    },
+    {
+      "file": "data_lake\\bronze\\apis\\sepe\\paro_registrado\\resources\\2011_2011.csv",
+      "status": "OK",
+      "rows": 84,
+      "note": "SEPE paro_registrado filtrado a ciudades objetivo"
+    },
+    {
+      "file": "data_lake\\bronze\\apis\\sepe\\paro_registrado\\resources\\2012_2012.csv",
+      "status": "OK",
+      "rows": 84,
+      "note": "SEPE paro_registrado filtrado a ciudades objetivo"
+    },
+    {
+      "file": "data_lake\\bronze\\apis\\sepe\\paro_registrado\\resources\\2013_2013.csv",
+      "status": "OK",
+      "rows": 28,
+      "note": "SEPE paro_registrado filtrado a ciudades objetivo"
+    },
+    {
+      "file": "data_lake\\bronze\\apis\\sepe\\paro_registrado\\resources\\2014_2014.csv",
+      "status": "OK",
+      "rows": 84,
+      "note": "SEPE paro_registrado filtrado a ciudades objetivo"
+    },
+    {
+      "file": "data_lake\\bronze\\apis\\sepe\\paro_registrado\\resources\\2015_2015.csv",
+      "status": "OK",
+      "rows": 84,
+      "note": "SEPE paro_registrado filtrado a ciudades objetivo"
+    },
+    {
+      "file": "data_lake\\bronze\\apis\\sepe\\paro_registrado\\resources\\2016_2016.csv",
+      "status": "OK",
+      "rows": 84,
+      "note": "SEPE paro_registrado filtrado a ciudades objetivo"
+    },
+    {
+      "file": "data_lake\\bronze\\apis\\sepe\\paro_registrado\\resources\\2017_2017.csv",
+      "status": "OK",
+      "rows": 84,
+      "note": "SEPE paro_registrado filtrado a ciudades objetivo"
+    },
+    {
+      "file": "data_lake\\bronze\\apis\\sepe\\paro_registrado\\resources\\2018_2018.csv",
+      "status": "OK",
+      "rows": 84,
+      "note": "SEPE paro_registrado filtrado a ciudades objetivo"
+    },
+    {
+      "file": "data_lake\\bronze\\apis\\sepe\\paro_registrado\\resources\\2019_2019.csv",
+      "status": "OK",
+      "rows": 84,
+      "note": "SEPE paro_registrado filtrado a ciudades objetivo"
+    },
+    {
+      "file": "data_lake\\bronze\\apis\\sepe\\paro_registrado\\resources\\2020_2020.csv",
+      "status": "OK",
+      "rows": 77,
+      "note": "SEPE paro_registrado filtrado a ciudades objetivo"
+    },
+    {
+      "file": "data_lake\\bronze\\apis\\sepe\\paro_registrado\\resources\\2021_2021.csv",
+      "status": "OK",
+      "rows": 84,
+      "note": "SEPE paro_registrado filtrado a ciudades objetivo"
+    },
+    {
+      "file": "data_lake\\bronze\\apis\\sepe\\paro_registrado\\resources\\2022_2022.csv",
+      "status": "OK",
+      "rows": 84,
+      "note": "SEPE paro_registrado filtrado a ciudades objetivo"
+    },
+    {
+      "file": "data_lake\\bronze\\apis\\sepe\\paro_registrado\\resources\\2023_2023.csv",
+      "status": "OK",
+      "rows": 84,
+      "note": "SEPE paro_registrado filtrado a ciudades objetivo"
+    },
+    {
+      "file": "data_lake\\bronze\\apis\\sepe\\paro_registrado\\resources\\2024_2024.csv",
+      "status": "OK",
+      "rows": 84,
+      "note": "SEPE paro_registrado filtrado a ciudades objetivo"
+    },
+    {
+      "file": "data_lake\\bronze\\apis\\sepe\\paro_registrado\\resources\\2025_2025.csv",
+      "status": "OK",
+      "rows": 84,
+      "note": "SEPE paro_registrado filtrado a ciudades objetivo"
+    },
+    {
+      "file": "data_lake\\bronze\\apis\\sepe\\contratos_registrados\\resources\\2010_2010.csv",
+      "status": "OK",
+      "rows": 84,
+      "note": "SEPE contratos_registrados filtrado a ciudades objetivo"
+    },
+    {
+      "file": "data_lake\\bronze\\apis\\sepe\\contratos_registrados\\resources\\2011_2011.csv",
+      "status": "OK",
+      "rows": 84,
+      "note": "SEPE contratos_registrados filtrado a ciudades objetivo"
+    },
+    {
+      "file": "data_lake\\bronze\\apis\\sepe\\contratos_registrados\\resources\\2012_2012.csv",
+      "status": "OK",
+      "rows": 84,
+      "note": "SEPE contratos_registrados filtrado a ciudades objetivo"
+    },
+    {
+      "file": "data_lake\\bronze\\apis\\sepe\\contratos_registrados\\resources\\2013_2013.csv",
+      "status": "OK",
+      "rows": 28,
+      "note": "SEPE contratos_registrados filtrado a ciudades objetivo"
+    },
+    {
+      "file": "data_lake\\bronze\\apis\\sepe\\contratos_registrados\\resources\\2014_2014.csv",
+      "status": "OK",
+      "rows": 84,
+      "note": "SEPE contratos_registrados filtrado a ciudades objetivo"
+    },
+    {
+      "file": "data_lake\\bronze\\apis\\sepe\\contratos_registrados\\resources\\2015_2015.csv",
+      "status": "OK",
+      "rows": 84,
+      "note": "SEPE contratos_registrados filtrado a ciudades objetivo"
+    },
+    {
+      "file": "data_lake\\bronze\\apis\\sepe\\contratos_registrados\\resources\\2016_2016.csv",
+      "status": "OK",
+      "rows": 84,
+      "note": "SEPE contratos_registrados filtrado a ciudades objetivo"
+    },
+    {
+      "file": "data_lake\\bronze\\apis\\sepe\\contratos_registrados\\resources\\2017_2017.csv",
+      "status": "OK",
+      "rows": 84,
+      "note": "SEPE contratos_registrados filtrado a ciudades objetivo"
+    },
+    {
+      "file": "data_lake\\bronze\\apis\\sepe\\contratos_registrados\\resources\\2018_2018.csv",
+      "status": "OK",
+      "rows": 84,
+      "note": "SEPE contratos_registrados filtrado a ciudades objetivo"
+    },
+    {
+      "file": "data_lake\\bronze\\apis\\sepe\\contratos_registrados\\resources\\2019_2019.csv",
+      "status": "OK",
+      "rows": 84,
+      "note": "SEPE contratos_registrados filtrado a ciudades objetivo"
+    },
+    {
+      "file": "data_lake\\bronze\\apis\\sepe\\contratos_registrados\\resources\\2020_2020.csv",
+      "status": "OK",
+      "rows": 77,
+      "note": "SEPE contratos_registrados filtrado a ciudades objetivo"
+    },
+    {
+      "file": "data_lake\\bronze\\apis\\sepe\\contratos_registrados\\resources\\2021_2021.csv",
+      "status": "OK",
+      "rows": 84,
+      "note": "SEPE contratos_registrados filtrado a ciudades objetivo"
+    },
+    {
+      "file": "data_lake\\bronze\\apis\\sepe\\contratos_registrados\\resources\\2022_2022.csv",
+      "status": "OK",
+      "rows": 84,
+      "note": "SEPE contratos_registrados filtrado a ciudades objetivo"
+    },
+    {
+      "file": "data_lake\\bronze\\apis\\sepe\\contratos_registrados\\resources\\2023_2023.csv",
+      "status": "OK",
+      "rows": 84,
+      "note": "SEPE contratos_registrados filtrado a ciudades objetivo"
+    },
+    {
+      "file": "data_lake\\bronze\\apis\\sepe\\contratos_registrados\\resources\\2024_2024.csv",
+      "status": "OK",
+      "rows": 10,
+      "note": "SEPE contratos_registrados filtrado a ciudades objetivo"
+    },
+    {
+      "file": "data_lake\\bronze\\apis\\sepe\\contratos_registrados\\resources\\2025_2025.csv",
+      "status": "OK",
+      "rows": 84,
+      "note": "SEPE contratos_registrados filtrado a ciudades objetivo"
+    },
+    {
+      "file": "data_lake\\bronze\\apis\\sepe\\contratos_registrados\\resources\\2026_2026.csv",
+      "status": "OK",
+      "rows": 35,
+      "note": "SEPE contratos_registrados filtrado a ciudades objetivo"
+    },
+    {
+      "file": "data_lake\\bronze\\apis\\sepe\\demandantes_empleo\\resources\\2010_2010.csv",
+      "status": "OK",
+      "rows": 84,
+      "note": "SEPE demandantes_empleo filtrado a ciudades objetivo"
+    },
+    {
+      "file": "data_lake\\bronze\\apis\\sepe\\demandantes_empleo\\resources\\2011_2011.csv",
+      "status": "OK",
+      "rows": 84,
+      "note": "SEPE demandantes_empleo filtrado a ciudades objetivo"
+    },
+    {
+      "file": "data_lake\\bronze\\apis\\sepe\\demandantes_empleo\\resources\\2012_2012.csv",
+      "status": "OK",
+      "rows": 84,
+      "note": "SEPE demandantes_empleo filtrado a ciudades objetivo"
+    },
+    {
+      "file": "data_lake\\bronze\\apis\\sepe\\demandantes_empleo\\resources\\2013_2013.csv",
+      "status": "OK",
+      "rows": 84,
+      "note": "SEPE demandantes_empleo filtrado a ciudades objetivo"
+    },
+    {
+      "file": "data_lake\\bronze\\apis\\sepe\\demandantes_empleo\\resources\\2014_2014.csv",
+      "status": "OK",
+      "rows": 84,
+      "note": "SEPE demandantes_empleo filtrado a ciudades objetivo"
+    },
+    {
+      "file": "data_lake\\bronze\\apis\\sepe\\demandantes_empleo\\resources\\2015_2015.csv",
+      "status": "OK",
+      "rows": 84,
+      "note": "SEPE demandantes_empleo filtrado a ciudades objetivo"
+    },
+    {
+      "file": "data_lake\\bronze\\apis\\sepe\\demandantes_empleo\\resources\\2016_2016.csv",
+      "status": "OK",
+      "rows": 84,
+      "note": "SEPE demandantes_empleo filtrado a ciudades objetivo"
+    },
+    {
+      "file": "data_lake\\bronze\\apis\\sepe\\demandantes_empleo\\resources\\2017_2017.csv",
+      "status": "OK",
+      "rows": 84,
+      "note": "SEPE demandantes_empleo filtrado a ciudades objetivo"
+    },
+    {
+      "file": "data_lake\\bronze\\apis\\sepe\\demandantes_empleo\\resources\\2018_2018.csv",
+      "status": "OK",
+      "rows": 84,
+      "note": "SEPE demandantes_empleo filtrado a ciudades objetivo"
+    },
+    {
+      "file": "data_lake\\bronze\\apis\\sepe\\demandantes_empleo\\resources\\2019_2019.csv",
+      "status": "OK",
+      "rows": 84,
+      "note": "SEPE demandantes_empleo filtrado a ciudades objetivo"
+    },
+    {
+      "file": "data_lake\\bronze\\apis\\sepe\\demandantes_empleo\\resources\\2020_2020.csv",
+      "status": "OK",
+      "rows": 77,
+      "note": "SEPE demandantes_empleo filtrado a ciudades objetivo"
+    },
+    {
+      "file": "data_lake\\bronze\\apis\\sepe\\demandantes_empleo\\resources\\2021_2021.csv",
+      "status": "OK",
+      "rows": 84,
+      "note": "SEPE demandantes_empleo filtrado a ciudades objetivo"
+    },
+    {
+      "file": "data_lake\\bronze\\apis\\sepe\\demandantes_empleo\\resources\\2022_2022.csv",
+      "status": "OK",
+      "rows": 84,
+      "note": "SEPE demandantes_empleo filtrado a ciudades objetivo"
+    },
+    {
+      "file": "data_lake\\bronze\\apis\\sepe\\demandantes_empleo\\resources\\2023_2023.csv",
+      "status": "OK",
+      "rows": 84,
+      "note": "SEPE demandantes_empleo filtrado a ciudades objetivo"
+    },
+    {
+      "file": "data_lake\\bronze\\apis\\sepe\\demandantes_empleo\\resources\\2024_2024.csv",
+      "status": "OK",
+      "rows": 84,
+      "note": "SEPE demandantes_empleo filtrado a ciudades objetivo"
+    },
+    {
+      "file": "data_lake\\bronze\\apis\\sepe\\demandantes_empleo\\resources\\2025_2025.csv",
+      "status": "OK",
+      "rows": 84,
+      "note": "SEPE demandantes_empleo filtrado a ciudades objetivo"
+    },
+    {
+      "file": "data_lake\\bronze\\apis\\sepe\\demandantes_empleo\\resources\\2026_2026.csv",
+      "status": "OK",
+      "rows": 35,
+      "note": "SEPE demandantes_empleo filtrado a ciudades objetivo"
+    },
+    {
+      "file": "data_lake\\bronze\\apis\\mitma\\relaciones_distrito_mitma.csv",
+      "status": "OK",
+      "rows": 10494,
+      "note": "MITMA relacion distrito normalizada"
+    },
+    {
+      "file": "data_lake\\bronze\\municipios\\barcelona\\resources\\atles-renda-bruta-per-llar\\2015_atles_renda_bruta_llar.csv",
+      "status": "OK",
+      "rows": 1068,
+      "note": "Municipal prioritario Barcelona"
+    },
+    {
+      "file": "data_lake\\bronze\\municipios\\barcelona\\resources\\atles-renda-bruta-per-llar\\2016_atles_renda_bruta_llar.csv",
+      "status": "OK",
+      "rows": 1068,
+      "note": "Municipal prioritario Barcelona"
+    },
+    {
+      "file": "data_lake\\bronze\\municipios\\barcelona\\resources\\atles-renda-bruta-per-llar\\2017_atles_renda_bruta_llar.csv",
+      "status": "OK",
+      "rows": 1068,
+      "note": "Municipal prioritario Barcelona"
+    },
+    {
+      "file": "data_lake\\bronze\\municipios\\barcelona\\resources\\atles-renda-bruta-per-llar\\2018_atles_renda_bruta_llar.csv",
+      "status": "OK",
+      "rows": 1068,
+      "note": "Municipal prioritario Barcelona"
+    },
+    {
+      "file": "data_lake\\bronze\\municipios\\barcelona\\resources\\atles-renda-bruta-per-llar\\2019_atles_renda_bruta_llar.csv",
+      "status": "OK",
+      "rows": 1068,
+      "note": "Municipal prioritario Barcelona"
+    },
+    {
+      "file": "data_lake\\bronze\\municipios\\barcelona\\resources\\atles-renda-bruta-per-llar\\2020_atles_renda_bruta_llar.csv",
+      "status": "OK",
+      "rows": 1068,
+      "note": "Municipal prioritario Barcelona"
+    },
+    {
+      "file": "data_lake\\bronze\\municipios\\barcelona\\resources\\atles-renda-bruta-per-llar\\2021_atles_renda_bruta_llar.csv",
+      "status": "OK",
+      "rows": 1068,
+      "note": "Municipal prioritario Barcelona"
+    },
+    {
+      "file": "data_lake\\bronze\\municipios\\barcelona\\resources\\atles-renda-bruta-per-llar\\2022_atles_renda_bruta_llar.csv",
+      "status": "OK",
+      "rows": 1068,
+      "note": "Municipal prioritario Barcelona"
+    },
+    {
+      "file": "data_lake\\bronze\\municipios\\barcelona\\resources\\atles-renda-bruta-per-llar\\2023_atles_renda_bruta_llar.csv",
+      "status": "OK",
+      "rows": 1068,
+      "note": "Municipal prioritario Barcelona"
+    },
+    {
+      "file": "data_lake\\bronze\\municipios\\barcelona\\resources\\atles-renda-bruta-per-persona\\2015_atles_renda_bruta_persona.csv",
+      "status": "OK",
+      "rows": 1068,
+      "note": "Municipal prioritario Barcelona"
+    },
+    {
+      "file": "data_lake\\bronze\\municipios\\barcelona\\resources\\atles-renda-bruta-per-persona\\2016_atles_renda_bruta_persona.csv",
+      "status": "OK",
+      "rows": 1068,
+      "note": "Municipal prioritario Barcelona"
+    },
+    {
+      "file": "data_lake\\bronze\\municipios\\barcelona\\resources\\atles-renda-bruta-per-persona\\2017_atles_renda_bruta_persona.csv",
+      "status": "OK",
+      "rows": 1068,
+      "note": "Municipal prioritario Barcelona"
+    },
+    {
+      "file": "data_lake\\bronze\\municipios\\barcelona\\resources\\atles-renda-bruta-per-persona\\2018_atles_renda_bruta_persona.csv",
+      "status": "OK",
+      "rows": 1068,
+      "note": "Municipal prioritario Barcelona"
+    },
+    {
+      "file": "data_lake\\bronze\\municipios\\barcelona\\resources\\atles-renda-bruta-per-persona\\2019_atles_renda_bruta_persona.csv",
+      "status": "OK",
+      "rows": 1068,
+      "note": "Municipal prioritario Barcelona"
+    },
+    {
+      "file": "data_lake\\bronze\\municipios\\barcelona\\resources\\atles-renda-bruta-per-persona\\2020_atles_renda_bruta_persona.csv",
+      "status": "OK",
+      "rows": 1068,
+      "note": "Municipal prioritario Barcelona"
+    },
+    {
+      "file": "data_lake\\bronze\\municipios\\barcelona\\resources\\atles-renda-bruta-per-persona\\2021_atles_renda_bruta_persona.csv",
+      "status": "OK",
+      "rows": 1068,
+      "note": "Municipal prioritario Barcelona"
+    },
+    {
+      "file": "data_lake\\bronze\\municipios\\barcelona\\resources\\atles-renda-bruta-per-persona\\2022_atles_renda_bruta_persona.csv",
+      "status": "OK",
+      "rows": 1068,
+      "note": "Municipal prioritario Barcelona"
+    },
+    {
+      "file": "data_lake\\bronze\\municipios\\barcelona\\resources\\atles-renda-bruta-per-persona\\2023_atles_renda_bruta_persona.csv",
+      "status": "OK",
+      "rows": 1068,
+      "note": "Municipal prioritario Barcelona"
+    },
+    {
+      "file": "data_lake\\bronze\\municipios\\barcelona\\resources\\atles-renda-index-gini\\2015_atles_renda_index_gini.csv",
+      "status": "OK",
+      "rows": 1068,
+      "note": "Municipal prioritario Barcelona"
+    },
+    {
+      "file": "data_lake\\bronze\\municipios\\barcelona\\resources\\atles-renda-index-gini\\2016_atles_renda_index_gini.csv",
+      "status": "OK",
+      "rows": 1068,
+      "note": "Municipal prioritario Barcelona"
+    },
+    {
+      "file": "data_lake\\bronze\\municipios\\barcelona\\resources\\atles-renda-index-gini\\2017_atles_renda_index_gini.csv",
+      "status": "OK",
+      "rows": 1068,
+      "note": "Municipal prioritario Barcelona"
+    },
+    {
+      "file": "data_lake\\bronze\\municipios\\barcelona\\resources\\atles-renda-index-gini\\2018_atles_renda_index_gini.csv",
+      "status": "OK",
+      "rows": 1068,
+      "note": "Municipal prioritario Barcelona"
+    },
+    {
+      "file": "data_lake\\bronze\\municipios\\barcelona\\resources\\atles-renda-index-gini\\2019_atles_renda_index_gini.csv",
+      "status": "OK",
+      "rows": 1068,
+      "note": "Municipal prioritario Barcelona"
+    },
+    {
+      "file": "data_lake\\bronze\\municipios\\barcelona\\resources\\atles-renda-index-gini\\2020_atles_renda_index_gini.csv",
+      "status": "OK",
+      "rows": 1068,
+      "note": "Municipal prioritario Barcelona"
+    },
+    {
+      "file": "data_lake\\bronze\\municipios\\barcelona\\resources\\atles-renda-index-gini\\2021_atles_renda_index_gini.csv",
+      "status": "OK",
+      "rows": 1068,
+      "note": "Municipal prioritario Barcelona"
+    },
+    {
+      "file": "data_lake\\bronze\\municipios\\barcelona\\resources\\atles-renda-index-gini\\2022_atles_renda_index_gini.csv",
+      "status": "OK",
+      "rows": 1068,
+      "note": "Municipal prioritario Barcelona"
+    },
+    {
+      "file": "data_lake\\bronze\\municipios\\barcelona\\resources\\atles-renda-index-gini\\2023_atles_renda_index_gini.csv",
+      "status": "OK",
+      "rows": 1068,
+      "note": "Municipal prioritario Barcelona"
+    },
+    {
+      "file": "data_lake\\bronze\\municipios\\barcelona\\resources\\atles-renda-mediana\\2015_atles_renda_mediana.csv",
+      "status": "OK",
+      "rows": 1068,
+      "note": "Municipal prioritario Barcelona"
+    },
+    {
+      "file": "data_lake\\bronze\\municipios\\barcelona\\resources\\atles-renda-mediana\\2016_atles_renda_mediana.csv",
+      "status": "OK",
+      "rows": 1068,
+      "note": "Municipal prioritario Barcelona"
+    },
+    {
+      "file": "data_lake\\bronze\\municipios\\barcelona\\resources\\atles-renda-mediana\\2017_atles_renda_mediana.csv",
+      "status": "OK",
+      "rows": 1068,
+      "note": "Municipal prioritario Barcelona"
+    },
+    {
+      "file": "data_lake\\bronze\\municipios\\barcelona\\resources\\atles-renda-mediana\\2018_atles_renda_mediana.csv",
+      "status": "OK",
+      "rows": 1068,
+      "note": "Municipal prioritario Barcelona"
+    },
+    {
+      "file": "data_lake\\bronze\\municipios\\barcelona\\resources\\atles-renda-mediana\\2019_atles_renda_mediana.csv",
+      "status": "OK",
+      "rows": 1068,
+      "note": "Municipal prioritario Barcelona"
+    },
+    {
+      "file": "data_lake\\bronze\\municipios\\barcelona\\resources\\atles-renda-mediana\\2020_atles_renda_mediana.csv",
+      "status": "OK",
+      "rows": 1068,
+      "note": "Municipal prioritario Barcelona"
+    },
+    {
+      "file": "data_lake\\bronze\\municipios\\barcelona\\resources\\atles-renda-mediana\\2021_atles_renda_mediana.csv",
+      "status": "OK",
+      "rows": 1068,
+      "note": "Municipal prioritario Barcelona"
+    },
+    {
+      "file": "data_lake\\bronze\\municipios\\barcelona\\resources\\atles-renda-mediana\\2022_atles_renda_mediana.csv",
+      "status": "OK",
+      "rows": 1068,
+      "note": "Municipal prioritario Barcelona"
+    },
+    {
+      "file": "data_lake\\bronze\\municipios\\barcelona\\resources\\atles-renda-mediana\\2023_atles_renda_mediana.csv",
+      "status": "OK",
+      "rows": 1068,
+      "note": "Municipal prioritario Barcelona"
+    },
+    {
+      "file": "data_lake\\bronze\\municipios\\barcelona\\resources\\atles-renda-mitjana\\2015_atles_renda_mitjana.csv",
+      "status": "OK",
+      "rows": 1068,
+      "note": "Municipal prioritario Barcelona"
+    },
+    {
+      "file": "data_lake\\bronze\\municipios\\barcelona\\resources\\atles-renda-mitjana\\2016_atles_renda_mitjana.csv",
+      "status": "OK",
+      "rows": 1068,
+      "note": "Municipal prioritario Barcelona"
+    },
+    {
+      "file": "data_lake\\bronze\\municipios\\barcelona\\resources\\atles-renda-mitjana\\2017_atles_renda_mitjana.csv",
+      "status": "OK",
+      "rows": 1068,
+      "note": "Municipal prioritario Barcelona"
+    },
+    {
+      "file": "data_lake\\bronze\\municipios\\barcelona\\resources\\atles-renda-mitjana\\2018_atles_renda_mitjana.csv",
+      "status": "OK",
+      "rows": 1068,
+      "note": "Municipal prioritario Barcelona"
+    },
+    {
+      "file": "data_lake\\bronze\\municipios\\barcelona\\resources\\atles-renda-mitjana\\2019_atles_renda_mitjana.csv",
+      "status": "OK",
+      "rows": 1068,
+      "note": "Municipal prioritario Barcelona"
+    },
+    {
+      "file": "data_lake\\bronze\\municipios\\barcelona\\resources\\atles-renda-mitjana\\2020_atles_renda_mitjana.csv",
+      "status": "OK",
+      "rows": 1068,
+      "note": "Municipal prioritario Barcelona"
+    },
+    {
+      "file": "data_lake\\bronze\\municipios\\barcelona\\resources\\atles-renda-mitjana\\2021_atles_renda_mitjana.csv",
+      "status": "OK",
+      "rows": 1068,
+      "note": "Municipal prioritario Barcelona"
+    },
+    {
+      "file": "data_lake\\bronze\\municipios\\barcelona\\resources\\atles-renda-mitjana\\2022_atles_renda_mitjana.csv",
+      "status": "OK",
+      "rows": 1068,
+      "note": "Municipal prioritario Barcelona"
+    },
+    {
+      "file": "data_lake\\bronze\\municipios\\barcelona\\resources\\atles-renda-mitjana\\2023_atles_renda_mitjana.csv",
+      "status": "OK",
+      "rows": 1068,
+      "note": "Municipal prioritario Barcelona"
+    },
+    {
+      "file": "data_lake\\bronze\\municipios\\barcelona\\resources\\atles-renda-p80-p20-distribucio\\2015_atles_renda_P8020_distribucio.csv",
+      "status": "OK",
+      "rows": 1068,
+      "note": "Municipal prioritario Barcelona"
+    },
+    {
+      "file": "data_lake\\bronze\\municipios\\barcelona\\resources\\atles-renda-p80-p20-distribucio\\2016_atles_renda_P8020_distribucio.csv",
+      "status": "OK",
+      "rows": 1068,
+      "note": "Municipal prioritario Barcelona"
+    },
+    {
+      "file": "data_lake\\bronze\\municipios\\barcelona\\resources\\atles-renda-p80-p20-distribucio\\2017_atles_renda_P8020_distribucio.csv",
+      "status": "OK",
+      "rows": 1068,
+      "note": "Municipal prioritario Barcelona"
+    },
+    {
+      "file": "data_lake\\bronze\\municipios\\barcelona\\resources\\atles-renda-p80-p20-distribucio\\2018_atles_renda_P8020_distribucio.csv",
+      "status": "OK",
+      "rows": 1068,
+      "note": "Municipal prioritario Barcelona"
+    },
+    {
+      "file": "data_lake\\bronze\\municipios\\barcelona\\resources\\atles-renda-p80-p20-distribucio\\2019_atles_renda_P8020_distribucio.csv",
+      "status": "OK",
+      "rows": 1068,
+      "note": "Municipal prioritario Barcelona"
+    },
+    {
+      "file": "data_lake\\bronze\\municipios\\barcelona\\resources\\atles-renda-p80-p20-distribucio\\2020_atles_renda_P8020_distribucio.csv",
+      "status": "OK",
+      "rows": 1068,
+      "note": "Municipal prioritario Barcelona"
+    },
+    {
+      "file": "data_lake\\bronze\\municipios\\barcelona\\resources\\atles-renda-p80-p20-distribucio\\2021_atles_renda_P8020_distribucio.csv",
+      "status": "OK",
+      "rows": 1068,
+      "note": "Municipal prioritario Barcelona"
+    },
+    {
+      "file": "data_lake\\bronze\\municipios\\barcelona\\resources\\atles-renda-p80-p20-distribucio\\2022_atles_renda_P8020_distribucio.csv",
+      "status": "OK",
+      "rows": 1068,
+      "note": "Municipal prioritario Barcelona"
+    },
+    {
+      "file": "data_lake\\bronze\\municipios\\barcelona\\resources\\atles-renda-p80-p20-distribucio\\2023_atles_renda_P8020_distribucio.csv",
+      "status": "OK",
+      "rows": 1068,
+      "note": "Municipal prioritario Barcelona"
+    },
+    {
+      "file": "data_lake\\bronze\\municipios\\barcelona\\resources\\bicicletes\\opendatabcn_bicicletes-csv.csv",
+      "status": "ERROR",
+      "rows": 0,
+      "note": "Error tokenizing data. C error: Expected 40 fields in line 3, saw 41\n"
+    },
+    {
+      "file": "data_lake\\bronze\\municipios\\barcelona\\resources\\renda-disponible-llars-bcn\\2015_renda_disponible_llars_per_persona.csv",
+      "status": "OK",
+      "rows": 1068,
+      "note": "Municipal prioritario Barcelona"
+    },
+    {
+      "file": "data_lake\\bronze\\municipios\\barcelona\\resources\\renda-disponible-llars-bcn\\2016_renda_disponible_llars_per_persona.csv",
+      "status": "OK",
+      "rows": 1068,
+      "note": "Municipal prioritario Barcelona"
+    },
+    {
+      "file": "data_lake\\bronze\\municipios\\barcelona\\resources\\renda-disponible-llars-bcn\\2017_renda_disponible_llars_per_persona.csv",
+      "status": "OK",
+      "rows": 1068,
+      "note": "Municipal prioritario Barcelona"
+    },
+    {
+      "file": "data_lake\\bronze\\municipios\\barcelona\\resources\\renda-disponible-llars-bcn\\2018_renda_disponible_llars_per_persona.csv",
+      "status": "OK",
+      "rows": 1068,
+      "note": "Municipal prioritario Barcelona"
+    },
+    {
+      "file": "data_lake\\bronze\\municipios\\barcelona\\resources\\renda-disponible-llars-bcn\\2019_renda_disponible_llars_per_persona.csv",
+      "status": "OK",
+      "rows": 1068,
+      "note": "Municipal prioritario Barcelona"
+    },
+    {
+      "file": "data_lake\\bronze\\municipios\\barcelona\\resources\\renda-disponible-llars-bcn\\2020_renda_disponible_llars_per_persona.csv",
+      "status": "OK",
+      "rows": 1068,
+      "note": "Municipal prioritario Barcelona"
+    },
+    {
+      "file": "data_lake\\bronze\\municipios\\barcelona\\resources\\renda-disponible-llars-bcn\\2021_renda_disponible_llars_per_persona.csv",
+      "status": "OK",
+      "rows": 1068,
+      "note": "Municipal prioritario Barcelona"
+    },
+    {
+      "file": "data_lake\\bronze\\municipios\\barcelona\\resources\\renda-disponible-llars-bcn\\2022_renda_disponible_llars_per_persona.csv",
+      "status": "OK",
+      "rows": 1068,
+      "note": "Municipal prioritario Barcelona"
+    },
+    {
+      "file": "data_lake\\bronze\\municipios\\barcelona\\resources\\renda-tributaria-per-persona-atlas-distribucio\\2015_renda_neta_mitjana_per_persona.csv",
+      "status": "OK",
+      "rows": 1068,
+      "note": "Municipal prioritario Barcelona"
+    },
+    {
+      "file": "data_lake\\bronze\\municipios\\barcelona\\resources\\renda-tributaria-per-persona-atlas-distribucio\\2016_renda_neta_mitjana_per_persona.csv",
+      "status": "OK",
+      "rows": 1068,
+      "note": "Municipal prioritario Barcelona"
+    },
+    {
+      "file": "data_lake\\bronze\\municipios\\barcelona\\resources\\renda-tributaria-per-persona-atlas-distribucio\\2017_renda_neta_mitjana_per_persona.csv",
+      "status": "OK",
+      "rows": 1068,
+      "note": "Municipal prioritario Barcelona"
+    },
+    {
+      "file": "data_lake\\bronze\\municipios\\barcelona\\resources\\renda-tributaria-per-persona-atlas-distribucio\\2018_renda_neta_mitjana_per_persona.csv",
+      "status": "OK",
+      "rows": 1068,
+      "note": "Municipal prioritario Barcelona"
+    },
+    {
+      "file": "data_lake\\bronze\\municipios\\barcelona\\resources\\renda-tributaria-per-persona-atlas-distribucio\\2019_renda_neta_mitjana_per_persona.csv",
+      "status": "OK",
+      "rows": 1068,
+      "note": "Municipal prioritario Barcelona"
+    },
+    {
+      "file": "data_lake\\bronze\\municipios\\barcelona\\resources\\renda-tributaria-per-persona-atlas-distribucio\\2020_renda_neta_mitjana_per_persona.csv",
+      "status": "OK",
+      "rows": 1068,
+      "note": "Municipal prioritario Barcelona"
+    },
+    {
+      "file": "data_lake\\bronze\\municipios\\barcelona\\resources\\renda-tributaria-per-persona-atlas-distribucio\\2021_renda_neta_mitjana_per_persona.csv",
+      "status": "OK",
+      "rows": 1068,
+      "note": "Municipal prioritario Barcelona"
+    },
+    {
+      "file": "data_lake\\bronze\\municipios\\barcelona\\resources\\renda-tributaria-per-persona-atlas-distribucio\\2022_renda_neta_mitjana_per_persona.csv",
+      "status": "OK",
+      "rows": 1068,
+      "note": "Municipal prioritario Barcelona"
+    },
+    {
+      "file": "data_lake\\bronze\\municipios\\barcelona\\resources\\renda-tributaria-per-persona-atlas-distribucio\\2023_renda_neta_mitjana_per_persona.csv",
+      "status": "OK",
+      "rows": 1068,
+      "note": "Municipal prioritario Barcelona"
+    },
+    {
+      "file": "data_lake\\bronze\\municipios\\barcelona\\resources\\renda-tributaria-unitat-consum-atlas-distribucio\\2015_renda_neta_mitjana_per_llar.csv",
+      "status": "OK",
+      "rows": 1068,
+      "note": "Municipal prioritario Barcelona"
+    },
+    {
+      "file": "data_lake\\bronze\\municipios\\barcelona\\resources\\renda-tributaria-unitat-consum-atlas-distribucio\\2016_renda_neta_mitjana_per_llar.csv",
+      "status": "OK",
+      "rows": 1068,
+      "note": "Municipal prioritario Barcelona"
+    },
+    {
+      "file": "data_lake\\bronze\\municipios\\barcelona\\resources\\renda-tributaria-unitat-consum-atlas-distribucio\\2017_renda_neta_mitjana_per_llar.csv",
+      "status": "OK",
+      "rows": 1068,
+      "note": "Municipal prioritario Barcelona"
+    },
+    {
+      "file": "data_lake\\bronze\\municipios\\barcelona\\resources\\renda-tributaria-unitat-consum-atlas-distribucio\\2018_renda_neta_mitjana_per_llar.csv",
+      "status": "OK",
+      "rows": 1068,
+      "note": "Municipal prioritario Barcelona"
+    },
+    {
+      "file": "data_lake\\bronze\\municipios\\barcelona\\resources\\renda-tributaria-unitat-consum-atlas-distribucio\\2019_renda_neta_mitjana_per_llar.csv",
+      "status": "OK",
+      "rows": 1068,
+      "note": "Municipal prioritario Barcelona"
+    },
+    {
+      "file": "data_lake\\bronze\\municipios\\barcelona\\resources\\renda-tributaria-unitat-consum-atlas-distribucio\\2020_renda_neta_mitjana_per_llar.csv",
+      "status": "OK",
+      "rows": 1068,
+      "note": "Municipal prioritario Barcelona"
+    },
+    {
+      "file": "data_lake\\bronze\\municipios\\barcelona\\resources\\renda-tributaria-unitat-consum-atlas-distribucio\\2021_renda_neta_mitjana_per_llar.csv",
+      "status": "OK",
+      "rows": 1068,
+      "note": "Municipal prioritario Barcelona"
+    },
+    {
+      "file": "data_lake\\bronze\\municipios\\barcelona\\resources\\renda-tributaria-unitat-consum-atlas-distribucio\\2022_renda_neta_mitjana_per_llar.csv",
+      "status": "OK",
+      "rows": 1068,
+      "note": "Municipal prioritario Barcelona"
+    },
+    {
+      "file": "data_lake\\bronze\\municipios\\barcelona\\resources\\renda-tributaria-unitat-consum-atlas-distribucio\\2023_renda_neta_mitjana_per_llar.csv",
+      "status": "OK",
+      "rows": 1068,
+      "note": "Municipal prioritario Barcelona"
+    },
+    {
+      "file": "data_lake\\bronze\\municipios\\valencia\\resources\\income-per-household-and-person\\Income_per_household_and_person.csv",
+      "status": "OK",
+      "rows": 6,
+      "note": "Municipal prioritario Valencia"
+    },
+    {
+      "file": "data_lake\\bronze\\municipios\\valencia\\resources\\income-per-household-and-person\\Renda_per_persona_i_llar.csv",
+      "status": "OK",
+      "rows": 6,
+      "note": "Municipal prioritario Valencia"
+    },
+    {
+      "file": "data_lake\\bronze\\municipios\\valencia\\resources\\income-per-household-and-person\\Renta_por_persona_y_hogar.csv",
+      "status": "OK",
+      "rows": 6,
+      "note": "Municipal prioritario Valencia"
+    },
+    {
+      "file": "data_lake\\bronze\\municipios\\valencia\\resources\\siniestros-de-trafico-2022-2025\\Accidents_de_tràfic.csv",
+      "status": "OK",
+      "rows": 34226,
+      "note": "Municipal prioritario Valencia"
+    },
+    {
+      "file": "data_lake\\bronze\\municipios\\zaragoza\\resources\\Estaciones_y_Usos_de_Bizi_Zaragoza\\Usuarios.csv",
+      "status": "OK",
+      "rows": 20751,
+      "note": "Municipal prioritario Zaragoza"
+    },
+    {
+      "file": "data_lake\\bronze\\municipios\\zaragoza\\resources\\Estaciones_y_Usos_de_Bizi_Zaragoza\\Usuarios_Marzo_-_Agosto.csv",
+      "status": "OK",
+      "rows": 20817,
+      "note": "Municipal prioritario Zaragoza"
+    },
+    {
+      "file": "data_lake\\bronze\\municipios\\zaragoza\\resources\\Indicadores_Sostenibilidad\\indicadores.csv",
+      "status": "OK",
+      "rows": 23,
+      "note": "Municipal prioritario Zaragoza"
+    }
+  ]
+}

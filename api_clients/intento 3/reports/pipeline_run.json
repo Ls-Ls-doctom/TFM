@@ -1,0 +1,51 @@
+{
+  "started_at": "2026-06-23T21:35:02",
+  "finished_at": "2026-06-23T21:35:43",
+  "status": "OK",
+  "steps": [
+    {
+      "name": "inventory_bronze",
+      "script": "pipeline\\01_inventory_bronze.py",
+      "args": [],
+      "started_at": "2026-06-23T21:35:02",
+      "finished_at": "2026-06-23T21:35:08",
+      "returncode": 0,
+      "stdout": "Inventario Bronze: D:\\Proyectos\\TFM\\api_clients\\intento 3\\reports\\inventory_bronze.csv\nArchivos: 492\nFilas CSV detectadas: 6519513\n",
+      "stderr": "",
+      "status": "OK"
+    },
+    {
+      "name": "clean_silver",
+      "script": "pipeline\\02_clean_silver.py",
+      "args": [],
+      "started_at": "2026-06-23T21:35:08",
+      "finished_at": "2026-06-23T21:35:28",
+      "returncode": 0,
+      "stdout": "Silver generado en: D:\\Proyectos\\TFM\\api_clients\\intento 3\\data_lake\\silver\nine/poblacion_municipal.csv: 35 filas\nine/poblacion_pais_nacimiento_total.csv: 0 filas\nsepe/paro_registrado.csv: 1281 filas\nsepe/contratos_registrados.csv: 1242 filas\nsepe/demandantes_empleo.csv: 1372 filas\nmitma/relaciones_distrito_mitma.csv: 10494 filas\nmunicipios/municipal_prioritario.csv: 161275 filas\n",
+      "stderr": "",
+      "status": "OK"
+    },
+    {
+      "name": "build_gold",
+      "script": "pipeline\\03_build_gold.py",
+      "args": [],
+      "started_at": "2026-06-23T21:35:28",
+      "finished_at": "2026-06-23T21:35:43",
+      "returncode": 0,
+      "stdout": "Gold generado: D:\\Proyectos\\TFM\\api_clients\\intento 3\\data_lake\\gold\\indicators.csv\nIndicadores: 3975\n",
+      "stderr": "",
+      "status": "OK"
+    },
+    {
+      "name": "build_sqlite",
+      "script": "pipeline\\04_build_sqlite.py",
+      "args": [],
+      "started_at": "2026-06-23T21:35:43",
+      "finished_at": "2026-06-23T21:35:43",
+      "returncode": 0,
+      "stdout": "SQLite Gold creado: D:\\Proyectos\\TFM\\api_clients\\intento 3\\data_lake\\gold\\iseu_indicadores.sqlite\nFilas indicators: 3975\n",
+      "stderr": "",
+      "status": "OK"
+    }
+  ]
+}

@@ -1,0 +1,75 @@
+{
+  "loaded_at": "2026-06-23T21:35:43",
+  "database": "data_lake\\gold\\iseu_indicadores.sqlite",
+  "source_file": "data_lake\\gold\\indicators.csv",
+  "rows_loaded": 3975,
+  "catalog_rows": 9,
+  "rows_by_city": [
+    {
+      "city": "Valencia",
+      "rows": 586
+    },
+    {
+      "city": "Barcelona",
+      "rows": 579
+    },
+    {
+      "city": "Zaragoza",
+      "rows": 564
+    },
+    {
+      "city": "Malaga",
+      "rows": 562
+    },
+    {
+      "city": "Sevilla",
+      "rows": 562
+    },
+    {
+      "city": "Bilbao",
+      "rows": 561
+    },
+    {
+      "city": "Madrid",
+      "rows": 561
+    }
+  ],
+  "rows_by_variable": [
+    {
+      "variable": "job_seekers",
+      "rows": 1372
+    },
+    {
+      "variable": "unemployed_registered",
+      "rows": 1281
+    },
+    {
+      "variable": "contracts_registered",
+      "rows": 1242
+    },
+    {
+      "variable": "population_total",
+      "rows": 35
+    },
+    {
+      "variable": "income",
+      "rows": 15
+    },
+    {
+      "variable": "income_median",
+      "rows": 15
+    },
+    {
+      "variable": "income_per_household",
+      "rows": 6
+    },
+    {
+      "variable": "income_per_person",
+      "rows": 6
+    },
+    {
+      "variable": "mobility_resources_records",
+      "rows": 3
+    }
+  ]
+}
