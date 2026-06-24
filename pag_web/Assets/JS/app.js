@@ -34,7 +34,9 @@ const sourceCompareChart = document.querySelector("#sourceCompareChart");
 const latestRows = document.querySelector("#latestRows");
 const variableChips = document.querySelector("#variableChips");
 const variableCountLabel = document.querySelector("#variableCountLabel");
-const API_BASE_URL = "http://127.0.0.1:5500";
+const API_BASE_URL = window.location.port === "8080" || window.location.protocol === "file:"
+  ? "http://127.0.0.1:5500"
+  : window.location.origin;
 
 let activeTopic = "general";
 let activeView = "general";
@@ -53,7 +55,7 @@ const percentFormatter = new Intl.NumberFormat("es-ES", {
   minimumFractionDigits: 1,
   maximumFractionDigits: 1
 });
-const chartPalette = ["#45d8ed", "#bdc2ff", "#f4c95d", "#7fd18b", "#ff8f70", "#c58cff", "#f06c9b", "#8bd3dd"];
+const chartPalette = ["#4f7c59", "#b56b45", "#d6a94a", "#6f8f72", "#8b6f4e", "#c26f5b", "#6f7f8d", "#9a8c63"];
 
 const taskLabels = {
   pensando: "Pensando",
@@ -295,6 +297,13 @@ function formatDashboardValue(value, unit) {
   return `${formatted} ${unit || ""}`.trim();
 }
 
+function normalizeText(value) {
+  return String(value || "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase();
+}
+
 async function loadDashboard() {
   try {
     if (pipelineStatus) {
@@ -325,7 +334,7 @@ function renderDashboard(payload) {
   if (kpiDetails) kpiDetails.textContent = formatNumber(kpis.detailRows);
 
   if (databaseStatus) {
-    databaseStatus.textContent = payload.ready ? (payload.storageLabel || "Base de datos activa") : "Base de datos no disponible";
+    databaseStatus.textContent = payload.ready ? "Cobertura por ciudad" : "Base de datos no disponible";
   }
   if (pipelineStatus) {
     const apiSummary = payload.pipeline?.apis || {};
@@ -335,8 +344,8 @@ function renderDashboard(payload) {
     lastUpdateTime.dateTime = payload.updatedAt;
     lastUpdateTime.textContent = payload.updatedAt.replace("T", " ");
   }
-  renderSourceChart(payload.sources || []);
-  renderSourcePie(payload.sources || []);
+  renderSourceChart(payload.cities || []);
+  renderSourcePie(payload.cities || []);
   renderDashboardCharts(payload.charts || {});
   renderExpandedCharts(payload);
   renderSelectionDetail();
@@ -351,6 +360,10 @@ function getFilteredLatestRows() {
   }
   if (activeSelection.type === "source") {
     return rows.filter((row) => String(row.source || "") === activeSelection.label);
+  }
+  if (activeSelection.type === "city") {
+    const selectedCity = normalizeText(activeSelection.label);
+    return rows.filter((row) => normalizeText(row.geo).includes(selectedCity));
   }
   if (activeSelection.type === "quality") {
     return rows.filter((row) => String(row.quality || "Sin clasificar").toLowerCase() === activeSelection.label.toLowerCase());
@@ -730,6 +743,179 @@ function renderSourceChart(sources) {
         <div class="bar-meta">
           <span>${escapeHtml(String(item.source || "Fuente"))}</span>
           <strong>${formatNumber(rows)} filas</strong>
+        </div>
+        <div class="bar-track">
+          <div class="bar-fill" style="width: ${width}%"></div>
+        </div>
+      </button>
+    `;
+  }).join("");
+  attachInteractiveHandlers(sourceChart);
+}
+
+function renderSourcePie(cities) {
+  if (!sourcePie) {
+    return;
+  }
+  const validCities = cities
+    .map((item) => ({ ...item, rows: Number(item.rows) || 0 }))
+    .filter((item) => item.rows > 0);
+  const totalRows = validCities.reduce((sum, item) => sum + item.rows, 0);
+
+  if (!validCities.length || totalRows <= 0) {
+    sourcePie.innerHTML = `<p class="trace-empty">No hay ciudades suficientes para graficar.</p>`;
+    return;
+  }
+
+  let cursor = 0;
+  const slices = validCities.map((item, index) => {
+    const start = cursor;
+    const value = item.rows / totalRows * 100;
+    cursor += value;
+    const color = chartPalette[index % chartPalette.length];
+    return `${color} ${start.toFixed(3)}% ${cursor.toFixed(3)}%`;
+  });
+
+  const leader = validCities[0];
+  const leaderPct = leader.rows / totalRows * 100;
+  sourcePie.innerHTML = `
+    <div class="pie-chart" style="background: conic-gradient(${slices.join(", ")})">
+      <div class="pie-center">
+        <span>Registros</span>
+        <strong>${formatNumber(totalRows)}</strong>
+      </div>
+    </div>
+    <div class="pie-legend">
+      <div class="pie-highlight">
+        <span>Ciudad con mas datos</span>
+        <strong>${escapeHtml(String(leader.city || "Ciudad"))} · ${percentFormatter.format(leaderPct)}%</strong>
+      </div>
+      ${validCities.map((item, index) => {
+        const pct = item.rows / totalRows * 100;
+        const label = String(item.city || "Ciudad");
+        const variables = Number(item.variables) || 0;
+        const sourceCount = Number(item.sources) || 0;
+        return `
+          <button class="pie-legend-row interactive-chart-item" type="button" data-select-type="city" data-select-kind="Ciudad" data-select-label="${escapeHtml(label)}" data-select-value="${item.rows}" data-select-value-label="${escapeHtml(`${percentFormatter.format(pct)}% · ${formatNumber(item.rows)} registros · ${formatNumber(variables)} variables`)}" data-select-note="Ciudad seleccionada desde el reparto territorial de registros disponibles.">
+            <span class="legend-dot" style="background:${chartPalette[index % chartPalette.length]}"></span>
+            <span>${escapeHtml(label)}</span>
+            <strong>${percentFormatter.format(pct)}% · ${formatNumber(variables)} vars. · ${formatNumber(sourceCount)} fuentes</strong>
+          </button>
+        `;
+      }).join("")}
+    </div>
+  `;
+  attachInteractiveHandlers(sourcePie);
+}
+
+function renderSourceChart(cities) {
+  if (!sourceChart) {
+    return;
+  }
+  if (!cities.length) {
+    sourceChart.innerHTML = `<p class="trace-empty">No hay ciudades cargadas.</p>`;
+    return;
+  }
+  const maxRows = Math.max(...cities.map((item) => Number(item.rows) || 0), 1);
+  sourceChart.innerHTML = cities.map((item) => {
+    const rows = Number(item.rows) || 0;
+    const variables = Number(item.variables) || 0;
+    const sourceCount = Number(item.sources) || 0;
+    const label = String(item.city || "Ciudad");
+    const width = Math.max(4, Math.round((rows / maxRows) * 100));
+    return `
+      <button class="source-row interactive-chart-item" type="button" data-select-type="city" data-select-kind="Ciudad" data-select-label="${escapeHtml(label)}" data-select-value="${rows}" data-select-value-label="${escapeHtml(`${formatNumber(rows)} registros · ${formatNumber(variables)} variables · ${formatNumber(sourceCount)} fuentes`)}" data-select-note="Ciudad seleccionada desde el grafico territorial de datos disponibles.">
+        <div class="bar-meta">
+          <span>${escapeHtml(label)}</span>
+          <strong>${formatNumber(variables)} variables · ${formatNumber(sourceCount)} fuentes</strong>
+        </div>
+        <div class="bar-track">
+          <div class="bar-fill" style="width: ${width}%"></div>
+        </div>
+      </button>
+    `;
+  }).join("");
+  attachInteractiveHandlers(sourceChart);
+}
+
+function renderSourcePie(cities) {
+  if (!sourcePie) {
+    return;
+  }
+  const validCities = cities
+    .map((item) => ({
+      ...item,
+      rows: Number(item.rows) || 0,
+      variables: Number(item.variables) || 0,
+      sources: Number(item.sources) || 0
+    }))
+    .filter((item) => item.variables > 0 || item.rows > 0);
+  const totalVariables = validCities.reduce((sum, item) => sum + Math.max(item.variables, 1), 0);
+
+  if (!validCities.length || totalVariables <= 0) {
+    sourcePie.innerHTML = `<p class="trace-empty">No hay ciudades suficientes para graficar.</p>`;
+    return;
+  }
+
+  let cursor = 0;
+  const slices = validCities.map((item, index) => {
+    const start = cursor;
+    const value = Math.max(item.variables, 1) / totalVariables * 100;
+    cursor += value;
+    const color = chartPalette[index % chartPalette.length];
+    return `${color} ${start.toFixed(3)}% ${cursor.toFixed(3)}%`;
+  });
+
+  const leader = validCities.reduce((best, item) => item.variables > best.variables ? item : best, validCities[0]);
+  const leaderPct = Math.max(leader.variables, 1) / totalVariables * 100;
+  sourcePie.innerHTML = `
+    <div class="pie-chart" style="background: conic-gradient(${slices.join(", ")})">
+      <div class="pie-center">
+        <span>Variables</span>
+        <strong>${formatNumber(totalVariables)}</strong>
+      </div>
+    </div>
+    <div class="pie-legend">
+      <div class="pie-highlight">
+        <span>Mayor cobertura</span>
+        <strong>${escapeHtml(String(leader.city || "Ciudad"))} · ${formatNumber(leader.variables)} variables</strong>
+      </div>
+      ${validCities.map((item, index) => {
+        const pct = Math.max(item.variables, 1) / totalVariables * 100;
+        const label = String(item.city || "Ciudad");
+        return `
+          <button class="pie-legend-row interactive-chart-item" type="button" data-select-type="city" data-select-kind="Ciudad" data-select-label="${escapeHtml(label)}" data-select-value="${item.rows}" data-select-value-label="${escapeHtml(`${formatNumber(item.variables)} variables · ${formatNumber(item.sources)} fuentes · ${formatNumber(item.rows)} registros`)}" data-select-note="Ciudad seleccionada desde la cobertura territorial de variables disponibles.">
+            <span class="legend-dot" style="background:${chartPalette[index % chartPalette.length]}"></span>
+            <span>${escapeHtml(label)}</span>
+            <strong>${percentFormatter.format(pct)}% · ${formatNumber(item.variables)} vars.</strong>
+          </button>
+        `;
+      }).join("")}
+    </div>
+  `;
+  attachInteractiveHandlers(sourcePie);
+}
+
+function renderSourceChart(cities) {
+  if (!sourceChart) {
+    return;
+  }
+  if (!cities.length) {
+    sourceChart.innerHTML = `<p class="trace-empty">No hay ciudades cargadas.</p>`;
+    return;
+  }
+  const maxVariables = Math.max(...cities.map((item) => Number(item.variables) || 0), 1);
+  sourceChart.innerHTML = cities.map((item) => {
+    const rows = Number(item.rows) || 0;
+    const variables = Number(item.variables) || 0;
+    const sourceCount = Number(item.sources) || 0;
+    const label = String(item.city || "Ciudad");
+    const width = Math.max(6, Math.round((variables / maxVariables) * 100));
+    return `
+      <button class="source-row interactive-chart-item" type="button" data-select-type="city" data-select-kind="Ciudad" data-select-label="${escapeHtml(label)}" data-select-value="${rows}" data-select-value-label="${escapeHtml(`${formatNumber(variables)} variables · ${formatNumber(sourceCount)} fuentes · ${formatNumber(rows)} registros`)}" data-select-note="Ciudad seleccionada desde el grafico de cobertura territorial.">
+        <div class="bar-meta">
+          <span>${escapeHtml(label)}</span>
+          <strong>${formatNumber(variables)} variables · ${formatNumber(sourceCount)} fuentes</strong>
         </div>
         <div class="bar-track">
           <div class="bar-fill" style="width: ${width}%"></div>

@@ -104,6 +104,7 @@ def main() -> None:
     if facts:
         unified = pd.concat(facts, ignore_index=True)
         unified = unified.dropna(how="all")
+        unified = drop_incomplete_indicators(unified)
         unified = unified.drop_duplicates()
         unified.to_csv(CLEAN_DIR / "indicadores_limpios.csv", index=False, encoding="utf-8")
         report.append(
@@ -139,14 +140,15 @@ def clean_ine() -> dict[str, Any]:
 
     df = read_csv(path)
     df = clean_dataframe(df)
-    df["fecha"] = pd.to_datetime(df.get("fecha"), errors="coerce")
+    df["fecha"] = parse_ine_datetime(df.get("fecha"))
     df["valor"] = to_number(df.get("valor"))
     df["fuente"] = "INE"
     out = CLEAN_DIR / "ine_limpio.csv"
     write_clean_csv(df, out)
 
-    geo_col = df["geo_config"] if "geo_config" in df.columns else infer_geo(df.get("nombre", ""))
-    unit_col = df["unidad"] if "unidad" in df.columns else ""
+    geo_col = df["geo_config"].fillna("") if "geo_config" in df.columns else empty_series(df)
+    geo_col = geo_col.mask(geo_col.astype(str).str.strip() == "", infer_geo_series(df.get("nombre", empty_series(df))))
+    unit_col = df["unidad"].fillna("") if "unidad" in df.columns else ""
     facts = pd.DataFrame(
         {
             "source": "INE",
@@ -374,11 +376,22 @@ def clean_bcn_csvs() -> dict[str, Any]:
 
 
 def build_bcn_facts(df: pd.DataFrame, path: Path, value_col: str) -> pd.DataFrame:
+    dataset_key = path.stem.replace("_raw", "")
+    if dataset_key == "bcn_ruido_poblacion":
+        return build_bcn_noise_facts(df, path)
+
     values = to_number(df[value_col])
-    geo = first_existing(df, ["nom_barri", "barri", "nom_districte", "districte"])
-    period = first_existing(df, ["data_referencia", "data", "any", "year", "mes"])
+    geo = first_existing(df, ["nom_barri", "barri", "nom_districte", "districte", "addresses_district_name"])
+    period = first_existing(df, ["data_referencia", "data_revisio", "data", "datetime", "fecha", "periodo", "any", "year", "mes", "extraido_en"])
     metric = first_existing(df, ["_variable_iseu", "variable_iseu", "nom", "name", "descripcio"])
     dataset = first_existing(df, ["_dataset_key", "dataset_key"])
+    extracted_at = first_existing(df, ["_extraido_en", "extraido_en"])
+
+    geo_values = df[geo].fillna("") if geo else empty_series(df)
+    geo_values = geo_values.mask(geo_values.astype(str).str.strip() == "", "Barcelona")
+    period_values = df[period].fillna("") if period else empty_series(df)
+    if period == "extraido_en":
+        period_values = period_values.astype(str).str.slice(0, 10)
 
     fact = pd.DataFrame(
         {
@@ -386,14 +399,52 @@ def build_bcn_facts(df: pd.DataFrame, path: Path, value_col: str) -> pd.DataFram
             "dataset": df[dataset] if dataset else path.stem.replace("_raw", ""),
             "variable": df[metric] if metric else path.stem.replace("_raw", ""),
             "metric": df[metric] if metric else path.stem.replace("_raw", ""),
-            "geo": df[geo] if geo else "Barcelona",
-            "period": df[period] if period else "",
+            "geo": geo_values,
+            "period": period_values,
             "value": values,
             "unit": "",
             "quality": "media",
             "notes": "Dato municipal normalizado; revisar si es proxy antes de usar en conclusiones.",
             "raw_file": relative(path),
-            "extracted_at": df["_extraido_en"] if "_extraido_en" in df else "",
+            "extracted_at": df[extracted_at] if extracted_at else "",
+        }
+    )
+    return fact.dropna(subset=["value"])
+
+
+def build_bcn_noise_facts(df: pd.DataFrame, path: Path) -> pd.DataFrame:
+    value_columns = [column for column in ("percentatge_poblacio_exposada", "valor") if column in df.columns]
+    if not value_columns:
+        return pd.DataFrame()
+
+    values = to_number(df[value_columns[0]])
+    for value_column in value_columns[1:]:
+        values = values.fillna(to_number(df[value_column]))
+    source_noise = coalesce_columns(df, ["font_soroll", "concepte"], "Fuente no informada")
+    time_slot = coalesce_columns(df, ["periode_horari"], "Periodo no informado")
+    noise_range = coalesce_columns(df, ["rang", "rang_soroll"], "Rango no informado")
+    district = coalesce_columns(df, ["nom_districte", "nom_districte_2"], "")
+    neighborhood = coalesce_columns(df, ["nom_barri", "nom_barri_2", "barri"], "")
+    extracted_at = first_existing(df, ["_extraido_en", "extraido_en"])
+
+    geo = source_noise + " | " + time_slot + " | " + noise_range
+    place = (neighborhood + ", " + district).str.strip(" ,")
+    geo = geo.mask(place.astype(str).str.strip() != "", geo + " | " + place)
+
+    fact = pd.DataFrame(
+        {
+            "source": "Open Data BCN",
+            "dataset": "bcn_ruido_poblacion",
+            "variable": "Ruido urbano",
+            "metric": "Porcentaje de poblacion expuesta por fuente y rango acustico",
+            "geo": geo,
+            "period": "2022",
+            "value": values,
+            "unit": "%",
+            "quality": "alta",
+            "notes": "Porcentaje de poblacion expuesta a niveles de ruido del mapa estrategico municipal.",
+            "raw_file": relative(path),
+            "extracted_at": df[extracted_at] if extracted_at else "",
         }
     )
     return fact.dropna(subset=["value"])
@@ -676,6 +727,20 @@ def parse_number(value: Any) -> float | None:
         return None
 
 
+def parse_ine_datetime(series: Any) -> pd.Series:
+    if not isinstance(series, pd.Series):
+        return pd.Series(dtype="datetime64[ns]")
+
+    numeric = pd.to_numeric(series, errors="coerce")
+    if numeric.notna().any() and numeric.dropna().abs().median() > 10_000_000_000:
+        return pd.to_datetime(numeric, errors="coerce", unit="ms")
+    return pd.to_datetime(series, errors="coerce")
+
+
+def empty_series(df: pd.DataFrame, default: str = "") -> pd.Series:
+    return pd.Series(default, index=df.index, dtype="object")
+
+
 def infer_geo(series: Any) -> str:
     if isinstance(series, pd.Series):
         sample = " ".join(series.dropna().astype(str).head(10).tolist()).lower()
@@ -684,6 +749,37 @@ def infer_geo(series: Any) -> str:
         if "catalu" in sample:
             return "Catalunya"
     return "España"
+
+
+def infer_geo_series(series: Any) -> pd.Series:
+    if not isinstance(series, pd.Series):
+        return pd.Series(dtype="object")
+
+    normalized = series.fillna("").astype(str).str.lower()
+    result = pd.Series("España", index=series.index, dtype="object")
+    result = result.mask(normalized.str.contains("barcelona", na=False), "Barcelona")
+    result = result.mask(normalized.str.contains("catalu|cataluña|catalunya", na=False), "Cataluña")
+    return result
+
+
+def coalesce_columns(df: pd.DataFrame, names: list[str], default: str) -> pd.Series:
+    result = empty_series(df, default)
+    for name in names:
+        if name not in df.columns:
+            continue
+        candidate = df[name].fillna("").astype(str)
+        result = result.mask(result.astype(str).str.strip() == "", candidate)
+    return result.mask(result.astype(str).str.strip() == "", default)
+
+
+def drop_incomplete_indicators(df: pd.DataFrame) -> pd.DataFrame:
+    required = ["source", "dataset", "variable", "metric", "geo", "period", "value"]
+    clean = df.copy()
+    for column in required:
+        if column not in clean.columns:
+            clean[column] = pd.NA
+        clean[column] = clean[column].replace(r"^\s*$", pd.NA, regex=True)
+    return clean.dropna(subset=required)
 
 
 def first_existing(df: pd.DataFrame, names: list[str]) -> str | None:

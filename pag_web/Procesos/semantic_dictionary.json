@@ -1,0 +1,83 @@
+{
+  "version": 1,
+  "description": "Diccionario semantico local para mapear lenguaje natural a variables, categorias y fuentes de SQLite.",
+  "cities": {
+    "barcelona": ["barcelona", "bcn"],
+    "madrid": ["madrid"],
+    "valencia": ["valencia", "valència"],
+    "sevilla": ["sevilla"],
+    "bilbao": ["bilbao"],
+    "malaga": ["malaga", "málaga"],
+    "zaragoza": ["zaragoza"]
+  },
+  "aliases": [
+    {
+      "intent": "employment_unemployment",
+      "aliases": ["paro", "desempleo", "sin trabajo", "personas sin trabajo", "parados", "desempleados"],
+      "variables": ["Paro registrado", "Demandantes de empleo"],
+      "categories": ["employment"],
+      "sources": ["SEPE"],
+      "weight": 14
+    },
+    {
+      "intent": "employment_opportunity",
+      "aliases": ["empleo", "trabajo", "oportunidades", "oportunidad laboral", "mercado laboral", "laboral", "contratos"],
+      "variables": ["Contratos registrados", "Demandantes de empleo", "Paro registrado"],
+      "categories": ["employment"],
+      "sources": ["SEPE"],
+      "weight": 12
+    },
+    {
+      "intent": "income",
+      "aliases": ["renta", "ingresos", "salario", "sueldos", "poder adquisitivo", "riqueza", "nivel economico"],
+      "variables": ["Renta disponible", "Renta mediana", "Renta media", "Renta bruta", "Renta por hogar", "Renta por persona"],
+      "categories": ["economy"],
+      "sources": ["Municipal Open Data"],
+      "weight": 12
+    },
+    {
+      "intent": "inequality",
+      "aliases": ["desigualdad", "gini", "brecha", "p80", "p20", "distribucion renta"],
+      "variables": ["Desigualdad Gini", "Desigualdad P80/P20"],
+      "categories": ["economy"],
+      "sources": ["Municipal Open Data"],
+      "weight": 12
+    },
+    {
+      "intent": "mobility_accidents",
+      "aliases": ["accidentes", "siniestros", "trafico", "tráfico", "siniestralidad", "choques"],
+      "variables": ["Accidentes de trafico"],
+      "categories": ["mobility"],
+      "sources": ["Municipal Open Data"],
+      "weight": 14
+    },
+    {
+      "intent": "mobility_bike",
+      "aliases": ["bicicleta", "bicicletas", "bicing", "bizi", "bicicleta publica", "movilidad ciclista"],
+      "variables": ["Usuarios bicicleta publica", "Registros de movilidad"],
+      "categories": ["mobility"],
+      "sources": ["Municipal Open Data"],
+      "weight": 10
+    },
+    {
+      "intent": "population",
+      "aliases": ["poblacion", "población", "habitantes", "demografia", "demografía", "residentes"],
+      "variables": ["Poblacion total"],
+      "categories": ["demography"],
+      "sources": ["INE"],
+      "weight": 12
+    },
+    {
+      "intent": "available_data",
+      "aliases": ["tablas", "fuentes", "datos disponibles", "que datos", "qué datos", "catalogo", "catálogo", "sql", "base de datos"],
+      "variables": [],
+      "categories": [],
+      "sources": [],
+      "tables": ["sql_table_catalog", "indicator_catalog"],
+      "weight": 8
+    }
+  ],
+  "geo_detail_terms": ["barrio", "barrios", "distrito", "distritos", "seccion", "sección", "secciones", "zona", "zonas"],
+  "comparison_terms": ["comparar", "compara", "comparado", "mejor", "peor", "mas", "más", "menos", "ranking", "donde", "dónde"],
+  "time_terms": ["evolucion", "evolución", "ultimamente", "últimamente", "historico", "histórico", "serie", "tendencia", "año", "mes"]
+}

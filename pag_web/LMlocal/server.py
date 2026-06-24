@@ -426,6 +426,7 @@ def build_data_payload(question: str) -> dict:
         "database": "Base de datos",
         "database_ready": sql_payload["ready"],
         "terminos_busqueda": sql_payload["terms"],
+        "semantic_sql": compact_semantic_payload(sql_payload.get("semantic", {})),
         "indicadores": compact_indicator_rows(sql_payload["rows"]),
         "catalogo": compact_catalog_summary(sql_payload["summary"]),
         "log": log,
@@ -457,6 +458,20 @@ def compact_catalog_summary(summary: dict) -> dict:
             }
             for table in tables[:16]
         ],
+    }
+
+
+def compact_semantic_payload(semantic: dict) -> dict:
+    return {
+        "matched": semantic.get("matched", False),
+        "intents": semantic.get("intents", [])[:6],
+        "variables": semantic.get("variables", [])[:8],
+        "categories": semantic.get("categories", [])[:6],
+        "sources": semantic.get("sources", [])[:6],
+        "cities": semantic.get("cities", [])[:8],
+        "detail_geo": semantic.get("detail_geo", False),
+        "comparison": semantic.get("comparison", False),
+        "time": semantic.get("time", False),
     }
 
 
@@ -514,6 +529,8 @@ def build_dashboard_payload() -> dict:
     top_variable_rows = []
     period_rows = []
     source_variable_rows = []
+    city_rows = []
+    detail_rows = int(sqlite_report.get("detail_rows_loaded") or 0)
 
     if DB_PATH.exists():
         import sqlite3
@@ -579,6 +596,72 @@ def build_dashboard_payload() -> dict:
                     """
                 ).fetchall()
             ]
+            city_rows = [
+                dict(row)
+                for row in conn.execute(
+                    """
+                    WITH normalized AS (
+                        SELECT
+                            CASE
+                                WHEN LOWER(geo) LIKE '%barcelona%' THEN 'Barcelona'
+                                WHEN LOWER(geo) LIKE '%madrid%' THEN 'Madrid'
+                                WHEN LOWER(geo) LIKE '%valencia%' THEN 'Valencia'
+                                WHEN LOWER(geo) LIKE '%sevilla%' THEN 'Sevilla'
+                                WHEN LOWER(geo) LIKE '%bilbao%' THEN 'Bilbao'
+                                WHEN LOWER(geo) LIKE '%malaga%' OR LOWER(geo) LIKE '%málaga%' THEN 'Malaga'
+                                WHEN LOWER(geo) LIKE '%zaragoza%' THEN 'Zaragoza'
+                                ELSE NULL
+                            END AS city,
+                            variable,
+                            source
+                        FROM indicadores
+                        WHERE geo IS NOT NULL AND TRIM(geo) <> ''
+                    )
+                    SELECT
+                        city,
+                        COUNT(*) AS rows,
+                        COUNT(DISTINCT variable) AS variables,
+                        COUNT(DISTINCT source) AS sources
+                    FROM normalized
+                    WHERE city IS NOT NULL
+                    GROUP BY city
+                    ORDER BY rows DESC, city
+                    """
+                ).fetchall()
+            ]
+            detail_tables = [
+                "semantic_observations",
+                "indicators",
+                "indicator_catalog",
+                "sql_table_catalog",
+            ]
+            detail_tables.extend(
+                row["name"]
+                for row in conn.execute(
+                    """
+                    SELECT name
+                    FROM sqlite_master
+                    WHERE type = 'table' AND name LIKE 'silver_%'
+                    ORDER BY name
+                    """
+                ).fetchall()
+            )
+            counted_tables = []
+            for table_name in dict.fromkeys(detail_tables):
+                exists = conn.execute(
+                    """
+                    SELECT 1
+                    FROM sqlite_master
+                    WHERE type = 'table' AND name = ?
+                    """,
+                    (table_name,),
+                ).fetchone()
+                if not exists:
+                    continue
+                rows = conn.execute(f'SELECT COUNT(*) AS rows FROM "{table_name}"').fetchone()["rows"]
+                counted_tables.append((table_name, int(rows or 0)))
+            if counted_tables:
+                detail_rows = sum(rows for _, rows in counted_tables)
 
     sources = summary.get("sources", [])
     variables = summary.get("variables", [])
@@ -591,9 +674,10 @@ def build_dashboard_payload() -> dict:
             "indicatorRows": total_rows,
             "sourceCount": len(sources),
             "variableCount": len(variables),
-            "detailRows": int(sqlite_report.get("detail_rows_loaded") or 0),
+            "detailRows": detail_rows,
         },
         "sources": sources,
+        "cities": city_rows,
         "variables": variables[:80],
         "latestRows": latest_rows,
         "charts": {
@@ -714,6 +798,7 @@ def build_lm_studio_request(payload: dict, stream: bool = False) -> urllib.reque
         "messages": [
             {"role": "system", "content": load_system_prompt()},
             {"role": "user", "content": build_user_content(payload)},
+            {"role": "assistant", "content": "Respuesta final:"},
         ],
     }
 
@@ -840,23 +925,46 @@ def ensure_user_facing_answer(payload: dict, answer: str) -> str:
 
 def build_local_fallback_answer(payload: dict) -> str:
     question = str(payload.get("message", "")).strip()
+    normalized_question = normalize(question)
     if not should_use_data_context(question):
         return "Hola. Soy ISEU Assistant. Puedo ayudarte a revisar el dashboard, explicar fuentes y responder preguntas sobre los indicadores urbanos cargados."
 
     data = build_data_payload(question)
     rows = data.get("indicadores", [])[:4]
     if not rows:
+        catalog = data.get("catalogo", {})
+        tables = catalog.get("tables", [])
+        if tables and any(token in normalize(question) for token in ("tabla", "tablas", "fuente", "fuentes", "sql", "datos disponibles")):
+            lines = ["La base SQLite tiene estas tablas principales disponibles:"]
+            for table in tables[:8]:
+                lines.append(
+                    f"- {table.get('table_name')}: capa {table.get('layer')}, {table.get('rows_loaded')} filas."
+                )
+            return "\n".join(lines)
         return "No he encontrado indicadores suficientes para responder esa pregunta con datos. Prueba a preguntar por empleo, vivienda, coste de vida, energia, poblacion o fuentes disponibles."
 
-    lines = [
-        "He recuperado indicadores relacionados con tu pregunta. Estos son los mas relevantes:"
-    ]
+    is_move_or_job_query = any(
+        token in normalized_question
+        for token in ("mudar", "mudanza", "oferta laboral", "informatica", "informática", "oportunidad", "oportunidades", "coste de vida")
+    )
+    if is_move_or_job_query:
+        lines = [
+            "Para evaluar esa mudanza puedo darte una lectura orientativa con los indicadores disponibles, pero hay una cautela importante: no tengo un desglose directo de contratos por sector informatico.",
+            "Como aproximacion, uso los indicadores laborales generales recuperados y separo lo que es dato directo de lo que requiere interpretacion:",
+        ]
+    else:
+        lines = [
+            "He recuperado indicadores relacionados con tu pregunta. Estos son los mas relevantes:"
+        ]
     for row in rows:
         value = format_metric_value(row.get("value"), str(row.get("unit") or ""))
         lines.append(
             f"- {row.get('source', 'Fuente n/d')}: {row.get('variable', 'Variable n/d')} en {row.get('geo', 'territorio n/d')} ({row.get('period', 'periodo n/d')}): {value}."
         )
-    lines.append("Usa la vista de tablas o graficos para revisar la trazabilidad completa.")
+    if is_move_or_job_query:
+        lines.append("Con estos datos puedo comparar el contexto laboral general entre ciudades, pero no afirmar oportunidades especificas en informatica sin una fuente sectorial adicional.")
+    else:
+        lines.append("Usa la vista de tablas o graficos para revisar la trazabilidad completa.")
     return "\n".join(lines)
 
 
@@ -873,7 +981,14 @@ def call_lm_studio_final(payload: dict) -> str:
             f"{row.get('source')} {row.get('variable')} {row.get('geo')} {row.get('period')}: {row.get('value')} {row.get('unit')}"
             for row in rows
         )
-        final_input = f"Pregunta: {question}\nDatos recuperados desde SQLite:\n{facts}\nRespuesta final:"
+        final_input = (
+            f"Pregunta: {question}\n"
+            f"Datos recuperados desde SQLite:\n{facts}\n"
+            "Instruccion de respuesta: si faltan datos directos para una parte de la pregunta, "
+            "explicalo de forma profesional y ofrece la mejor aproximacion con los indicadores disponibles. "
+            "No digas simplemente que no hay datos; separa dato directo, aproximacion disponible y cautela.\n"
+            "Respuesta final:"
+        )
     else:
         final_input = f"Pregunta: {question}\nRespuesta conversacional breve, sin mencionar datos ni SQLite:"
     body = {
@@ -887,6 +1002,8 @@ def call_lm_studio_final(payload: dict) -> str:
                 "content": (
                     "Responde en espanol al usuario final. No muestres razonamiento. "
                     "Si recibes datos, usa exactamente esos datos y cita sus fuentes. "
+                    "Si el usuario pide variables no disponibles, dilo con claridad y propone indicadores relacionados como aproximacion. "
+                    "Para mudanzas o comparaciones entre ciudades, estructura la respuesta en lectura general, empleo, coste/renta si existe y limites. "
                     "Si no recibes datos, responde de forma natural sin mencionar bases de datos, fuentes ni trazabilidad. "
                     "Maximo 5 frases."
                 ),
@@ -913,6 +1030,21 @@ def call_lm_studio_final(payload: dict) -> str:
 def extract_final_answer(text: str) -> str:
     if not text:
         return ""
+
+    clean_text = text.strip()
+    for stop_marker in (
+        "\n\nInstrucción:",
+        "\n\nInstruction:",
+        "\n\nNo inventar datos",
+        "\nNo inventar datos",
+        "\n</think>",
+        "</think>",
+    ):
+        marker_index = clean_text.find(stop_marker)
+        if marker_index > 0 and "Thinking Process:" not in clean_text[:marker_index]:
+            clean_text = clean_text[:marker_index].strip()
+            break
+    text = clean_text
 
     markers = [
         "Revised Draft:",

@@ -1,19 +1,19 @@
 :root {
-  --bg: #10131a;
-  --bg-deep: #0b0e14;
-  --panel: rgba(25, 28, 34, 0.88);
-  --panel-strong: rgba(50, 53, 60, 0.76);
-  --line: rgba(189, 194, 255, 0.16);
-  --line-strong: rgba(189, 194, 255, 0.28);
-  --text: #e1e2eb;
-  --muted: #a9adbd;
-  --soft: #c6c5d3;
-  --primary: #bdc2ff;
-  --primary-strong: #737cd3;
-  --cyan: #45d8ed;
-  --cyan-strong: #00daf3;
-  --ink-on-cyan: #001f24;
-  --shadow: 0 24px 80px rgba(0, 0, 0, 0.42);
+  --bg: #f6f3ec;
+  --bg-deep: #ece7dc;
+  --panel: rgba(255, 255, 255, 0.94);
+  --panel-strong: #f1eee6;
+  --line: rgba(62, 72, 67, 0.16);
+  --line-strong: rgba(62, 72, 67, 0.28);
+  --text: #202722;
+  --muted: #69736d;
+  --soft: #3f4a44;
+  --primary: #4f7c59;
+  --primary-strong: #315c3c;
+  --cyan: #b56b45;
+  --cyan-strong: #9e5635;
+  --ink-on-cyan: #fffaf3;
+  --shadow: 0 18px 48px rgba(42, 37, 30, 0.12);
 }
 
 * {
@@ -49,7 +49,7 @@ button {
   min-height: 0;
   display: grid;
   grid-template-columns: 360px minmax(0, 1fr);
-  background: radial-gradient(circle at 68% 22%, rgba(69, 216, 237, 0.08), transparent 28%);
+  background: radial-gradient(circle at 68% 22%, rgba(181, 107, 69, 0.08), transparent 28%);
   overflow: hidden;
 }
 
@@ -165,8 +165,8 @@ button {
 }
 
 .screen-tab.is-active {
-  background: rgba(69, 216, 237, 0.1);
-  border-color: rgba(69, 216, 237, 0.28);
+  background: rgba(181, 107, 69, 0.1);
+  border-color: rgba(181, 107, 69, 0.28);
   color: var(--text);
 }
 
@@ -226,15 +226,15 @@ a.icon-button {
 }
 
 .data-tab.is-active {
-  background: rgba(69, 216, 237, 0.1);
-  border-color: rgba(69, 216, 237, 0.28);
+  background: rgba(181, 107, 69, 0.1);
+  border-color: rgba(181, 107, 69, 0.28);
   color: var(--text);
 }
 
 .update-card,
 .trace-card {
   padding: 12px;
-  border: 1px solid rgba(189, 194, 255, 0.14);
+  border: 1px solid rgba(62, 72, 67, 0.14);
   border-radius: 8px;
   background: rgba(25, 28, 34, 0.68);
 }
@@ -291,7 +291,7 @@ a.icon-button {
   display: grid;
   gap: 4px;
   padding: 9px;
-  border: 1px solid rgba(189, 194, 255, 0.1);
+  border: 1px solid rgba(62, 72, 67, 0.1);
   border-radius: 8px;
   background: rgba(11, 14, 20, 0.44);
 }
@@ -350,7 +350,7 @@ a.icon-button {
   display: grid;
   gap: 4px;
   padding: 10px;
-  border: 1px solid rgba(189, 194, 255, 0.1);
+  border: 1px solid rgba(62, 72, 67, 0.1);
   border-radius: 8px;
   background: rgba(11, 14, 20, 0.42);
 }
@@ -380,7 +380,7 @@ a.icon-button {
   justify-content: space-between;
   gap: 8px;
   padding: 10px;
-  border: 1px solid rgba(189, 194, 255, 0.1);
+  border: 1px solid rgba(62, 72, 67, 0.1);
   border-radius: 8px;
   background: rgba(11, 14, 20, 0.5);
 }
@@ -400,7 +400,7 @@ a.icon-button {
 .data-table-wrap {
   margin-top: 16px;
   overflow-x: auto;
-  border: 1px solid rgba(189, 194, 255, 0.12);
+  border: 1px solid rgba(62, 72, 67, 0.12);
   border-radius: 8px;
   background: rgba(11, 14, 20, 0.48);
 }
@@ -414,7 +414,7 @@ a.icon-button {
 .data-table th,
 .data-table td {
   padding: 11px 10px;
-  border-bottom: 1px solid rgba(189, 194, 255, 0.1);
+  border-bottom: 1px solid rgba(62, 72, 67, 0.1);
   text-align: left;
   font-size: 12px;
   vertical-align: top;
@@ -441,9 +441,9 @@ a.icon-button {
   align-items: center;
   min-height: 22px;
   padding: 0 8px;
-  border: 1px solid rgba(69, 216, 237, 0.26);
+  border: 1px solid rgba(181, 107, 69, 0.26);
   border-radius: 8px;
-  background: rgba(69, 216, 237, 0.08);
+  background: rgba(181, 107, 69, 0.08);
   color: var(--cyan);
   font-size: 11px;
   font-weight: 800;
@@ -454,7 +454,7 @@ a.icon-button {
   display: grid;
   gap: 14px;
   padding: 14px;
-  border: 1px solid rgba(189, 194, 255, 0.12);
+  border: 1px solid rgba(62, 72, 67, 0.12);
   border-radius: 8px;
   background: rgba(11, 14, 20, 0.48);
 }
@@ -480,14 +480,14 @@ a.icon-button {
   height: 9px;
   overflow: hidden;
   border-radius: 8px;
-  background: rgba(189, 194, 255, 0.11);
+  background: rgba(62, 72, 67, 0.11);
 }
 
 .bar-fill {
   height: 100%;
   border-radius: 8px;
   background: linear-gradient(90deg, var(--primary), var(--cyan));
-  box-shadow: 0 0 18px rgba(69, 216, 237, 0.24);
+  box-shadow: 0 0 18px rgba(181, 107, 69, 0.24);
 }
 
 .sidebar-footer {
@@ -513,7 +513,7 @@ a.icon-button {
   height: 8px;
   border-radius: 999px;
   background: var(--cyan);
-  box-shadow: 0 0 18px rgba(69, 216, 237, 0.95);
+  box-shadow: 0 0 18px rgba(181, 107, 69, 0.95);
 }
 
 .main-layout,
@@ -545,7 +545,7 @@ a.icon-button {
   align-items: center;
   justify-content: space-between;
   padding: 0 22px;
-  border-bottom: 1px solid rgba(189, 194, 255, 0.08);
+  border-bottom: 1px solid rgba(62, 72, 67, 0.08);
 }
 
 .model-pill {
@@ -681,7 +681,7 @@ a.icon-button {
 .clear-selection {
   min-height: 30px;
   padding: 0 10px;
-  border: 1px solid rgba(189, 194, 255, 0.16);
+  border: 1px solid rgba(62, 72, 67, 0.16);
   border-radius: 8px;
   background: rgba(11, 14, 20, 0.42);
   color: var(--soft);
@@ -690,7 +690,7 @@ a.icon-button {
 }
 
 .clear-selection:hover {
-  border-color: rgba(69, 216, 237, 0.32);
+  border-color: rgba(181, 107, 69, 0.32);
   color: var(--text);
 }
 
@@ -718,7 +718,7 @@ a.icon-button {
   align-content: space-between;
   gap: 8px;
   padding: 10px;
-  border: 1px solid rgba(189, 194, 255, 0.1);
+  border: 1px solid rgba(62, 72, 67, 0.1);
   border-radius: 8px;
   background: rgba(11, 14, 20, 0.42);
 }
@@ -742,9 +742,9 @@ a.icon-button {
   display: inline-flex;
   align-items: center;
   padding: 0 12px;
-  border: 1px solid rgba(69, 216, 237, 0.28);
+  border: 1px solid rgba(181, 107, 69, 0.28);
   border-radius: 8px;
-  background: rgba(69, 216, 237, 0.08);
+  background: rgba(181, 107, 69, 0.08);
   color: var(--cyan);
   font-size: 12px;
   font-weight: 800;
@@ -808,7 +808,7 @@ a.icon-button {
   gap: 18px;
   margin-bottom: 18px;
   padding: 14px;
-  border: 1px solid rgba(189, 194, 255, 0.12);
+  border: 1px solid rgba(62, 72, 67, 0.12);
   border-radius: 8px;
   background: rgba(11, 14, 20, 0.42);
 }
@@ -819,7 +819,7 @@ a.icon-button {
   border-radius: 50%;
   display: grid;
   place-items: center;
-  border: 1px solid rgba(189, 194, 255, 0.18);
+  border: 1px solid rgba(62, 72, 67, 0.18);
   box-shadow: inset 0 0 28px rgba(0, 0, 0, 0.24), 0 14px 42px rgba(0, 0, 0, 0.22);
 }
 
@@ -832,7 +832,7 @@ a.icon-button {
   align-content: center;
   gap: 5px;
   background: rgba(16, 19, 26, 0.92);
-  border: 1px solid rgba(189, 194, 255, 0.16);
+  border: 1px solid rgba(62, 72, 67, 0.16);
 }
 
 .pie-center span,
@@ -860,7 +860,7 @@ a.icon-button {
   display: grid;
   gap: 4px;
   padding-bottom: 8px;
-  border-bottom: 1px solid rgba(189, 194, 255, 0.1);
+  border-bottom: 1px solid rgba(62, 72, 67, 0.1);
 }
 
 .pie-highlight strong {
@@ -894,6 +894,12 @@ a.icon-button {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.source-pie-wrap .pie-legend-row span:nth-child(2) {
+  overflow: visible;
+  text-overflow: clip;
+  white-space: normal;
 }
 
 .pie-legend-row strong {
@@ -930,7 +936,7 @@ a.icon-button {
 .interactive-chart-item.is-selected .compact-fill,
 .interactive-chart-item.is-selected .year-bar-fill,
 .interactive-chart-item.is-selected .comparison-fill {
-  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.34), 0 0 22px rgba(69, 216, 237, 0.42);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.34), 0 0 22px rgba(181, 107, 69, 0.42);
 }
 
 .source-row.interactive-chart-item,
@@ -980,14 +986,14 @@ a.icon-button {
   height: 8px;
   overflow: hidden;
   border-radius: 8px;
-  background: rgba(189, 194, 255, 0.1);
+  background: rgba(62, 72, 67, 0.1);
 }
 
 .compact-fill {
   height: 100%;
   min-width: 4px;
   border-radius: 8px;
-  box-shadow: 0 0 16px rgba(69, 216, 237, 0.16);
+  box-shadow: 0 0 16px rgba(181, 107, 69, 0.16);
 }
 
 .vertical-bars {
@@ -1027,14 +1033,14 @@ a.icon-button {
   align-items: flex-end;
   overflow: hidden;
   border-radius: 8px;
-  background: rgba(189, 194, 255, 0.1);
+  background: rgba(62, 72, 67, 0.1);
 }
 
 .year-bar-fill {
   width: 100%;
   min-height: 8px;
   border-radius: 8px 8px 0 0;
-  box-shadow: 0 0 18px rgba(69, 216, 237, 0.18);
+  box-shadow: 0 0 18px rgba(181, 107, 69, 0.18);
 }
 
 .year-bar-item span {
@@ -1045,11 +1051,11 @@ a.icon-button {
 .scatter-plot {
   min-height: 220px;
   position: relative;
-  border: 1px solid rgba(189, 194, 255, 0.12);
+  border: 1px solid rgba(62, 72, 67, 0.12);
   border-radius: 8px;
   background:
-    linear-gradient(rgba(189, 194, 255, 0.06) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(189, 194, 255, 0.06) 1px, transparent 1px),
+    linear-gradient(rgba(62, 72, 67, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(62, 72, 67, 0.06) 1px, transparent 1px),
     rgba(11, 14, 20, 0.42);
   background-size: 100% 25%, 25% 100%, auto;
   overflow: hidden;
@@ -1061,14 +1067,14 @@ a.icon-button {
   border-radius: 50%;
   padding: 0;
   transform: translate(-50%, -50%);
-  box-shadow: 0 0 18px rgba(69, 216, 237, 0.26);
+  box-shadow: 0 0 18px rgba(181, 107, 69, 0.26);
   cursor: pointer;
 }
 
 .scatter-point:hover,
 .scatter-point.is-selected {
   z-index: 3;
-  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.2), 0 0 24px rgba(69, 216, 237, 0.52);
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.2), 0 0 24px rgba(181, 107, 69, 0.52);
 }
 
 .scatter-point span {
@@ -1144,7 +1150,7 @@ a.icon-button {
   height: 8px;
   overflow: hidden;
   border-radius: 8px;
-  background: rgba(189, 194, 255, 0.1);
+  background: rgba(62, 72, 67, 0.1);
 }
 
 .comparison-fill {
@@ -1207,7 +1213,7 @@ a.icon-button {
 .variable-chip {
   min-height: 72px;
   padding: 10px;
-  border: 1px solid rgba(189, 194, 255, 0.12);
+  border: 1px solid rgba(62, 72, 67, 0.12);
   border-radius: 8px;
   background: rgba(11, 14, 20, 0.42);
   color: var(--text);
@@ -1223,8 +1229,8 @@ a.icon-button {
 }
 
 .variable-chip:hover {
-  border-color: rgba(69, 216, 237, 0.32);
-  background: rgba(69, 216, 237, 0.08);
+  border-color: rgba(181, 107, 69, 0.32);
+  background: rgba(181, 107, 69, 0.08);
 }
 
 .welcome-state,
@@ -1396,7 +1402,7 @@ h1 {
   grid-template-columns: 1fr auto;
   gap: 12px;
   padding: 8px 0;
-  border-bottom: 1px solid rgba(189, 194, 255, 0.1);
+  border-bottom: 1px solid rgba(62, 72, 67, 0.1);
   font-size: 14px;
 }
 
@@ -1410,7 +1416,7 @@ h1 {
 
 .composer-zone {
   padding: 12px 24px 22px;
-  border-top: 1px solid rgba(189, 194, 255, 0.08);
+  border-top: 1px solid rgba(62, 72, 67, 0.08);
   background: linear-gradient(180deg, rgba(16, 19, 26, 0.34), rgba(16, 19, 26, 0.92));
 }
 
@@ -1516,6 +1522,21 @@ textarea::placeholder {
 }
 
 @media (max-width: 640px) {
+  h1 {
+    font-size: 30px;
+    line-height: 1.08;
+    overflow-wrap: anywhere;
+  }
+
+  .dashboard-header h1,
+  .welcome-state h1 {
+    max-width: 100%;
+  }
+
+  .welcome-copy {
+    max-width: 100%;
+  }
+
   body {
     overflow: hidden;
   }
@@ -1581,3 +1602,265 @@ textarea::placeholder {
     grid-template-columns: 40px minmax(0, 1fr) 40px;
   }
 }
+
+/* Public visual refresh: light, neutral and readable for a broader audience. */
+:root {
+  --bg: #f6f3ec;
+  --bg-deep: #ece7dc;
+  --panel: rgba(255, 255, 255, 0.94);
+  --panel-strong: #f1eee6;
+  --line: rgba(62, 72, 67, 0.16);
+  --line-strong: rgba(62, 72, 67, 0.28);
+  --text: #202722;
+  --muted: #69736d;
+  --soft: #3f4a44;
+  --primary: #4f7c59;
+  --primary-strong: #315c3c;
+  --cyan: #b56b45;
+  --cyan-strong: #9e5635;
+  --ink-on-cyan: #fffaf3;
+  --shadow: 0 18px 48px rgba(42, 37, 30, 0.12);
+}
+
+body {
+  color: var(--text);
+  background:
+    linear-gradient(120deg, rgba(246, 243, 236, 0.94), rgba(236, 231, 220, 0.9)),
+    url("https://images.unsplash.com/photo-1518005020951-eccb494ad742?auto=format&fit=crop&w=2200&q=80") center/cover fixed;
+}
+
+.app-shell {
+  background:
+    linear-gradient(135deg, rgba(246, 243, 236, 0.94), rgba(255, 251, 243, 0.84)),
+    radial-gradient(circle at 78% 18%, rgba(181, 107, 69, 0.08), transparent 30%),
+    radial-gradient(circle at 52% 82%, rgba(79, 124, 89, 0.08), transparent 34%);
+}
+
+.sidebar {
+  background: rgba(255, 251, 243, 0.92);
+  border-right-color: rgba(62, 72, 67, 0.14);
+  box-shadow: 16px 0 36px rgba(42, 37, 30, 0.06);
+}
+
+.main-layout,
+.chat-layout {
+  background: rgba(255, 255, 255, 0.58);
+}
+
+.topbar {
+  background: rgba(255, 251, 243, 0.72);
+  border-bottom-color: rgba(62, 72, 67, 0.1);
+  backdrop-filter: blur(18px);
+}
+
+.brand-mark,
+.avatar,
+.new-chat,
+.screen-tab,
+.data-tab,
+.model-pill,
+.icon-button,
+.composer-tool,
+.clear-selection {
+  background: rgba(255, 255, 255, 0.72);
+  border-color: rgba(62, 72, 67, 0.14);
+  color: var(--soft);
+}
+
+.brand-mark img {
+  filter: saturate(0.95) contrast(1.04);
+}
+
+.new-chat:hover,
+.screen-tab:hover,
+.data-tab:hover,
+.model-pill:hover,
+.icon-button:hover,
+.composer-tool:hover,
+.prompt-card:hover,
+.clear-selection:hover {
+  background: #fffaf3;
+  border-color: rgba(181, 107, 69, 0.34);
+  color: var(--text);
+}
+
+.screen-tab.is-active,
+.data-tab.is-active {
+  background: rgba(79, 124, 89, 0.12);
+  border-color: rgba(79, 124, 89, 0.28);
+  color: var(--primary-strong);
+}
+
+.primary-action,
+.send-button {
+  background: var(--primary);
+  color: #fffaf3;
+  border-color: transparent;
+}
+
+.primary-action:hover,
+.send-button:hover {
+  background: var(--primary-strong);
+}
+
+.update-card,
+.trace-card,
+.insight-card,
+.kpi-card,
+.dashboard-panel,
+.answer-panel,
+.prompt-card,
+.composer {
+  background: var(--panel);
+  border-color: rgba(62, 72, 67, 0.14);
+  box-shadow: var(--shadow);
+}
+
+.trace-row,
+.mini-table div,
+.summary-metrics div,
+.data-table-wrap,
+.chart-card,
+.selection-summary div,
+.source-pie-wrap,
+.pie-center,
+.variable-chip,
+.scatter-plot {
+  background: rgba(255, 251, 243, 0.72);
+  border-color: rgba(62, 72, 67, 0.12);
+}
+
+.pie-chart {
+  border-color: rgba(62, 72, 67, 0.18);
+  box-shadow: inset 0 0 24px rgba(42, 37, 30, 0.08), 0 14px 30px rgba(42, 37, 30, 0.08);
+}
+
+.bar-track,
+.compact-track,
+.year-bar-track,
+.comparison-track {
+  background: rgba(62, 72, 67, 0.11);
+}
+
+.bar-fill {
+  background: linear-gradient(90deg, var(--primary), var(--cyan));
+  box-shadow: 0 0 16px rgba(181, 107, 69, 0.16);
+}
+
+.comparison-fill.volume,
+.legend-line.volume {
+  background: var(--primary);
+}
+
+.comparison-fill.coverage,
+.legend-line.coverage {
+  background: var(--cyan);
+}
+
+.scatter-plot {
+  background:
+    linear-gradient(rgba(62, 72, 67, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(62, 72, 67, 0.08) 1px, transparent 1px),
+    rgba(255, 251, 243, 0.72);
+  background-size: 100% 25%, 25% 100%, auto;
+}
+
+.scatter-point {
+  border-color: rgba(255, 255, 255, 0.82);
+  box-shadow: 0 8px 18px rgba(42, 37, 30, 0.16);
+}
+
+.status-pill,
+.selection-action {
+  background: rgba(181, 107, 69, 0.1);
+  border-color: rgba(181, 107, 69, 0.26);
+  color: var(--cyan-strong);
+}
+
+.source-status,
+.eyebrow,
+.update-card__title,
+.trace-card__title,
+.insight-label,
+.data-table th,
+.metric-row strong,
+.prompt-card span,
+.task-step .material-symbols-outlined {
+  color: var(--cyan-strong);
+}
+
+.pulse-dot {
+  background: var(--primary);
+  box-shadow: 0 0 14px rgba(79, 124, 89, 0.56);
+}
+
+.avatar.user {
+  background: linear-gradient(135deg, var(--primary), var(--cyan));
+  color: #fffaf3;
+}
+
+.composer-zone {
+  background: linear-gradient(180deg, rgba(246, 243, 236, 0.08), rgba(246, 243, 236, 0.94));
+  border-top-color: rgba(62, 72, 67, 0.1);
+}
+
+textarea {
+  color: var(--text);
+}
+
+textarea::placeholder {
+  color: #7a837d;
+}
+
+.data-table td,
+.message-content,
+.kpi-card strong,
+.summary-metrics strong,
+.mini-table strong,
+.panel-heading h2,
+.pie-center strong,
+.pie-highlight strong,
+.pie-legend-row strong,
+.compact-meta strong,
+.comparison-row strong,
+.selection-summary strong,
+.variable-chip strong,
+.trace-row strong {
+  color: var(--text);
+}
+
+@media (max-width: 640px) {
+  .conversation-stage,
+  .dashboard-screen {
+    overflow-x: hidden;
+  }
+
+  h1 {
+    max-width: 100%;
+    font-size: 28px;
+    line-height: 1.1;
+    overflow-wrap: anywhere;
+  }
+
+  .welcome-copy,
+  .prompt-card {
+    max-width: 100%;
+  }
+
+  .welcome-state,
+  .messages,
+  .composer,
+  .composer-note {
+    width: min(280px, calc(100vw - 80px));
+  }
+
+  .prompt-grid {
+    width: 100%;
+  }
+
+  .prompt-card {
+    width: 100%;
+    white-space: normal;
+  }
+}
+

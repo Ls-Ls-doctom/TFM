@@ -84,7 +84,7 @@ def main() -> None:
             df[column] = ""
     df = df[expected]
     df["value"] = pd.to_numeric(df["value"], errors="coerce")
-    df = df.dropna(subset=["value"])
+    df = drop_incomplete_indicators(df)
 
     with sqlite3.connect(DB_PATH) as conn:
         conn.executescript(SCHEMA)
@@ -247,7 +247,7 @@ def derive_bcn_licencias(conn: sqlite3.Connection) -> pd.DataFrame:
             'Licencias comerciales' AS variable,
             'Locales de actividad economica por distrito' AS metric,
             COALESCE(nom_districte, 'Barcelona') AS geo,
-            COALESCE(SUBSTR(data_revisio, 1, 7), '') AS period,
+            COALESCE(SUBSTR(data_revisio, 1, 7), SUBSTR(data, 1, 7), SUBSTR(extraido_en, 1, 10), '') AS period,
             COUNT(*) AS value,
             'locales' AS unit,
             'media' AS quality,
@@ -255,7 +255,7 @@ def derive_bcn_licencias(conn: sqlite3.Connection) -> pd.DataFrame:
             'pag_web\\Procesos\\Datasets\\limpios\\bcn_licencias_limpio.csv' AS raw_file,
             MAX(extraido_en) AS extracted_at
         FROM detalle_bcn_licencias
-        GROUP BY nom_districte, SUBSTR(data_revisio, 1, 7)
+        GROUP BY nom_districte, COALESCE(SUBSTR(data_revisio, 1, 7), SUBSTR(data, 1, 7), SUBSTR(extraido_en, 1, 10), '')
         """,
         conn,
     )
@@ -267,7 +267,7 @@ def derive_bcn_licencias(conn: sqlite3.Connection) -> pd.DataFrame:
             'Densidad empresarial' AS variable,
             'Locales por sector de actividad y distrito' AS metric,
             COALESCE(nom_districte, 'Barcelona') || ' | ' || COALESCE(nom_sector_activitat, 'Sector no informado') AS geo,
-            COALESCE(SUBSTR(data_revisio, 1, 7), '') AS period,
+            COALESCE(SUBSTR(data_revisio, 1, 7), SUBSTR(data, 1, 7), SUBSTR(extraido_en, 1, 10), '') AS period,
             COUNT(*) AS value,
             'locales' AS unit,
             'media' AS quality,
@@ -275,7 +275,7 @@ def derive_bcn_licencias(conn: sqlite3.Connection) -> pd.DataFrame:
             'pag_web\\Procesos\\Datasets\\limpios\\bcn_licencias_limpio.csv' AS raw_file,
             MAX(extraido_en) AS extracted_at
         FROM detalle_bcn_licencias
-        GROUP BY nom_districte, nom_sector_activitat, SUBSTR(data_revisio, 1, 7)
+        GROUP BY nom_districte, nom_sector_activitat, COALESCE(SUBSTR(data_revisio, 1, 7), SUBSTR(data, 1, 7), SUBSTR(extraido_en, 1, 10), '')
         """,
         conn,
     )
@@ -695,7 +695,15 @@ def normalize_indicator_frame(df: pd.DataFrame) -> pd.DataFrame:
             df[column] = ""
     df = df[expected]
     df["value"] = pd.to_numeric(df["value"], errors="coerce")
-    return df.dropna(subset=["value"])
+    return drop_incomplete_indicators(df)
+
+
+def drop_incomplete_indicators(df: pd.DataFrame) -> pd.DataFrame:
+    required = ["source", "dataset", "variable", "metric", "geo", "period", "value"]
+    df = df.copy()
+    for column in required:
+        df[column] = df[column].replace(r"^\s*$", pd.NA, regex=True)
+    return df.dropna(subset=required)
 
 
 def table_exists(conn: sqlite3.Connection, table_name: str) -> bool:

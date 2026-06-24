@@ -1,7 +1,9 @@
 from __future__ import annotations
 
+import json
 import sqlite3
 import unicodedata
+from functools import lru_cache
 from pathlib import Path
 from typing import Any
 
@@ -9,6 +11,7 @@ from typing import Any
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 DATASETS_DIR = PROJECT_ROOT / "pag_web" / "Procesos" / "Datasets"
 DB_PATH = DATASETS_DIR / "iseu_datos.sqlite"
+SEMANTIC_DICTIONARY_PATH = PROJECT_ROOT / "pag_web" / "Procesos" / "semantic_dictionary.json"
 
 
 TOPIC_TERMS = {
@@ -73,7 +76,65 @@ def question_terms(question: str) -> list[str]:
         if len(word) >= 4
     ]
     terms.extend(words)
+    semantic = semantic_query(question)
+    terms.extend(semantic["terms"])
     return sorted(set(normalize(term) for term in terms))
+
+
+@lru_cache(maxsize=1)
+def load_semantic_dictionary() -> dict[str, Any]:
+    if not SEMANTIC_DICTIONARY_PATH.exists():
+        return {"aliases": [], "cities": {}}
+    with SEMANTIC_DICTIONARY_PATH.open("r", encoding="utf-8") as file:
+        return json.load(file)
+
+
+def semantic_query(question: str) -> dict[str, Any]:
+    dictionary = load_semantic_dictionary()
+    normalized = normalize(question)
+    matched_aliases = []
+    terms: list[str] = []
+    variables: list[str] = []
+    categories: list[str] = []
+    sources: list[str] = []
+    tables: list[str] = []
+    intents: list[str] = []
+
+    for entry in dictionary.get("aliases", []):
+        aliases = [normalize(str(alias)) for alias in entry.get("aliases", [])]
+        if not any(alias and alias in normalized for alias in aliases):
+            continue
+        matched_aliases.append(entry)
+        intents.append(str(entry.get("intent", "")))
+        variables.extend(str(value) for value in entry.get("variables", []))
+        categories.extend(str(value) for value in entry.get("categories", []))
+        sources.extend(str(value) for value in entry.get("sources", []))
+        tables.extend(str(value) for value in entry.get("tables", []))
+        terms.extend(aliases)
+        terms.extend(str(value) for value in entry.get("variables", []))
+        terms.extend(str(value) for value in entry.get("categories", []))
+        terms.extend(str(value) for value in entry.get("sources", []))
+
+    cities = []
+    for city, aliases in dictionary.get("cities", {}).items():
+        normalized_aliases = [normalize(str(alias)) for alias in aliases]
+        if any(alias and alias in normalized for alias in normalized_aliases):
+            cities.append(city)
+            terms.append(city)
+
+    return {
+        "matched": bool(matched_aliases),
+        "intents": sorted(set(filter(None, intents))),
+        "terms": sorted(set(normalize(term) for term in terms if term)),
+        "variables": sorted(set(variables)),
+        "categories": sorted(set(categories)),
+        "sources": sorted(set(sources)),
+        "tables": sorted(set(tables)),
+        "cities": sorted(set(cities)),
+        "detail_geo": any(normalize(str(term)) in normalized for term in dictionary.get("geo_detail_terms", [])),
+        "comparison": any(normalize(str(term)) in normalized for term in dictionary.get("comparison_terms", [])),
+        "time": any(normalize(str(term)) in normalized for term in dictionary.get("time_terms", [])),
+    }
 
 
 def connect() -> sqlite3.Connection:
@@ -132,6 +193,7 @@ def fetch_catalog_summary() -> dict[str, Any]:
         "sources": [dict(row) for row in sources],
         "variables": [dict(row) for row in variables],
         "tables": [dict(row) for row in tables],
+        "semantic_dictionary": compact_semantic_dictionary(),
     }
 
 
@@ -175,15 +237,16 @@ def fetch_relevant_indicators(question: str, limit: int = 18) -> dict[str, Any]:
         }
 
     normalized_question = normalize(question)
+    semantic = semantic_query(question)
     terms = question_terms(question)
-    requested_cities = [
+    requested_cities = semantic["cities"] or [
         city
         for city in ("barcelona", "madrid", "valencia", "sevilla", "bilbao", "malaga", "zaragoza")
         if city in normalized_question
     ]
-    detail_geo_intent = any(term in normalized_question for term in ("barrio", "barrios", "distrito", "distritos", "seccion", "secciones"))
-    work_intent = any(term in normalized_question for term in ("trabajo", "empleo", "paro", "desempleo", "laboral"))
-    cost_intent = any(term in normalized_question for term in ("coste", "vida", "vivienda", "alquiler", "precio", "mudanza", "mudarme"))
+    detail_geo_intent = semantic["detail_geo"] or any(term in normalized_question for term in ("barrio", "barrios", "distrito", "distritos", "seccion", "secciones"))
+    work_intent = any(intent.startswith("employment") for intent in semantic["intents"]) or any(term in normalized_question for term in ("trabajo", "empleo", "paro", "desempleo", "laboral"))
+    cost_intent = "income" in semantic["intents"] or any(term in normalized_question for term in ("coste", "vida", "vivienda", "alquiler", "precio", "mudanza", "mudarme"))
     with connect() as conn:
         rows = conn.execute(
             """
@@ -206,7 +269,29 @@ def fetch_relevant_indicators(question: str, limit: int = 18) -> dict[str, Any]:
             " ".join(str(item.get(key) or "") for key in ("source", "dataset", "variable", "metric", "notes"))
         )
         geo_text = normalize(str(item.get("geo") or ""))
+        variable_name = normalize(str(item.get("variable") or ""))
+        dataset_name = normalize(str(item.get("dataset") or ""))
+        source_name = normalize(str(item.get("source") or ""))
         score = sum(4 for term in terms if term and term in haystack)
+
+        for variable in semantic["variables"]:
+            normalized_variable = normalize(variable)
+            if normalized_variable and normalized_variable == variable_name:
+                score += 18
+            elif normalized_variable and normalized_variable in variable_text:
+                score += 10
+
+        for category in semantic["categories"]:
+            normalized_category = normalize(category)
+            if normalized_category and normalized_category in dataset_name:
+                score += 7
+            if normalized_category and normalized_category in variable_text:
+                score += 4
+
+        for source in semantic["sources"]:
+            normalized_source = normalize(source)
+            if normalized_source and normalized_source == source_name:
+                score += 6
 
         for city in requested_cities:
             exact_city = geo_text == city or geo_text.startswith(f"{city},")
@@ -230,7 +315,7 @@ def fetch_relevant_indicators(question: str, limit: int = 18) -> dict[str, Any]:
         if cost_intent and any(term in variable_text for term in ("precio vivienda", "precio alquiler", "ipc", "precio electricidad")):
             score += 5
 
-        if "barcelona" in haystack:
+        if not requested_cities and "barcelona" in haystack:
             score += 1
         if item.get("quality") == "alta":
             score += 1
@@ -261,8 +346,18 @@ def fetch_relevant_indicators(question: str, limit: int = 18) -> dict[str, Any]:
             ),
             reverse=True,
         )
-        deduped = []
+        deduped = balanced_dedup(scored, requested_cities, limit) if requested_cities else []
         seen = set()
+        for item in deduped:
+            key = (
+                item.get("source"),
+                item.get("variable"),
+                item.get("geo"),
+                item.get("period"),
+                item.get("value"),
+                item.get("unit"),
+            )
+            seen.add(key)
         for item in scored:
             key = (
                 item.get("source"),
@@ -280,12 +375,53 @@ def fetch_relevant_indicators(question: str, limit: int = 18) -> dict[str, Any]:
                 break
         scored = deduped
 
+    if "available_data" in semantic["intents"] and not semantic["variables"]:
+        scored = []
+
     return {
         "database": relative(DB_PATH),
         "ready": True,
         "terms": terms[:20],
+        "semantic": semantic,
         "rows": scored[:limit],
         "summary": fetch_catalog_summary(),
+    }
+
+
+def balanced_dedup(scored: list[dict[str, Any]], requested_cities: list[str], limit: int) -> list[dict[str, Any]]:
+    selected: list[dict[str, Any]] = []
+    seen = set()
+    for city in requested_cities:
+        for item in scored:
+            geo_text = normalize(str(item.get("geo") or ""))
+            if city not in geo_text:
+                continue
+            key = (
+                item.get("source"),
+                item.get("variable"),
+                item.get("geo"),
+                item.get("period"),
+                item.get("value"),
+                item.get("unit"),
+            )
+            if key in seen:
+                continue
+            seen.add(key)
+            selected.append(item)
+            break
+        if len(selected) >= limit:
+            return selected
+    return selected
+
+
+def compact_semantic_dictionary() -> dict[str, Any]:
+    dictionary = load_semantic_dictionary()
+    aliases = dictionary.get("aliases", [])
+    return {
+        "version": dictionary.get("version"),
+        "alias_count": len(aliases),
+        "cities": sorted((dictionary.get("cities") or {}).keys()),
+        "intents": [entry.get("intent") for entry in aliases],
     }
 
 

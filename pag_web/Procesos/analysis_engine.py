@@ -52,8 +52,8 @@ def analyze_question(question: str) -> dict[str, Any] | None:
         analyses.append(analyze_ine_series("tasa_empleo_cataluna", "empleo"))
 
     if has_any(normalized, ["ipc", "inflacion", "inflación", "coste", "vida", "precio"]):
-        analyses.append(analyze_ine_series("ipc_general_barcelona", "coste de vida"))
-        analyses.append(analyze_ine_series("ipc_alimentos_barcelona", "coste de vida"))
+        analyses.append(analyze_ine_series("ipc_general_espana", "coste de vida"))
+        analyses.append(analyze_ine_series("ipc_alimentos_espana", "coste de vida"))
 
     if has_any(normalized, ["energia", "energía", "electricidad", "luz", "demanda", "consumo"]):
         analyses.append(analyze_ree_prices())
