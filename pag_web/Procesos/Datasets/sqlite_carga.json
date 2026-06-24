@@ -1,180 +1,123 @@
 {
-  "loaded_at": "2026-06-08T16:45:41",
-  "database": "pag_web\\Procesos\\Datasets\\iseu_datos.sqlite",
-  "source_file": "pag_web\\Procesos\\Datasets\\limpios\\indicadores_limpios.csv",
-  "rows_loaded": 390557,
-  "derived_indicator_rows_loaded": 128206,
-  "rows_by_source": [
+  "loaded_at": "2026-06-24T14:49:06",
+  "database": "data_lake\\gold\\iseu_indicadores.sqlite",
+  "web_database": "D:\\Proyectos\\TFM\\pag_web\\Procesos\\Datasets\\iseu_datos.sqlite",
+  "source_file": "data_lake\\gold\\indicators.csv",
+  "rows_loaded": 3975,
+  "indicadores_rows_loaded": 93561,
+  "semantic_observations_rows_loaded": 105391,
+  "catalog_rows": 9,
+  "silver_detail_tables": [
     {
-      "source": "Open Data BCN",
-      "rows": 217359
-    },
-    {
-      "source": "SEPE",
-      "rows": 172387
-    },
-    {
-      "source": "REE",
-      "rows": 77352
-    },
-    {
-      "source": "MITMA/MIVAU",
-      "rows": 49397
-    },
-    {
-      "source": "INE",
-      "rows": 1622
-    },
-    {
-      "source": "Idescat",
-      "rows": 646
-    }
-  ],
-  "detail_tables": [
-    {
-      "table_name": "detalle_bcn_aire",
-      "source_file": "pag_web\\Procesos\\Datasets\\limpios\\bcn_aire_limpio.csv",
-      "rows_loaded": 315861,
-      "columns_loaded": 10
-    },
-    {
-      "table_name": "detalle_bcn_alquiler",
-      "source_file": "pag_web\\Procesos\\Datasets\\limpios\\bcn_alquiler_limpio.csv",
-      "rows_loaded": 1068,
-      "columns_loaded": 8
-    },
-    {
-      "table_name": "detalle_bcn_compraventa_numero",
-      "source_file": "pag_web\\Procesos\\Datasets\\limpios\\bcn_compraventa_numero_limpio.csv",
-      "rows_loaded": 36771,
-      "columns_loaded": 15
-    },
-    {
-      "table_name": "detalle_bcn_compraventa_superficie",
-      "source_file": "pag_web\\Procesos\\Datasets\\limpios\\bcn_compraventa_superficie_limpio.csv",
-      "rows_loaded": 36535,
-      "columns_loaded": 15
-    },
-    {
-      "table_name": "detalle_bcn_equipamientos",
-      "source_file": "pag_web\\Procesos\\Datasets\\limpios\\bcn_equipamientos_limpio.csv",
-      "rows_loaded": 4715,
-      "columns_loaded": 73
-    },
-    {
-      "table_name": "detalle_bcn_iae",
-      "source_file": "pag_web\\Procesos\\Datasets\\limpios\\bcn_iae_limpio.csv",
-      "rows_loaded": 2075,
-      "columns_loaded": 13
-    },
-    {
-      "table_name": "detalle_bcn_licencias",
-      "source_file": "pag_web\\Procesos\\Datasets\\limpios\\bcn_licencias_limpio.csv",
-      "rows_loaded": 326804,
-      "columns_loaded": 103
-    },
-    {
-      "table_name": "detalle_bcn_locales_precio",
-      "source_file": "pag_web\\Procesos\\Datasets\\limpios\\bcn_locales_precio_limpio.csv",
-      "rows_loaded": 73,
-      "columns_loaded": 12
-    },
-    {
-      "table_name": "detalle_bcn_movilidad",
-      "source_file": "pag_web\\Procesos\\Datasets\\limpios\\bcn_movilidad_limpio.csv",
-      "rows_loaded": 47270,
-      "columns_loaded": 11
-    },
-    {
-      "table_name": "detalle_bcn_poblacion",
-      "source_file": "pag_web\\Procesos\\Datasets\\limpios\\bcn_poblacion_limpio.csv",
-      "rows_loaded": 128116,
-      "columns_loaded": 15
-    },
-    {
-      "table_name": "detalle_bcn_renta",
-      "source_file": "pag_web\\Procesos\\Datasets\\limpios\\bcn_renta_limpio.csv",
-      "rows_loaded": 8544,
-      "columns_loaded": 13
-    },
-    {
-      "table_name": "detalle_bcn_ruido_poblacion",
-      "source_file": "pag_web\\Procesos\\Datasets\\limpios\\bcn_ruido_poblacion_limpio.csv",
-      "rows_loaded": 44856,
-      "columns_loaded": 48
-    },
-    {
-      "table_name": "detalle_bcn_seguridad",
-      "source_file": "pag_web\\Procesos\\Datasets\\limpios\\bcn_seguridad_limpio.csv",
-      "rows_loaded": 94199,
-      "columns_loaded": 32
-    },
-    {
-      "table_name": "detalle_bcn_terrazas",
-      "source_file": "pag_web\\Procesos\\Datasets\\limpios\\bcn_terrazas_limpio.csv",
-      "rows_loaded": 87215,
-      "columns_loaded": 26
-    },
-    {
-      "table_name": "detalle_bcn_transporte",
-      "source_file": "pag_web\\Procesos\\Datasets\\limpios\\bcn_transporte_limpio.csv",
-      "rows_loaded": 27,
-      "columns_loaded": 17
-    },
-    {
-      "table_name": "detalle_bcn_turismo",
-      "source_file": "pag_web\\Procesos\\Datasets\\limpios\\bcn_turismo_limpio.csv",
-      "rows_loaded": 892,
-      "columns_loaded": 73
-    },
-    {
-      "table_name": "detalle_bcn_zonas_verdes",
-      "source_file": "pag_web\\Procesos\\Datasets\\limpios\\bcn_zonas_verdes_limpio.csv",
-      "rows_loaded": 66738,
-      "columns_loaded": 26
-    },
-    {
-      "table_name": "detalle_idescat",
-      "source_file": "pag_web\\Procesos\\Datasets\\limpios\\idescat_limpio.csv",
-      "rows_loaded": 230,
-      "columns_loaded": 13
-    },
-    {
-      "table_name": "detalle_ine",
-      "source_file": "pag_web\\Procesos\\Datasets\\limpios\\ine_limpio.csv",
-      "rows_loaded": 1622,
-      "columns_loaded": 9
-    },
-    {
-      "table_name": "detalle_mitma_precio_m2_vivienda",
-      "source_file": "pag_web\\Procesos\\Datasets\\limpios\\mitma_precio_m2_vivienda_limpio.csv",
-      "rows_loaded": 24672,
-      "columns_loaded": 10
-    },
-    {
-      "table_name": "detalle_ree_demanda",
-      "source_file": "pag_web\\Procesos\\Datasets\\limpios\\ree_demanda_limpio.csv",
-      "rows_loaded": 29,
-      "columns_loaded": 5
-    },
-    {
-      "table_name": "detalle_ree_precios",
-      "source_file": "pag_web\\Procesos\\Datasets\\limpios\\ree_precios_limpio.csv",
-      "rows_loaded": 77323,
+      "table_name": "silver_ine_poblacion_municipal",
+      "source_file": "data_lake\\silver\\ine\\poblacion_municipal.csv",
+      "rows_loaded": 35,
       "columns_loaded": 6
     },
     {
-      "table_name": "detalle_sepe_contratos",
-      "source_file": "pag_web\\Procesos\\Datasets\\limpios\\sepe_contratos_limpio.csv",
-      "rows_loaded": 97538,
-      "columns_loaded": 23
+      "table_name": "silver_ine_poblacion_pais_nacimiento_total",
+      "source_file": "data_lake\\silver\\ine\\poblacion_pais_nacimiento_total.csv",
+      "rows_loaded": 0,
+      "columns_loaded": 6
     },
     {
-      "table_name": "detalle_sepe_paro",
-      "source_file": "pag_web\\Procesos\\Datasets\\limpios\\sepe_paro_limpio.csv",
-      "rows_loaded": 98156,
-      "columns_loaded": 24
+      "table_name": "silver_mitma_relaciones_distrito_mitma",
+      "source_file": "data_lake\\silver\\mitma\\relaciones_distrito_mitma.csv",
+      "rows_loaded": 10494,
+      "columns_loaded": 1
+    },
+    {
+      "table_name": "silver_municipios_municipal_prioritario",
+      "source_file": "data_lake\\silver\\municipios\\municipal_prioritario.csv",
+      "rows_loaded": 167725,
+      "columns_loaded": 244
+    },
+    {
+      "table_name": "silver_sepe_contratos_registrados",
+      "source_file": "data_lake\\silver\\sepe\\contratos_registrados.csv",
+      "rows_loaded": 1242,
+      "columns_loaded": 8
+    },
+    {
+      "table_name": "silver_sepe_demandantes_empleo",
+      "source_file": "data_lake\\silver\\sepe\\demandantes_empleo.csv",
+      "rows_loaded": 1372,
+      "columns_loaded": 8
+    },
+    {
+      "table_name": "silver_sepe_paro_registrado",
+      "source_file": "data_lake\\silver\\sepe\\paro_registrado.csv",
+      "rows_loaded": 1281,
+      "columns_loaded": 8
     }
   ],
-  "detail_rows_loaded": 1501329
+  "silver_detail_rows_loaded": 182149,
+  "rows_by_city": [
+    {
+      "city": "Valencia",
+      "rows": 586
+    },
+    {
+      "city": "Barcelona",
+      "rows": 579
+    },
+    {
+      "city": "Zaragoza",
+      "rows": 564
+    },
+    {
+      "city": "Malaga",
+      "rows": 562
+    },
+    {
+      "city": "Sevilla",
+      "rows": 562
+    },
+    {
+      "city": "Bilbao",
+      "rows": 561
+    },
+    {
+      "city": "Madrid",
+      "rows": 561
+    }
+  ],
+  "rows_by_variable": [
+    {
+      "variable": "job_seekers",
+      "rows": 1372
+    },
+    {
+      "variable": "unemployed_registered",
+      "rows": 1281
+    },
+    {
+      "variable": "contracts_registered",
+      "rows": 1242
+    },
+    {
+      "variable": "population_total",
+      "rows": 35
+    },
+    {
+      "variable": "income",
+      "rows": 15
+    },
+    {
+      "variable": "income_median",
+      "rows": 15
+    },
+    {
+      "variable": "income_per_household",
+      "rows": 6
+    },
+    {
+      "variable": "income_per_person",
+      "rows": 6
+    },
+    {
+      "variable": "mobility_resources_records",
+      "rows": 3
+    }
+  ]
 }

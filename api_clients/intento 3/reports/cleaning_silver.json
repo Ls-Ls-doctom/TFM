@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-23T21:35:28",
+  "generated_at": "2026-06-24T14:47:22",
   "silver_dir": "data_lake\\silver",
   "tables_total": 7,
   "rows_by_table": {
@@ -9,7 +9,7 @@
     "sepe/contratos_registrados.csv": 1242,
     "sepe/demandantes_empleo.csv": 1372,
     "mitma/relaciones_distrito_mitma.csv": 10494,
-    "municipios/municipal_prioritario.csv": 161275
+    "municipios/municipal_prioritario.csv": 167725
   },
   "resources": [
     {
@@ -815,6 +815,24 @@
       "status": "OK",
       "rows": 1068,
       "note": "Municipal prioritario Barcelona"
+    },
+    {
+      "file": "data_lake\\bronze\\municipios\\madrid\\resources\\300494-0-estudio-covid-poblacion\\300494-0-estudio-covid-poblacion-csv.csv",
+      "status": "OK",
+      "rows": 1605,
+      "note": "Municipal prioritario Madrid"
+    },
+    {
+      "file": "data_lake\\bronze\\municipios\\madrid\\resources\\300494-0-estudio-covid-poblacion\\300494-2-estudio-covid-poblacion-csv.csv",
+      "status": "OK",
+      "rows": 3774,
+      "note": "Municipal prioritario Madrid"
+    },
+    {
+      "file": "data_lake\\bronze\\municipios\\madrid\\resources\\300557-0-poblacion-distrito-barrio\\300557-0-poblacion-distrito-barrio-csv.csv",
+      "status": "OK",
+      "rows": 1071,
+      "note": "Municipal prioritario Madrid"
     },
     {
       "file": "data_lake\\bronze\\municipios\\valencia\\resources\\income-per-household-and-person\\Income_per_household_and_person.csv",

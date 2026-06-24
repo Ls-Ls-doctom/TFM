@@ -1,35 +1,38 @@
 {
-  "generated_at": "2026-06-23T21:35:08",
+  "generated_at": "2026-06-24T14:46:54",
   "bronze_dir": "data_lake\\bronze",
-  "files_total": 492,
-  "bytes_total": 1075042423,
+  "files_total": 536,
+  "bytes_total": 1135527763,
   "files_by_scope": {
     "apis": 82,
-    "municipios": 410
+    "municipios": 454
   },
   "files_by_source": {
     "aemet": 2,
     "barcelona": 255,
+    "bilbao": 2,
     "catalogos": 10,
     "ine": 9,
+    "madrid": 21,
     "malaga": 1,
     "mitma": 4,
     "sepe": 57,
+    "sevilla": 21,
     "valencia": 81,
     "zaragoza": 73
   },
   "files_by_extension": {
-    ".csv": 319,
-    ".geojson": 24,
-    ".html": 2,
-    ".json": 65,
+    ".csv": 332,
+    ".geojson": 30,
+    ".html": 3,
+    ".json": 82,
     ".pdf": 1,
     ".xls": 18,
-    ".xlsx": 5,
+    ".xlsx": 12,
     ".xml": 15,
     ".zip": 43
   },
-  "csv_rows_detected": 6519513,
+  "csv_rows_detected": 6947862,
   "inventory_csv": "reports\\inventory_bronze.csv",
   "manifests": [
     {

@@ -6,6 +6,7 @@ import re
 import sqlite3
 import subprocess
 import sys
+import unicodedata
 from datetime import datetime
 from pathlib import Path
 from typing import Any
@@ -75,7 +76,7 @@ def write_json(path: Path, payload: Any) -> None:
 
 
 def normalize_column(value: object) -> str:
-    text = str(value).strip().lower()
+    text = strip_accents(str(value).strip().lower())
     replacements = {
         "á": "a",
         "é": "e",
@@ -94,6 +95,11 @@ def normalize_column(value: object) -> str:
         text = text.replace(old, new)
     text = re.sub(r"[^a-z0-9]+", "_", text)
     return text.strip("_") or "column"
+
+
+def strip_accents(value: str) -> str:
+    decomposed = unicodedata.normalize("NFKD", value)
+    return "".join(char for char in decomposed if not unicodedata.combining(char))
 
 
 def clean_columns(df: pd.DataFrame) -> pd.DataFrame:
@@ -188,13 +194,14 @@ def municipality_code(value: object) -> str:
 
 
 def infer_city_from_path(path: Path) -> str:
-    parts = [part.lower() for part in path.parts]
+    parts = [strip_accents(part.lower()) for part in path.parts]
     for key, city in CITY_ALIASES.items():
-        if key in parts:
+        normalized_key = strip_accents(key)
+        if normalized_key in parts:
             return city
-    text = str(path).lower()
+    text = strip_accents(str(path).lower())
     for key, city in CITY_ALIASES.items():
-        if key in text:
+        if strip_accents(key) in text:
             return city
     return ""
 

@@ -1,14 +1,13 @@
 from __future__ import annotations
 
-from _common import print_result, text_catalog
+from _common import ckan_search, print_result
 
 
 def scrape_madrid() -> dict:
-    return text_catalog(
+    return ckan_search(
         city_slug="madrid",
         source_name="Madrid Datos Abiertos",
-        url="https://datos.madrid.es/catalog/dataset.rdf",
-        filename="catalog_raw.rdf",
+        endpoint="https://datos.madrid.es/api/3/action/package_search",
     )
 
 

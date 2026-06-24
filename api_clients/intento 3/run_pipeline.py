@@ -30,7 +30,18 @@ def main() -> int:
                 (
                     "municipios_recursos",
                     BASE_DIR / "APIS" / "municipios" / "download_recursos.py",
-                    ["barcelona", "valencia", "zaragoza", "--since", "2010", "--max-resources", args.municipal_max_resources],
+                    [
+                        "barcelona",
+                        "madrid",
+                        "valencia",
+                        "sevilla",
+                        "bilbao",
+                        "zaragoza",
+                        "--since",
+                        "2010",
+                        "--max-resources",
+                        args.municipal_max_resources,
+                    ],
                 )
             )
 

@@ -440,12 +440,23 @@ def compact_indicator_rows(rows: list[dict]) -> list[dict]:
 def compact_catalog_summary(summary: dict) -> dict:
     sources = summary.get("sources", [])
     variables = summary.get("variables", [])
+    tables = summary.get("tables", [])
     return {
         "database": "Base de datos",
         "ready": summary.get("ready"),
         "source_count": len(sources),
         "variable_count": len(variables),
+        "table_count": len(tables),
         "sources": sources,
+        "tables": [
+            {
+                "table_name": table.get("table_name"),
+                "layer": table.get("layer"),
+                "rows_loaded": table.get("rows_loaded"),
+                "columns_loaded": table.get("columns_loaded"),
+            }
+            for table in tables[:16]
+        ],
     }
 
 

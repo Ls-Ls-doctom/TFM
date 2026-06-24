@@ -557,7 +557,7 @@ En la carpeta \texttt{APIS/municipios} se han creado conectores específicos par
 \texttt{api\_malaga.py} & Datos Abiertos Málaga & Consulta el catálogo CKAN de Málaga mediante los mismos términos urbanos. Guarda los resultados raw en la carpeta Bronze de Málaga. \\
 \texttt{api\_zaragoza.py} & Datos Abiertos Zaragoza & Descarga el catálogo JSON del portal de Zaragoza. Guarda el catálogo raw en la carpeta Bronze de Zaragoza. \\
 \texttt{api\_bilbao.py} & Bilbao Open Data & Descarga el catálogo o página base del portal como HTML cuando no existe una API CKAN homogénea. Guarda el HTML raw y sus metadatos en Bronze. \\
-\texttt{api\_sevilla.py} & IDE Sevilla Open Data & Descarga el catálogo o página base del portal espacial de Sevilla como HTML. Guarda el HTML raw y sus metadatos en Bronze. \\
+\texttt{api\_sevilla.py} & Centro de Datos Urbanos de Sevilla & Descarga el catálogo ArcGIS Hub como JSON desde \texttt{collections/all/items}. Guarda recursos geográficos y metadatos en Bronze para su posterior normalización. \\
 \texttt{run\_}\newline\texttt{municipios.py} & Orquestador municipal & Permite ejecutar una, varias o todas las APIs municipales y genera el reporte \texttt{reports/municipios\_run.json}. \\
 \bottomrule
 \end{longtable}
@@ -572,13 +572,12 @@ Tras ejecutar el orquestador municipal, se generan salidas raw separadas por ciu
 
 \begin{itemize}
 \item \texttt{data\_lake/bronze/municipios/barcelona/catalog\_search\_raw.json}
-\item \texttt{data\_lake/bronze/municipios/madrid/catalog\_raw.rdf}
-\item \texttt{data\_lake/bronze/municipios/madrid/catalog\_metadata.json}
+\item \texttt{data\_lake/bronze/municipios/madrid/catalog\_search\_raw.json}
 \item \texttt{data\_lake/bronze/municipios/valencia/catalog\_search\_raw.json}
 \item \texttt{data\_lake/bronze/municipios/malaga/catalog\_search\_raw.json}
 \item \texttt{data\_lake/bronze/municipios/zaragoza/catalog\_raw.json}
 \item \texttt{data\_lake/bronze/municipios/bilbao/catalog\_raw.html}
-\item \texttt{data\_lake/bronze/municipios/sevilla/catalog\_raw.html}
+\item \texttt{data\_lake/bronze/municipios/sevilla/catalog\_raw.json}
 \item \texttt{reports/municipios\_run.json}
 \end{itemize}
 
@@ -588,7 +587,9 @@ La ejecución municipal se lanza con:
 python "api_clients\intento 3\APIS\municipios\run_municipios.py"
 \end{verbatim}
 
-En la prueba local, Barcelona, Madrid, Valencia, Málaga y Zaragoza finalizaron correctamente. Sevilla y Bilbao quedaron como ejecuciones parciales porque sus portales se capturan como HTML y requieren un parser específico si se desea extraer datasets estructurados de forma automática. Aun así, el HTML raw y sus metadatos quedan conservados en la capa Bronze, manteniendo la trazabilidad de la fuente consultada.
+En la prueba local, Barcelona, Madrid, Valencia, Málaga, Zaragoza y Sevilla finalizaron correctamente a nivel de catálogo. Madrid se integró mediante la API CKAN de \texttt{datos.madrid.es}, lo que permite descubrir recursos estructurados de forma automática. Sevilla se integró mediante el catálogo ArcGIS Hub del Centro de Datos Urbanos, que publica recursos geográficos y servicios \textit{FeatureServer}. Bilbao quedó como ejecución parcial, ya que su portal se captura como HTML y no expone, en esta fase, un catálogo estructurado estable comparable a CKAN o ArcGIS Hub. Aun así, el HTML raw y sus metadatos quedan conservados en la capa Bronze, manteniendo la trazabilidad de la fuente consultada.
+
+Además de recolectar catálogos, se incorporó una descarga controlada de recursos municipales. En una ejecución de prueba con límite de veinte recursos por ciudad, Madrid detectó 4.778 recursos y descargó correctamente 20, Sevilla detectó 80 recursos y descargó correctamente 20, mientras que Bilbao no produjo recursos estructurados descargables desde el HTML capturado. Este resultado no invalida Bilbao como fuente futura, pero sí obliga a documentarla como limitación técnica y a reservar su integración completa para una fase con parser específico o endpoint oficial más estable.
 
 Esta forma de almacenamiento permite auditar de dónde procede cada dato y diferenciar claramente entre datos originales y datos procesados. En una fase posterior, los archivos Bronze servirán como entrada para la capa Silver, donde se seleccionarán datasets útiles, se normalizarán campos y se mapearán variables hacia el modelo de datos multiciudad.
 
@@ -643,7 +644,7 @@ El pipeline se incorporó dentro de la carpeta \texttt{api\_clients/intento 3/}.
 \texttt{pipeline/01\_}\newline\texttt{inventory\_bronze.py} & Recorre la capa Bronze, identifica archivos, formatos, extensiones, tamaño, columnas y filas detectadas. Genera \texttt{reports/inventory\_bronze.json} y \texttt{reports/inventory\_bronze.csv}. \\
 \texttt{pipeline/02\_}\newline\texttt{clean\_silver.py} & Limpia fuentes prioritarias. Normaliza columnas, codificaciones, fechas y números. Filtra INE y SEPE a las ciudades objetivo. Genera tablas Silver por fuente. \\
 \texttt{pipeline/03\_}\newline\texttt{build\_gold.py} & Convierte Silver en indicadores comparables con un esquema común. Agrega los datos municipales para evitar que una ciudad pese más solo por tener más registros brutos. \\
-\texttt{pipeline/04\_}\newline\texttt{build\_sqlite.py} & Carga los indicadores Gold en SQLite y genera tablas auxiliares de catálogo. La salida principal es \texttt{data\_lake/gold/}\newline\texttt{iseu\_indicadores.sqlite}. \\
+\texttt{pipeline/04\_}\newline\texttt{build\_sqlite.py} & Carga la capa Gold en SQLite y añade tablas enriquecidas para consulta conversacional: \texttt{indicadores}, \texttt{semantic\_observations}, tablas \texttt{silver\_*} y \texttt{sql\_table\_catalog}. También copia la base resultante a \texttt{pag\_web/Procesos/Datasets/}\newline\texttt{iseu\_datos.sqlite}, que es la ruta consumida por la web local. \\
 \bottomrule
 \end{longtable}
 
@@ -679,9 +680,38 @@ python "api_clients\intento 3\pipeline\04_build_sqlite.py"
 \end{flushleft}
 \end{figure}
 
+\subsection{Resumen cuantitativo por fase}
+
+La ejecución local del pipeline deja trazabilidad numérica en cada etapa. La capa Bronze mide el volumen recibido o inventariado; Silver mide el volumen limpio y seleccionado; Gold mide los indicadores comparables; y SQLite mide la base preparada para consulta por la página web y el modelo conversacional.
+
+\begin{table}[htbp]
+\caption{Volumen de datos por fase del pipeline local}
+\label{tab:datos-por-fase}
+\centering
+\small
+\begin{tabular}{p{0.22\textwidth} p{0.20\textwidth} r p{0.33\textwidth}}
+\toprule
+\textbf{Fase} & \textbf{Salida principal} & \textbf{Volumen} & \textbf{Uso dentro del sistema} \\
+\midrule
+APIs nacionales & \texttt{bronze/apis} & 68 recursos OK & Ingesta de INE, MITMA, SEPE y catálogos; AEMET queda pendiente de clave. \\
+Catálogos municipales & \texttt{bronze/municipios} & 7 ciudades & Descubrimiento de portales municipales y preservación de catálogos raw. \\
+Recursos municipales & carpetas \texttt{resources} & 20 Madrid, 20 Sevilla & Prueba controlada de descarga para ampliar cobertura municipal. \\
+Bronze inventariado & inventario Bronze & 6.947.862 filas CSV & Evidencia raw, volumen, formatos y trazabilidad de archivos. \\
+Silver limpio & \texttt{data\_lake/silver} & 182.149 filas en SQL & Datos curados y detalle operativo reutilizable. \\
+Gold comparable & \texttt{indicators.csv} & 3.975 indicadores & Indicadores homogéneos por ciudad, variable, fecha y fuente. \\
+SQLite conversacional & \texttt{iseu\_datos.sqlite} & 93.561 filas & Tabla compatible con chatbot y consultas web. \\
+Observaciones semánticas & observaciones SQL & 105.391 filas & Capa intermedia para preguntas con más detalle territorial. \\
+\bottomrule
+\end{tabular}
+\vspace{0.4em}
+\begin{flushleft}
+\small Nota. Los recursos nacionales OK suman INE, MITMA, SEPE y catálogos nacionales. AEMET se registra como \texttt{SKIPPED\_AUTH} por requerir \texttt{AEMET\_API\_KEY}.
+\end{flushleft}
+\end{table}
+
 \subsection{Resultados de recolección e inventario Bronze}
 
-La capa Bronze quedó organizada en dos grandes grupos: fuentes nacionales o generales en \texttt{bronze/apis/} y fuentes municipales en \texttt{bronze/municipios/}. La ejecución local generó un volumen importante de archivos raw y metadatos de control. El inventario detectó 492 archivos en Bronze, con un tamaño aproximado de 1,07 GB y 6.519.513 filas CSV identificadas.
+La capa Bronze quedó organizada en dos grandes grupos: fuentes nacionales o generales en \texttt{bronze/apis/} y fuentes municipales en \texttt{bronze/municipios/}. La ejecución local generó un volumen importante de archivos raw y metadatos de control. Tras incorporar Madrid y Sevilla al flujo municipal, el inventario detectó 536 archivos en Bronze y 6.947.862 filas CSV identificadas.
 
 \begin{table}[htbp]
 \caption{Resumen de la capa Bronze inventariada}
@@ -691,15 +721,14 @@ La capa Bronze quedó organizada en dos grandes grupos: fuentes nacionales o gen
 \toprule
 \textbf{Métrica} & \textbf{Valor} \\
 \midrule
-Archivos totales inventariados & 492 \\
-Tamaño aproximado Bronze & 1,07 GB \\
-Filas CSV detectadas & 6.519.513 \\
+Archivos totales inventariados & 536 \\
+Filas CSV detectadas & 6.947.862 \\
 Archivos en \texttt{bronze/apis} & 82 \\
-Archivos en \texttt{bronze/municipios} & 410 \\
-Archivos CSV & 319 \\
-Archivos JSON & 65 \\
-Archivos ZIP & 43 \\
-Archivos GeoJSON & 24 \\
+Archivos municipales y catálogos & 454 \\
+Ciudades municipales con catálogo & 7 \\
+Recursos Madrid descargados en prueba & 20 \\
+Recursos Sevilla descargados en prueba & 20 \\
+Recursos Bilbao estructurados detectados & 0 \\
 \bottomrule
 \end{tabular}
 \vspace{0.4em}
@@ -710,7 +739,7 @@ Archivos GeoJSON & 24 \\
 
 Por fuente, Barcelona fue la ciudad con mayor cantidad de recursos descargados, seguida de Valencia y Zaragoza. Esta diferencia no se interpreta como mayor importancia analítica, sino como mayor disponibilidad de datos abiertos estructurados. Para evitar sesgos, el pipeline mantiene ese detalle en Bronze y Silver, pero agrega la información en Gold cuando se generan indicadores comparables.
 
-Este punto es relevante para la defensa del proyecto como sistema Big Data. El volumen no se mide únicamente por el número de filas finales en SQL, sino por el conjunto del ciclo de vida del dato: recolección masiva, almacenamiento raw, inventario automático, limpieza, normalización, reducción analítica y carga estructurada. En la ejecución actual se detectaron más de 6,5 millones de filas CSV en Bronze. Ese volumen queda disponible para auditoría y reproceso, aunque la capa Gold final contenga un número menor de indicadores.
+Este punto es relevante para la defensa del proyecto como sistema Big Data. El volumen no se mide únicamente por el número de filas finales en SQL, sino por el conjunto del ciclo de vida del dato: recolección masiva, almacenamiento raw, inventario automático, limpieza, normalización, reducción analítica y carga estructurada. En la ejecución actual se detectaron casi 6,95 millones de filas CSV en Bronze. Ese volumen queda disponible para auditoría y reproceso, aunque la capa Gold final contenga un número menor de indicadores.
 
 La estrategia evita confundir cantidad con calidad analítica. Por ejemplo, Barcelona aporta más de un millón de filas raw debido a la riqueza de su portal Open Data, mientras que otras ciudades ofrecen menos recursos estructurados. Si se cargaran todas esas filas como indicadores finales, cualquier análisis tendería a reflejar la abundancia documental de Barcelona más que una comparación urbana equilibrada. Por ello, el pipeline conserva el detalle en capas previas, pero calcula indicadores comparables para la capa de consulta.
 
@@ -726,10 +755,13 @@ Barcelona Open Data & 255 \\
 Valencia Open Data & 81 \\
 Zaragoza Open Data & 73 \\
 SEPE & 57 \\
+Madrid Datos Abiertos & 21 \\
+Sevilla Open Data / ArcGIS Hub & 21 \\
 Catálogos datos.gob.es & 10 \\
 INE & 9 \\
 MITMA & 4 \\
 AEMET & 2 \\
+Bilbao Open Data & 2 \\
 Málaga Open Data & 1 \\
 \bottomrule
 \end{tabular}
@@ -755,16 +787,18 @@ El resultado de Silver queda almacenado en \texttt{data\_lake/silver/}. Esta cap
 \texttt{sepe/contratos\_registrados.csv} & 1.242 \\
 \texttt{sepe/demandantes\_empleo.csv} & 1.372 \\
 \texttt{mitma/relaciones\_distrito\_mitma.csv} & 10.494 \\
-\texttt{municipios/municipal\_prioritario.csv} & 161.275 \\
+\texttt{municipios/municipal\_prioritario.csv} & 167.725 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-La existencia de una tabla Silver municipal con 161.275 filas muestra que el sistema conserva detalle operativo. Sin embargo, ese volumen no se traslada directamente a Gold, ya que hacerlo produciría un sesgo hacia las ciudades con más datos abiertos disponibles, especialmente Barcelona. Por ello, la capa Gold aplica agregaciones por ciudad, fecha y variable.
+La existencia de una tabla Silver municipal con 167.725 filas muestra que el sistema conserva detalle operativo. El incremento respecto a la ejecución anterior se debe principalmente a la incorporación de recursos de Madrid, que aportan 6.450 filas de demografía municipal. Sevilla queda inventariada en Bronze, pero sus recursos ArcGIS requieren reglas específicas de lectura y normalización antes de incorporarse plenamente a Silver. Sin embargo, ese volumen no se traslada directamente a Gold, ya que hacerlo produciría un sesgo hacia las ciudades con más datos abiertos disponibles, especialmente Barcelona. Por ello, la capa Gold aplica agregaciones por ciudad, fecha y variable.
 
 Silver cumple una función intermedia crítica. No es todavía la capa que consulta directamente el chat, pero tampoco es dato bruto. En esta zona se resuelven problemas técnicos como codificaciones distintas, separadores CSV diferentes, nombres de columnas heterogéneos, fechas en distintos formatos, valores numéricos escritos como texto y duplicados. También se filtran las ciudades objetivo para las fuentes nacionales, de modo que los datos de SEPE o INE puedan compararse con las fuentes municipales.
 
 En la implementación actual, SEPE se filtra a las ciudades piloto para variables de empleo, INE se utiliza para población municipal, MITMA aporta relación territorial y los portales municipales aportan recursos prioritarios. Esta selección inicial permite obtener un pipeline funcional y defendible sin pretender resolver todos los datasets posibles en una sola iteración. El diseño, sin embargo, deja abierta la incorporación progresiva de nuevas reglas de limpieza.
+
+La distribución municipal de Silver confirma que no todas las ciudades aportan el mismo tipo de información en esta fase. Barcelona concentra registros de renta con granularidad de barrio y sección censal; Valencia aporta movilidad y accidentes de tráfico; Zaragoza aporta movilidad y sostenibilidad; Madrid aporta demografía; y Sevilla queda pendiente de transformación específica desde servicios ArcGIS. Esta diferencia se documenta como una característica del ecosistema Open Data, no como un fallo del modelo: cada ayuntamiento publica con formatos, granularidades y mecanismos de acceso diferentes.
 
 \subsection{Capa Gold y base SQLite}
 
@@ -781,7 +815,30 @@ La tabla Gold funciona como contrato de datos entre el pipeline y la capa conver
 
 El uso de SQLite en local permite validar esta lógica sin desplegar todavía servicios cloud. SQLite no pretende ser la solución final de escalabilidad, sino una representación local del data warehouse. Permite probar consultas, verificar que el esquema funciona, alimentar la página web de desarrollo y revisar cómo respondería el chat ante preguntas reales. En AWS, esta misma capa se podría materializar en Redshift para consultas analíticas de alto rendimiento, o en Athena si se decide consultar directamente archivos en S3 mediante Glue Catalog.
 
-La ejecución actual generó 3.975 indicadores Gold y los cargó en la base SQLite ubicada en \texttt{data\_lake/gold/}\newline\texttt{iseu\_indicadores.sqlite}. La tabla principal se denomina \texttt{indicators}; además, se crea \texttt{indicator\_catalog}, que resume variables, categorías, unidades y fuentes disponibles.
+La ejecución actual generó 3.975 indicadores Gold y los cargó en la base SQLite ubicada en \texttt{data\_lake/gold/}\newline\texttt{iseu\_indicadores.sqlite}. La tabla Gold principal se denomina \texttt{indicators}; además, se crea \texttt{indicator\_catalog}, que resume variables, categorías, unidades y fuentes disponibles. No obstante, la base SQL ya no se limita a Gold: se amplió con una estructura enriquecida para conservar cantidad, detalle y capacidad de consulta conversacional.
+
+La versión enriquecida de SQLite contiene cinco bloques principales. \texttt{indicators} conserva los indicadores Gold comparables. \texttt{indicadores} funciona como tabla compatible con el chatbot local y combina indicadores Gold con observaciones semantizadas de Silver. \texttt{semantic\_observations} almacena observaciones normalizadas con ciudad, territorio, periodo, variable, valor, unidad, fuente, granularidad y calidad. Las tablas \texttt{silver\_*} conservan el detalle limpio de Silver para auditoría y consultas avanzadas. Por último, \texttt{sql\_table\_catalog} documenta las tablas cargadas, su capa, número de filas, columnas y descripción funcional.
+
+\begin{table}[htbp]
+\caption{Modelo SQLite enriquecido para consulta local y chatbot}
+\label{tab:sqlite-enriquecido}
+\centering
+\begin{tabular}{lrl}
+\toprule
+\textbf{Tabla} & \textbf{Filas} & \textbf{Función} \\
+\midrule
+\texttt{indicators} & 3.975 & Indicadores Gold comparables \\
+\texttt{indicadores} & 93.561 & Tabla compatible con el chatbot local \\
+\texttt{semantic\_observations} & 105.391 & Observaciones Silver semantizadas \\
+\texttt{silver\_*} & 182.149 & Tablas Silver detalladas \\
+\texttt{sql\_table\_catalog} & 11 & Catálogo de tablas SQL \\
+\bottomrule
+\end{tabular}
+\vspace{0.4em}
+\begin{flushleft}
+\small Nota. La base enriquecida se copia también a \texttt{pag\_web/Procesos/Datasets/iseu\_datos.sqlite}, que es la ruta consumida por la página web local.
+\end{flushleft}
+\end{table}
 
 \begin{figure}[htbp]
 \caption{Consulta SQL sobre la tabla de indicadores Gold}
@@ -840,7 +897,7 @@ Madrid & 561 \\
 
 \subsection{Relación con la página web y el chat}
 
-La lógica de consumo prevista es que la página web no consulte directamente los archivos CSV o JSON originales. En su lugar, el chat debe interpretar la pregunta del usuario, identificar ciudad, variable y periodo, y generar una consulta SQL sobre la tabla \texttt{indicators}. De este modo, la respuesta se apoya en datos estructurados y trazables.
+La lógica de consumo prevista es que la página web no consulte directamente los archivos CSV o JSON originales. En su lugar, el chat debe interpretar la pregunta del usuario, identificar ciudad, variable y periodo, y recuperar datos desde SQLite. Para comparaciones limpias entre ciudades puede utilizar \texttt{indicators}; para preguntas más abiertas o con mayor detalle territorial puede utilizar \texttt{indicadores}, \texttt{semantic\_observations} o las tablas \texttt{silver\_*}. De este modo, la respuesta se apoya en datos estructurados y trazables sin obligar al modelo a leer archivos raw.
 
 Por ejemplo, una consulta como ``¿Cómo ha evolucionado el paro en Valencia?'' podría traducirse internamente a:
 
@@ -863,7 +920,25 @@ ORDER BY date;
 \end{flushleft}
 \end{figure}
 
-Esta arquitectura separa tres responsabilidades: el data lake conserva los datos originales, el pipeline construye indicadores confiables y el modelo conversacional actúa como capa semántica para transformar lenguaje natural en SQL. Para mejorar esta capa será necesario incorporar un diccionario semántico de variables, donde términos como ``paro'', ``desempleo'' o ``personas sin trabajo'' apunten a \texttt{unemployed\_registered}.
+Esta arquitectura separa tres responsabilidades: el data lake conserva los datos originales, el pipeline construye indicadores confiables y el modelo conversacional actúa como capa semántica para transformar lenguaje natural en SQL o en consultas controladas sobre SQLite. Para mejorar esta capa se plantea incorporar un diccionario semántico de variables. Este diccionario no sustituye al modelo de lenguaje, sino que reduce la ambigüedad antes de llamar al modelo: términos como ``paro'', ``desempleo'' o ``personas sin trabajo'' pueden apuntar a \texttt{unemployed\_registered} o a la variable semántica ``Paro registrado''; términos como ``trabajo'' u ``oportunidades'' pueden relacionarse con contratos registrados y demandantes de empleo; y expresiones como ``renta'', ``ingresos'' o ``poder adquisitivo'' pueden mapearse a renta disponible, renta mediana o renta por hogar.
+
+\begin{table}[htbp]
+\caption{Ejemplo de diccionario semántico propuesto para el chat}
+\label{tab:diccionario-semantico}
+\centering
+\begin{tabular}{p{0.30\textwidth} p{0.55\textwidth}}
+\toprule
+\textbf{Términos de usuario} & \textbf{Variables o familias de datos sugeridas} \\
+\midrule
+paro, desempleo, sin trabajo & Paro registrado; demandantes de empleo \\
+empleo, trabajo, oportunidades & Contratos registrados; demandantes de empleo \\
+renta, ingresos, poder adquisitivo & Renta disponible; renta mediana; renta por hogar \\
+accidentes, tráfico, siniestros & Accidentes de tráfico; movilidad urbana \\
+población, habitantes, demografía & Población total; demografía municipal \\
+tablas, fuentes, datos disponibles & \texttt{sql\_table\_catalog}; catálogo de variables \\
+\bottomrule
+\end{tabular}
+\end{table}
 
 En una implementación web, el chat no debería tener permisos libres sobre toda la base. La solución propuesta es que el modelo genere consultas dentro de un conjunto controlado de tablas y columnas. La aplicación puede disponer de una lista blanca de variables, fuentes y ciudades admitidas. Si la pregunta del usuario no puede mapearse a una variable disponible, el sistema debería responder que no cuenta con datos suficientes, en lugar de construir una consulta especulativa.
 
@@ -871,15 +946,17 @@ También es importante conservar la consulta SQL generada junto con la respuesta
 
 La salida de la consulta puede transformarse en distintos formatos dentro de la web. Una pregunta de evolución temporal puede convertirse en un gráfico de líneas; una comparación entre ciudades puede mostrarse como tabla ordenada o gráfico de barras; y una pregunta de resumen puede devolver una explicación textual acompañada de la fuente y el periodo analizado. Por tanto, el SQL no es el resultado final visible para el usuario, sino el mecanismo interno que asegura que la respuesta del chat se base en datos reales.
 
-\subsection{Decisión pendiente sobre el alcance SQL}
+\subsection{Alcance SQL consolidado y limitaciones actuales}
 
-Aunque la base SQLite actual contiene 3.975 indicadores comparables, el volumen bruto procesado es mucho mayor. Bronze contiene más de 6,5 millones de filas CSV detectadas y Silver conserva tablas detalladas, especialmente la tabla municipal prioritaria. Por tanto, el proyecto ya trabaja con una lógica de Big Data en la fase de ingesta y procesamiento, aunque la capa Gold se haya reducido deliberadamente a indicadores agregados para facilitar consultas y evitar sesgos.
+La decisión metodológica adoptada es mantener dos niveles SQL dentro de la misma base. El primer nivel es \texttt{indicators}, optimizado para preguntas frecuentes y comparaciones limpias entre ciudades. El segundo nivel está formado por \texttt{indicadores}, \texttt{semantic\_observations} y las tablas \texttt{silver\_*}, que refuerzan el volumen analítico, conservan detalle operativo y permiten consultas más específicas. Esta solución evita presentar la reducción a 3.975 indicadores Gold como pérdida de datos, ya que el volumen limpio sigue disponible en SQLite.
 
-Queda como decisión metodológica pendiente si la base SQL final debe contener solo la tabla \texttt{indicators} o si también debe incorporar una tabla de detalle, por ejemplo \texttt{fact\_observations}, con registros Silver normalizados. La primera opción es más simple y adecuada para el chat. La segunda opción refuerza el volumen analítico y permite consultas más detalladas, pero exige mayor control de rendimiento, calidad y semántica de columnas. Esta decisión se consultará con el profesor antes de consolidar la versión final del repositorio.
+Con esta estructura, el proyecto equilibra simplicidad y profundidad. El chat ciudadano puede priorizar \texttt{indicators} o \texttt{indicadores} para responder de forma clara, mientras que el análisis técnico puede consultar \texttt{semantic\_observations} y las tablas \texttt{silver\_*}. La tabla \texttt{sql\_table\_catalog} actúa como índice interno para que la aplicación conozca qué capas están disponibles, cuántas filas contienen y qué función cumple cada tabla.
 
-Una solución intermedia podría mantener dos niveles SQL. El primero sería \texttt{indicators}, optimizado para preguntas frecuentes y comparaciones limpias entre ciudades. El segundo sería una tabla de observaciones normalizadas, destinada a análisis más detallado, auditoría y consultas avanzadas. De esta manera, el chat ciudadano utilizaría por defecto la tabla de indicadores, mientras que los procesos internos o análisis técnicos podrían acceder a mayor granularidad cuando fuera necesario.
+La ejecución final deja el sistema en un estado suficiente para muestreo y demostración funcional. La capa Bronze contiene 6.947.862 filas CSV detectadas; Silver conserva 182.149 filas detalladas en SQL; y la tabla compatible con el chatbot contiene 93.561 filas consultables. Estos números permiten defender que ISEU+ trabaja con un ciclo de vida completo de datos, no solo con una pequeña tabla agregada.
 
-Esta decisión afecta directamente al equilibrio entre simplicidad, volumen y explicabilidad. Una tabla SQL pequeña es más fácil de consultar y controlar, pero puede parecer limitada frente al volumen raw recolectado. Una tabla SQL grande refuerza la idea de Big Data, pero requiere una semántica más elaborada para que el modelo no confunda registros operativos con indicadores comparables. Por ello, se plantea revisar este punto con el profesor antes de fijar la versión final del modelo de datos.
+No obstante, se mantienen limitaciones conocidas. AEMET requiere configurar \texttt{AEMET\_API\_KEY} para descargar datos meteorológicos reales. Bilbao queda como fuente parcial porque su portal no expone en esta fase un catálogo estructurado fácilmente explotable. Sevilla queda inventariada en Bronze mediante ArcGIS Hub, pero necesita reglas adicionales para transformar servicios \textit{FeatureServer} y GeoJSON en indicadores Silver más ricos. La tabla de INE sobre población por país de nacimiento se descarga, pero el filtro actual devuelve cero filas, por lo que requiere revisión de esquema y valores de total. Finalmente, algunos recursos municipales presentan problemas de codificación de caracteres, visibles en nombres de barrios o campos con acentos; esto no invalida los valores numéricos, pero sí afecta a presentación, búsquedas textuales y calidad percibida.
+
+Estas limitaciones no bloquean el paso a la conexión web con LM Studio. El conjunto de datos ya es suficiente para probar preguntas reales sobre empleo, población, renta, movilidad, accidentes, fuentes disponibles y cobertura SQL. Las mejoras pendientes se consideran iteraciones de calidad y ampliación, no requisitos previos para validar el funcionamiento del sistema.
 
 \chapter{Conclusiones}
 

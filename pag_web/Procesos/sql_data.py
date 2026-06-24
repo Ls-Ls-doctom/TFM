@@ -19,6 +19,11 @@ TOPIC_TERMS = {
     "conviene": ["paro registrado", "contratos registrados", "precio vivienda", "precio alquiler", "ipc"],
     "madrid": ["madrid"],
     "barcelona": ["barcelona"],
+    "valencia": ["valencia"],
+    "sevilla": ["sevilla"],
+    "bilbao": ["bilbao"],
+    "malaga": ["malaga"],
+    "zaragoza": ["zaragoza"],
     "paro": ["tasa de paro", "paro", "paro registrado"],
     "desempleo": ["tasa de paro", "paro", "paro registrado"],
     "ipc": ["ipc", "inflacion", "alimentos"],
@@ -110,12 +115,23 @@ def fetch_catalog_summary() -> dict[str, Any]:
             ORDER BY variable, source
             """
         ).fetchall()
+        if table_exists(conn, "sql_table_catalog"):
+            tables = conn.execute(
+                """
+                SELECT table_name, layer, rows_loaded, columns_loaded, description
+                FROM sql_table_catalog
+                ORDER BY layer, table_name
+                """
+            ).fetchall()
+        else:
+            tables = []
 
     return {
         "database": relative(DB_PATH),
         "ready": True,
         "sources": [dict(row) for row in sources],
         "variables": [dict(row) for row in variables],
+        "tables": [dict(row) for row in tables],
     }
 
 
@@ -160,7 +176,12 @@ def fetch_relevant_indicators(question: str, limit: int = 18) -> dict[str, Any]:
 
     normalized_question = normalize(question)
     terms = question_terms(question)
-    requested_cities = [city for city in ("barcelona", "madrid") if city in normalized_question]
+    requested_cities = [
+        city
+        for city in ("barcelona", "madrid", "valencia", "sevilla", "bilbao", "malaga", "zaragoza")
+        if city in normalized_question
+    ]
+    detail_geo_intent = any(term in normalized_question for term in ("barrio", "barrios", "distrito", "distritos", "seccion", "secciones"))
     work_intent = any(term in normalized_question for term in ("trabajo", "empleo", "paro", "desempleo", "laboral"))
     cost_intent = any(term in normalized_question for term in ("coste", "vida", "vivienda", "alquiler", "precio", "mudanza", "mudarme"))
     with connect() as conn:
@@ -189,10 +210,20 @@ def fetch_relevant_indicators(question: str, limit: int = 18) -> dict[str, Any]:
 
         for city in requested_cities:
             exact_city = geo_text == city or geo_text.startswith(f"{city},")
-            if exact_city:
+            detailed_city = city in geo_text and not exact_city
+            if detail_geo_intent and detailed_city:
                 score += 12
+            elif exact_city:
+                score += 3 if detail_geo_intent else 12
             elif city in geo_text:
                 score += 2
+
+        if detail_geo_intent:
+            notes_text = normalize(str(item.get("notes") or ""))
+            if any(token in notes_text for token in ("neighborhood", "district", "census_section")):
+                score += 6
+            if "," in str(item.get("geo") or ""):
+                score += 4
 
         if work_intent and any(term in variable_text for term in ("paro registrado", "contratos registrados", "tasa de paro", "tasa de empleo", "salario")):
             score += 8
@@ -235,10 +266,11 @@ def fetch_relevant_indicators(question: str, limit: int = 18) -> dict[str, Any]:
         for item in scored:
             key = (
                 item.get("source"),
-                item.get("dataset"),
                 item.get("variable"),
-                item.get("metric"),
                 item.get("geo"),
+                item.get("period"),
+                item.get("value"),
+                item.get("unit"),
             )
             if key in seen:
                 continue
@@ -255,3 +287,15 @@ def fetch_relevant_indicators(question: str, limit: int = 18) -> dict[str, Any]:
         "rows": scored[:limit],
         "summary": fetch_catalog_summary(),
     }
+
+
+def table_exists(conn: sqlite3.Connection, table_name: str) -> bool:
+    row = conn.execute(
+        """
+        SELECT 1
+        FROM sqlite_master
+        WHERE type IN ('table', 'view') AND name = ?
+        """,
+        (table_name,),
+    ).fetchone()
+    return row is not None

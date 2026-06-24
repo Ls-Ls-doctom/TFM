@@ -1,9 +1,57 @@
 {
-  "loaded_at": "2026-06-23T21:35:43",
+  "loaded_at": "2026-06-24T14:49:06",
   "database": "data_lake\\gold\\iseu_indicadores.sqlite",
+  "web_database": "D:\\Proyectos\\TFM\\pag_web\\Procesos\\Datasets\\iseu_datos.sqlite",
   "source_file": "data_lake\\gold\\indicators.csv",
   "rows_loaded": 3975,
+  "indicadores_rows_loaded": 93561,
+  "semantic_observations_rows_loaded": 105391,
   "catalog_rows": 9,
+  "silver_detail_tables": [
+    {
+      "table_name": "silver_ine_poblacion_municipal",
+      "source_file": "data_lake\\silver\\ine\\poblacion_municipal.csv",
+      "rows_loaded": 35,
+      "columns_loaded": 6
+    },
+    {
+      "table_name": "silver_ine_poblacion_pais_nacimiento_total",
+      "source_file": "data_lake\\silver\\ine\\poblacion_pais_nacimiento_total.csv",
+      "rows_loaded": 0,
+      "columns_loaded": 6
+    },
+    {
+      "table_name": "silver_mitma_relaciones_distrito_mitma",
+      "source_file": "data_lake\\silver\\mitma\\relaciones_distrito_mitma.csv",
+      "rows_loaded": 10494,
+      "columns_loaded": 1
+    },
+    {
+      "table_name": "silver_municipios_municipal_prioritario",
+      "source_file": "data_lake\\silver\\municipios\\municipal_prioritario.csv",
+      "rows_loaded": 167725,
+      "columns_loaded": 244
+    },
+    {
+      "table_name": "silver_sepe_contratos_registrados",
+      "source_file": "data_lake\\silver\\sepe\\contratos_registrados.csv",
+      "rows_loaded": 1242,
+      "columns_loaded": 8
+    },
+    {
+      "table_name": "silver_sepe_demandantes_empleo",
+      "source_file": "data_lake\\silver\\sepe\\demandantes_empleo.csv",
+      "rows_loaded": 1372,
+      "columns_loaded": 8
+    },
+    {
+      "table_name": "silver_sepe_paro_registrado",
+      "source_file": "data_lake\\silver\\sepe\\paro_registrado.csv",
+      "rows_loaded": 1281,
+      "columns_loaded": 8
+    }
+  ],
+  "silver_detail_rows_loaded": 182149,
   "rows_by_city": [
     {
       "city": "Valencia",

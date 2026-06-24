@@ -9,10 +9,11 @@ import ssl
 import time
 import urllib.error
 import urllib.request
+from html.parser import HTMLParser
 from datetime import datetime
 from pathlib import Path
 from typing import Any
-from urllib.parse import urljoin, urlparse
+from urllib.parse import urlencode, urljoin, urlparse
 
 
 BASE_DIR = Path(__file__).resolve().parents[2]
@@ -108,6 +109,9 @@ def discover_city_resources(city: str, since_year: int) -> list[dict[str, Any]]:
     catalog_path = city_path / "catalog_raw.json"
     if catalog_path.exists():
         resources.extend(discover_json_catalog_resources(city, catalog_path, since_year))
+    html_path = city_path / "catalog_raw.html"
+    if html_path.exists():
+        resources.extend(discover_html_resources(city, html_path, since_year))
     return dedupe_resources(resources)
 
 
@@ -174,7 +178,90 @@ def discover_json_catalog_resources(city: str, path: Path, since_year: int) -> l
                         "url": url,
                     }
                 )
+    elif city == "sevilla":
+        features = data.get("features") or []
+        for feature in features:
+            props = feature.get("properties") or {}
+            item_date = epoch_year(props.get("modified") or props.get("created"))
+            if item_date and item_date < since_year:
+                continue
+            title = safe_text(props.get("title") or props.get("name") or feature.get("id"))
+            service_url = safe_text(props.get("url"))
+            item_id = safe_text(props.get("id") or feature.get("id"))
+            item_type = safe_text(props.get("type"))
+            if service_url and "FeatureServer" in service_url:
+                output.append(
+                    {
+                        "city": city,
+                        "source_type": "arcgis_hub",
+                        "dataset_id": item_id,
+                        "dataset_name": title,
+                        "dataset_title": title,
+                        "dataset_modified": str(props.get("modified") or ""),
+                        "resource_id": f"{item_id}_geojson",
+                        "resource_name": f"{title}_geojson",
+                        "format": "GEOJSON",
+                        "url": arcgis_feature_geojson_url(service_url),
+                    }
+                )
+            for link in feature.get("links") or []:
+                url = link.get("href")
+                fmt = normalize_format(link.get("type") or link.get("title") or url)
+                if not url or not is_structured(fmt, url):
+                    continue
+                output.append(
+                    {
+                        "city": city,
+                        "source_type": "arcgis_hub_link",
+                        "dataset_id": item_id,
+                        "dataset_name": title,
+                        "dataset_title": title,
+                        "dataset_modified": str(props.get("modified") or ""),
+                        "resource_id": safe_text(link.get("rel") or item_id),
+                        "resource_name": safe_text(link.get("title") or title),
+                        "format": fmt,
+                        "url": url,
+                    }
+                )
     return output
+
+
+def discover_html_resources(city: str, path: Path, since_year: int) -> list[dict[str, Any]]:
+    text = path.read_text(encoding="utf-8", errors="replace")
+    parser = LinkParser()
+    parser.feed(text)
+    output = []
+    for index, url in enumerate(parser.links):
+        full_url = urljoin(str(path), url)
+        fmt = normalize_format(full_url)
+        if not is_structured(fmt, full_url):
+            continue
+        output.append(
+            {
+                "city": city,
+                "source_type": "html_link",
+                "dataset_id": f"html_{index}",
+                "dataset_name": safe_filename(Path(urlparse(full_url).path).stem or f"html_{index}"),
+                "dataset_title": "",
+                "dataset_modified": "",
+                "resource_id": f"html_{index}",
+                "resource_name": safe_filename(Path(urlparse(full_url).path).name or f"html_{index}"),
+                "format": fmt,
+                "url": full_url,
+            }
+        )
+    return output
+
+
+class LinkParser(HTMLParser):
+    def __init__(self) -> None:
+        super().__init__()
+        self.links: list[str] = []
+
+    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        for name, value in attrs:
+            if name.lower() in {"href", "src"} and value:
+                self.links.append(value)
 
 
 def download_resource(city: str, resource: dict[str, Any]) -> dict[str, Any]:
@@ -299,6 +386,27 @@ def first_date(item: dict[str, Any], keys: tuple[str, ...]):
         if match:
             return datetime(int(match.group(1)), 1, 1)
     return None
+
+
+def epoch_year(value: Any) -> int | None:
+    if value is None or value == "":
+        return None
+    try:
+        number = int(value)
+    except (TypeError, ValueError):
+        return None
+    if number > 10_000_000_000:
+        return datetime.fromtimestamp(number / 1000).year
+    if number > 10_000_000:
+        return datetime.fromtimestamp(number).year
+    return None
+
+
+def arcgis_feature_geojson_url(service_url: str) -> str:
+    base = service_url.rstrip("/")
+    if not re.search(r"/FeatureServer/\d+$", base, flags=re.IGNORECASE):
+        base = f"{base}/0"
+    return f"{base}/query?{urlencode({'where': '1=1', 'outFields': '*', 'f': 'geojson'})}"
 
 
 def safe_filename(value: Any) -> str:
