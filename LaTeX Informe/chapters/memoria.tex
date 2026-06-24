@@ -920,7 +920,7 @@ ORDER BY date;
 \end{flushleft}
 \end{figure}
 
-Esta arquitectura separa tres responsabilidades: el data lake conserva los datos originales, el pipeline construye indicadores confiables y el modelo conversacional actúa como capa semántica para transformar lenguaje natural en SQL o en consultas controladas sobre SQLite. Para mejorar esta capa se plantea incorporar un diccionario semántico de variables. Este diccionario no sustituye al modelo de lenguaje, sino que reduce la ambigüedad antes de llamar al modelo: términos como ``paro'', ``desempleo'' o ``personas sin trabajo'' pueden apuntar a \texttt{unemployed\_registered} o a la variable semántica ``Paro registrado''; términos como ``trabajo'' u ``oportunidades'' pueden relacionarse con contratos registrados y demandantes de empleo; y expresiones como ``renta'', ``ingresos'' o ``poder adquisitivo'' pueden mapearse a renta disponible, renta mediana o renta por hogar.
+Esta arquitectura separa tres responsabilidades: el data lake conserva los datos originales, el pipeline construye indicadores confiables y el modelo conversacional actúa como capa semántica para transformar lenguaje natural en SQL o en consultas controladas sobre SQLite. Para mejorar esta capa se implementó un diccionario semántico de variables en \texttt{pag\_web/Procesos/semantic\_dictionary.json}. Este diccionario no sustituye al modelo de lenguaje, sino que reduce la ambigüedad antes de llamar al modelo: términos como ``paro'', ``desempleo'' o ``personas sin trabajo'' pueden apuntar a \texttt{unemployed\_registered} o a la variable semántica ``Paro registrado''; términos como ``trabajo'' u ``oportunidades'' pueden relacionarse con contratos registrados y demandantes de empleo; y expresiones como ``renta'', ``ingresos'' o ``poder adquisitivo'' pueden mapearse a renta disponible, renta mediana o renta por hogar.
 
 \begin{table}[htbp]
 \caption{Ejemplo de diccionario semántico propuesto para el chat}
@@ -939,6 +939,25 @@ tablas, fuentes, datos disponibles & \texttt{sql\_table\_catalog}; catálogo de 
 \bottomrule
 \end{tabular}
 \end{table}
+
+El diccionario semántico se integra en dos puntos del prototipo local. Primero, \texttt{sql\_data.py} carga el archivo JSON, normaliza la pregunta del usuario y detecta intenciones, variables, categorías, fuentes, ciudades y necesidad de detalle territorial. Después, \texttt{server.py} incorpora esa información al contexto enviado al modelo local, de forma que LM Studio recibe tanto los indicadores recuperados como la interpretación semántica usada para buscarlos.
+
+\begin{table}[htbp]
+\caption{Componentes implementados del diccionario semántico SQL}
+\label{tab:componentes-diccionario-sql}
+\centering
+\begin{tabular}{p{0.32\textwidth} p{0.54\textwidth}}
+\toprule
+\textbf{Componente} & \textbf{Función} \\
+\midrule
+\texttt{semantic\_dictionary.json} & Define aliases, ciudades, intenciones, variables, categorías, fuentes y términos de comparación o detalle territorial. \\
+\texttt{sql\_data.py} & Expande la pregunta con términos semánticos, ajusta la puntuación de resultados y evita devolver indicadores aleatorios cuando la consulta pide tablas o fuentes. \\
+\texttt{server.py} & Añade el resumen semántico al payload del chat y permite responder con el catálogo SQL cuando la pregunta trata sobre tablas disponibles. \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+La validación funcional del diccionario se realizó con preguntas equivalentes a lenguaje ciudadano. Por ejemplo, ``personas sin trabajo'' se interpretó como empleo y desempleo; ``poder adquisitivo'' se relacionó con renta; ``siniestros de tráfico'' se vinculó con accidentes; ``bicicleta pública'' se vinculó con movilidad; y ``fuentes y tablas disponibles'' se resolvió mediante el catálogo SQL, sin forzar la recuperación de indicadores numéricos que no correspondían a la pregunta.
 
 En una implementación web, el chat no debería tener permisos libres sobre toda la base. La solución propuesta es que el modelo genere consultas dentro de un conjunto controlado de tablas y columnas. La aplicación puede disponer de una lista blanca de variables, fuentes y ciudades admitidas. Si la pregunta del usuario no puede mapearse a una variable disponible, el sistema debería responder que no cuenta con datos suficientes, en lugar de construir una consulta especulativa.
 
