@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>60 Preguntas Motivacionales · ISEU+ TFM</title>
+  <style>
+    :root {
+      --bg: #f4f0e8;
+      --card: #ffffff;
+      --ink: #17312e;
+      --muted: #63706d;
+      --line: rgba(23,49,46,.12);
+      --accent: #0f6a57;
+      --accent-soft: #e1f2ec;
+      --b1: #b71c1c; --b1s: #ffebee;
+      --b2: #1565c0; --b2s: #e3f2fd;
+      --b3: #e65100; --b3s: #fff3e0;
+      --b4: #2e7d32; --b4s: #e8f5e9;
+      --b5: #6a1b9a; --b5s: #f3e5f5;
+      --b6: #37474f; --b6s: #eceff1;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Georgia,"Times New Roman",serif;
+      color: var(--ink);
+      background: radial-gradient(circle at top left,rgba(15,106,87,.07),transparent 30%),
+                  linear-gradient(180deg,#faf7f1 0%,var(--bg) 100%);
+    }
+    .page { max-width: 1060px; margin: 0 auto; padding: 36px 24px 64px; }
+
+    .eyebrow {
+      margin: 0 0 8px;
+      font: 800 11px/1 "Trebuchet MS",sans-serif;
+      letter-spacing: .2em; text-transform: uppercase; color: var(--accent);
+    }
+    h1 { margin: 0 0 12px; font-size: clamp(1.9rem,4vw,2.8rem); line-height: 1.1; }
+    .intro { max-width: 860px; margin: 0 0 20px; color: var(--muted); line-height: 1.7; }
+
+    .stats-bar { display: flex; flex-wrap: wrap; gap: 14px; margin-bottom: 28px; }
+    .stat {
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 12px; padding: 14px 20px;
+      box-shadow: 0 4px 14px rgba(23,49,46,.06);
+    }
+    .stat-value { font: 800 26px/1 "Trebuchet MS",sans-serif; color: var(--accent); }
+    .stat-label { font: 600 11px/1.3 "Trebuchet MS",sans-serif; color: var(--muted); margin-top: 4px; }
+
+    .toolbar { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 28px; }
+    button {
+      border: 0; border-radius: 8px; padding: 11px 16px;
+      font: 800 13px/1 "Trebuchet MS",sans-serif;
+      cursor: pointer; color: #fff; background: var(--accent);
+    }
+    button.secondary { background: var(--b6); }
+
+    .progress-bar {
+      height: 8px; background: var(--line); border-radius: 99px;
+      margin-bottom: 28px; overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%; background: var(--accent);
+      border-radius: 99px; width: 0%;
+      transition: width .4s ease;
+    }
+
+    .section { margin-bottom: 36px; }
+    .section-header {
+      display: flex; align-items: center; gap: 12px;
+      padding: 15px 20px; color: #fff;
+      border-radius: 14px 14px 0 0;
+      font: 800 14px/1 "Trebuchet MS",sans-serif;
+      letter-spacing: .05em; text-transform: uppercase;
+    }
+    .section-header .icon { font-size: 20px; }
+    .b1 { background: var(--b1); }
+    .b2 { background: var(--b2); }
+    .b3 { background: var(--b3); }
+    .b4 { background: var(--b4); }
+    .b5 { background: var(--b5); }
+    .b6 { background: var(--b6); }
+
+    .questions-container {
+      background: var(--card); border: 1px solid var(--line);
+      border-top: none; border-radius: 0 0 14px 14px; overflow: hidden;
+    }
+    .qa { padding: 20px 22px; border-bottom: 1px solid var(--line); }
+    .qa:last-child { border-bottom: none; }
+
+    .qa-header { display: flex; align-items: flex-start; gap: 14px; margin-bottom: 12px; }
+    .num {
+      flex-shrink: 0; width: 38px; height: 38px;
+      display: grid; place-items: center; border-radius: 9px;
+      font: 900 13px/1 "Trebuchet MS",sans-serif;
+    }
+    .num.b1 { background: var(--b1s); color: var(--b1); }
+    .num.b2 { background: var(--b2s); color: var(--b2); }
+    .num.b3 { background: var(--b3s); color: var(--b3); }
+    .num.b4 { background: var(--b4s); color: var(--b4); }
+    .num.b5 { background: var(--b5s); color: var(--b5); }
+    .num.b6 { background: var(--b6s); color: var(--b6); }
+
+    .question-text { margin: 0; font: 700 16px/1.4 Georgia,serif; color: var(--ink); }
+
+    .answer-area {
+      width: 100%; min-height: 80px;
+      border: 1.5px solid var(--line); border-radius: 10px;
+      padding: 12px 14px; font: 15px/1.6 Georgia,serif;
+      color: var(--ink); background: #fafaf8;
+      resize: vertical; transition: border-color .2s, background .2s;
+    }
+    .answer-area:focus {
+      outline: none; border-color: var(--accent);
+      background: #fff; box-shadow: 0 0 0 3px rgba(15,106,87,.1);
+    }
+    .answer-area.filled { background: var(--accent-soft); border-color: var(--accent); }
+
+    .answer-meta {
+      display: flex; justify-content: space-between;
+      align-items: center; margin-top: 6px;
+    }
+    .char-count { font: 11px/1 "Trebuchet MS",sans-serif; color: var(--muted); }
+    .answered-badge {
+      display: none; font: 700 11px/1 "Trebuchet MS",sans-serif;
+      color: var(--accent); letter-spacing: .06em; text-transform: uppercase;
+    }
+    .answered-badge.visible { display: inline; }
+
+    .summary-box {
+      margin-top: 36px; padding: 22px 26px;
+      border: 2px solid var(--accent); border-radius: 16px;
+      background: var(--accent-soft); color: var(--ink); line-height: 1.7;
+    }
+    .summary-box h2 {
+      margin: 0 0 8px; font: 800 15px/1 "Trebuchet MS",sans-serif;
+      color: var(--accent); text-transform: uppercase; letter-spacing: .04em;
+    }
+
+    @media (max-width: 600px) {
+      .qa-header { flex-direction: column; gap: 8px; }
+    }
+    @media print {
+      body { background: #fff !important; }
+      .toolbar, .progress-bar { display: none; }
+      .answer-area { border: 1px solid #ccc !important; }
+      .section-header { break-inside: avoid; }
+      .qa { break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+<main class="page">
+  <p class="eyebrow">TFM · ISEU+ · Validación de hipótesis</p>
+  <h1>60 Preguntas que justifican ISEU+</h1>
+  <p class="intro">
+    Responde cada pregunta con tus propias palabras, datos o referencias.
+    Las respuestas se guardan automáticamente en el navegador.
+    Úsalas para construir el argumentario del TFM y la narrativa del proyecto.
+  </p>
+
+  <div class="stats-bar">
+    <div class="stat">
+      <div class="stat-value" id="answered-count">0/60</div>
+      <div class="stat-label">Preguntas respondidas</div>
+    </div>
+    <div class="stat">
+      <div class="stat-value">6</div>
+      <div class="stat-label">Bloques temáticos</div>
+    </div>
+    <div class="stat">
+      <div class="stat-value" id="pct">0%</div>
+      <div class="stat-label">Completado</div>
+    </div>
+  </div>
+
+  <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+
+  <div class="toolbar">
+    <button onclick="window.print()">Exportar a PDF</button>
+    <button class="secondary" onclick="clearAll()">Borrar todo</button>
+  </div>
+
+  <!-- BLOQUE 1 -->
+  <section class="section">
+    <div class="section-header b1"><span class="icon">🏠</span>Bloque 1 · Vivienda y Acceso al Hogar</div>
+    <div class="questions-container">
+      <article class="qa">
+        <div class="qa-header"><div class="num b1">01</div><h2 class="question-text">¿Cuánto ha subido el precio del alquiler en Barcelona en los últimos 5 años?</h2></div>
+        <textarea class="answer-area" data-id="q01" placeholder="Escribe tu respuesta aquí..."></textarea>
+        <div class="answer-meta"><span class="char-count" id="cc-q01">0 caracteres</span><span class="answered-badge" id="ab-q01">✓ Respondida</span></div>
+      </article>
+      <article class="qa">
+        <div class="qa-header"><div class="num b1">02</div><h2 class="question-text">¿Qué porcentaje del salario medio se destina al alquiler en las principales ciudades españolas?</h2></div>
+        <textarea class="answer-area" data-id="q02" placeholder="Escribe tu respuesta aquí..."></textarea>
+        <div class="answer-meta"><span class="char-count" id="cc-q02">0 caracteres</span><span class="answered-badge" id="ab-q02">✓ Respondida</span></div>
+      </article>
+      <article class="qa">
+        <div class="qa-header"><div class="num b1">03</div><h2 class="question-text">¿En qué ciudades españolas es más difícil acceder a una vivienda en alquiler?</h2></div>
+        <textarea class="answer-area" data-id="q03" placeholder="Escribe tu respuesta aquí..."></textarea>
+        <div class="answer-meta"><span class="char-count" id="cc-q03">0 caracteres</span><span class="answered-badge" id="ab-q03">✓ Respondida</span></div>
+      </article>
+      <article class="qa">
+        <div class="qa-header"><div class="num b1">04</div><h2 class="question-text">¿Ha crecido el precio de la vivienda más rápido que los salarios en España?</h2></div>
+        <textarea class="answer-area" data-id="q04" placeholder="Escribe tu respuesta aquí..."></textarea>
+        <div class="answer-meta"><span class="char-count" id="cc-q04">0 caracteres</span><span class="answered-badge" id="ab-q04">✓ Respondida</span></div>
+      </article>
+      <article class="qa">
+        <div class="qa-header"><div class="num b1">05</div><h2 class="question-text">¿Existe algún índice público que mida simultáneamente el coste de vivienda y el nivel salarial por ciudad?</h2></div>
+        <textarea class="answer-area" data-id="q05" placeholder="Escribe tu respuesta aquí..."></textarea>
+        <div class="answer-meta"><span class="char-count" id="cc-q05">0 caracteres</span><span class="answered-badge" id="ab-q05">✓ Respondida</span></div>
+      </article>
+      <article class="qa">
+        <div class="qa-header"><div class="num b1">06</div><h2 class="question-text">¿Cuántos años de salario completo se necesitan para comprar un piso en Barcelona?</h2></div>
+        <textarea class="answer-area" data-id="q06" placeholder="Escribe tu respuesta aquí..."></textarea>
+        <div class="answer-meta"><span class="char-count" id="cc-q06">0 caracteres</span><span class="answered-badge" id="ab-q06">✓ Respondida</span></div>
+      </article>
+      <article class="qa">
+        <div class="qa-header"><div class="num b1">07</div><h2 class="question-text">¿La regulación del alquiler ha conseguido frenar la subida de precios en las ciudades donde se ha aplicado?</h2></div>
+        <textarea class="answer-area" data-id="q07" placeholder="Escribe tu respuesta aquí..."></textarea>
+        <div class="answer-meta"><span class="char-count" id="cc-q07">0 caracteres</span><span class="answered-badge" id="ab-q07">✓ Respondida</span></div>
+      </article>
+      <article class="qa">
+        <div class="qa-header"><div class="num b1">08</div><h2 class="question-text">¿Qué porcentaje de la población joven en España no puede independizarse debido al coste de la vivienda?</h2></div>
+        <textarea class="answer-area" data-id="q08" placeholder="Escribe tu respuesta aquí..."></textarea>
+        <div class="answer-meta"><span class="char-count" id="cc-q08">0 caracteres</span><span class="answered-badge" id="ab-q08">✓ Respondida</span></div>
+      </article>
+      <article class="qa">
+        <div class="qa-header"><div class="num b1">09</div><h2 class="question-text">¿El precio de la vivienda en España ha recuperado los niveles de antes de la crisis de 2008?</h2></div>
+        <textarea class="answer-area" data-id="q09" placeholder="Escribe tu respuesta aquí..."></textarea>
+        <div class="answer-meta"><span class="char-count" id="cc-q09">0 caracteres</span><span class="answered-badge" id="ab-q09">✓ Respondida</span></div>
+      </article>
+      <article class="qa">
+        <div class="qa-header"><div class="num b1">10</div><h2 class="question-text">¿Existe en España algún indicador oficial de esfuerzo de acceso a la vivienda comparable entre ciudades?</h2></div>
+        <textarea class="answer-area" data-id="q10" placeholder="Escribe tu respuesta aquí..."></textarea>
+        <div class="answer-meta"><span class="char-count" id="cc-q10">0 caracteres</span><span class="answered-badge" id="ab-q10">✓ Respondida</span></div>
+      </article>
+    </div>
+  </section>
+
+  <!-- BLOQUE 2 -->
+  <section class="section">
+    <div class="section-header b2"><span class="icon">💶</span>Bloque 2 · Salarios y Poder Adquisitivo</div>
+    <div class="questions-container">
+      <article class="qa">
+        <div class="qa-header"><div class="num b2">11</div><h2 class="question-text">¿Ha perdido poder adquisitivo el trabajador medio español en los últimos 3 años?</h2></div>
+        <textarea class="answer-area" data-id="q11" placeholder="Escribe tu respuesta aquí..."></textarea>
+        <div class="answer-meta"><span class="char-count" id="cc-q11">0 caracteres</span><span class="answered-badge" id="ab-q11">✓ Respondida</span></div>
+      </article>
+      <article class="qa">
+        <div class="qa-header"><div class="num b2">12</div><h2 class="question-text">¿Cuánto vale realmente el salario mínimo interprofesional en términos de coste de vida por ciudad?</h2></div>
+        <textarea class="answer-area" data-id="q12" placeholder="Escribe tu respuesta aquí..."></textarea>
+        <div class="answer-meta"><span class="char-count" id="cc-q12">0 caracteres</span><span class="answered-badge" id="ab-q12">✓ Respondida</span></div>
+      </article>
+      <article class="qa">
+        <div class="qa-header"><div class="num b2">13</div><h2 class="question-text">¿La inflación de alimentos ha afectado igual a todas las clases sociales?</h2></div>
+        <textarea class="answer-area" data-id="q13" placeholder="Escribe tu respuesta aquí..."></textarea>
+        <div class="answer-meta"><span class="char-count" id="cc-q13">0 caracteres</span><span class="answered-badge" id="ab-q13">✓ Respondida</span></div>
+      </article>
+      <article class="qa">
+        <div class="qa-header"><div class="num b2">14</div><h2 class="question-text">¿Qué ciudad española ofrece mejor equilibrio entre salario y coste de vida?</h2></div>
+        <textarea class="answer-area" data-id="q14" placeholder="Escribe tu respuesta aquí..."></textarea>
+        <div class="answer-meta"><span class="char-count" id="cc-q14">0 caracteres</span><span class="answered-badge" id="ab-q14">✓ Respondida</span></div>
+      </article>
+      <article class="qa">
+        <div class="qa-header"><div class="num b2">15</div><h2 class="question-text">¿Cuánto tiempo tarda una persona con salario medio en ahorrar para la entrada de un piso en Barcelona?</h2></div>
+        <textarea class="answer-area" data-id="q15" placeholder="Escribe tu respuesta aquí..."></textarea>
+        <div class="answer-meta"><span class="char-count" id="cc-q15">0 caracteres</span><span class="answered-badge" id="ab-q15">✓ Respondida</span></div>
+      </article>
+      <article class="qa">
+        <div class="qa-header"><div class="num b2">16</div><h2 class="question-text">¿Cuál es la diferencia salarial entre el sector público y el privado en España?</h2></div>
+        <textarea class="answer-area" data-id="q16" placeholder="Escribe tu respuesta aquí..."></textarea>
+        <div class="answer-meta"><span class="char-count" id="cc-q16">0 caracteres</span><span class="answered-badge" id="ab-q16">✓ Respondida</span></div>
+      </article>
+      <article class="qa">
+        <div class="qa-header"><div class="num b2">17</div><h2 class="question-text">¿Los salarios en España han crecido por encima de la inflación en los últimos 10 años?</h2></div>
+        <textarea class="answer-area" data-id="q17" placeholder="Escribe tu respuesta aquí..."></textarea>
+        <div class="answer-meta"><span class="char-count" id="cc-q17">0 caracteres</span><span class="answered-badge" id="ab-q17">✓ Respondida</span></div>
+      </article>
+      <article class="qa">
+        <div class="qa-header"><div class="num b2">18</div><h2 class="question-text">¿Existe una brecha salarial significativa entre hombres y mujeres en las principales ciudades españolas?</h2></div>
+        <textarea class="answer-area" data-id="q18" placeholder="Escribe tu respuesta aquí..."></textarea>
+        <div class="answer-meta"><span class="char-count" id="cc-q18">0 caracteres</span><span class="answered-badge" id="ab-q18">✓ Respondida</span></div>
+      </article>
+      <article class="qa">
+        <div class="qa-header"><div class="num b2">19</div><h2 class="question-text">¿Cuánto gana de media un trabajador en Barcelona comparado con uno en Sevilla o Zaragoza?</h2></div>
+        <textarea class="answer-area" data-id="q19" placeholder="Escribe tu respuesta aquí..."></textarea>
+        <div class="answer-meta"><span class="char-count" id="cc-q19">0 caracteres</span><span class="answered-badge" id="ab-q19">✓ Respondida</span></div>
+      </article>
+      <article class="qa">
+        <div class="qa-header"><div class="num b2">20</div><h2 class="question-text">¿El incremento del SMI ha mejorado realmente las condiciones de vida de los trabajadores de menor renta?</h2></div>
+        <textarea class="answer-area" data-id="q20" placeholder="Escribe tu respuesta aquí..."></textarea>
+        <div class="answer-meta"><span class="char-count" id="cc-q20">0 caracteres</span><span class="answered-badge" id="ab-q20">✓ Respondida</span></div>
+      </article>
+    </div>
+  </section>
+
+  <!-- BLOQUE 3 -->
+  <section class="section">
+    <div class="section-header b3"><span class="icon">📉</span>Bloque 3 · Desigualdad y Exclusión Social</div>
+    <div class="questions-container">
+      <article class="qa">
+        <div class="qa-header"><div class="num b3">21</div><h2 class="question-text">¿Cuál es el índice de Gini en España y qué nos dice sobre la desigualdad real?</h2></div>
+        <textarea class="answer-area" data-id="q21" placeholder="Escribe tu respuesta aquí..."></textarea>
+        <div class="answer-meta"><span class="char-count" id="cc-q21">0 caracteres</span><span class="answered-badge" id="ab-q21">✓ Respondida</span></div>
+      </article>
+      <article class="qa">
+        <div class="qa-header"><div class="num b3">22</div><h2 class="question-text">¿Qué porcentaje de la población española está en riesgo de pobreza o exclusión social?</h2></div>
+        <textarea class="answer-area" data-id="q22" placeholder="Escribe tu respuesta aquí..."></textarea>
+        <div class="answer-meta"><span class="char-count" id="cc-q22">0 caracteres</span><span class="answered-badge" id="ab-q22">✓ Respondida</span></div>
+      </article>
+      <article class="qa">
+        <div class="qa-header"><div class="num b3">23</div><h2 class="question-text">¿La desigualdad dentro de Barcelona es mayor que entre Barcelona y otras ciudades?</h2></div>
+        <textarea class="answer-area" data-id="q23" placeholder="Escribe tu respuesta aquí..."></textarea>
+        <div class="answer-meta"><span class="char-count" id="cc-q23">0 caracteres</span><span class="answered-badge" id="ab-q23">✓ Respondida</span></div>
+      </article>
+      <article class="qa">
+        <div class="qa-header"><div class="num b3">24</div><h2 class="question-text">¿Ha aumentado la pobreza energética en España en los últimos años?</h2></div>
+        <textarea class="answer-area" data-id="q24" placeholder="Escribe tu respuesta aquí..."></textarea>
+        <div class="answer-meta"><span class="char-count" id="cc-q24">0 caracteres</span><span class="answered-badge" id="ab-q24">✓ Respondida</span></div>
+      </article>
+      <article class="qa">
+        <div class="qa-header"><div class="num b3">25</div><h2 class="question-text">¿España es uno de los países más desiguales de la Unión Europea?</h2></div>
+        <textarea class="answer-area" data-id="q25" placeholder="Escribe tu respuesta aquí..."></textarea>
+        <div class="answer-meta"><span class="char-count" id="cc-q25">0 caracteres</span><span class="answered-badge" id="ab-q25">✓ Respondida</span></div>
+      </article>
+      <article class="qa">
+        <div class="qa-header"><div class="num b3">26</div><h2 class="question-text">¿La pandemia de COVID-19 aumentó la desigualdad económica en las ciudades españolas?</h2></div>
+        <textarea class="answer-area" data-id="q26" placeholder="Escribe tu respuesta aquí..."></textarea>
+        <div class="answer-meta"><span class="char-count" id="cc-q26">0 caracteres</span><span class="answered-badge" id="ab-q26">✓ Respondida</span></div>
+      </article>
+      <article class="qa">
+        <div class="qa-header"><div class="num b3">27</div><h2 class="question-text">¿Cuál es la diferencia de renta media entre el barrio más rico y el más pobre de Barcelona?</h2></div>
+        <textarea class="answer-area" data-id="q27" placeholder="Escribe tu respuesta aquí..."></textarea>
+        <div class="answer-meta"><span class="char-count" id="cc-q27">0 caracteres</span><span class="answered-badge" id="ab-q27">✓ Respondida</span></div>
+      </article>
+      <article class="qa">
+        <div class="qa-header"><div class="num b3">28</div><h2 class="question-text">¿Existe algún indicador que mida la movilidad social entre generaciones en las ciudades españolas?</h2></div>
+        <textarea class="answer-area" data-id="q28" placeholder="Escribe tu respuesta aquí..."></textarea>
+        <div class="answer-meta"><span class="char-count" id="cc-q28">0 caracteres</span><span class="answered-badge" id="ab-q28">✓ Respondida</span></div>
+      </article>
+      <article class="qa">
+        <div class="qa-header"><div class="num b3">29</div><h2 class="question-text">¿Cómo afecta la concentración de riqueza en pocas manos a la salud económica de una ciudad?</h2></div>
+        <textarea class="answer-area" data-id="q29" placeholder="Escribe tu respuesta aquí..."></textarea>
+        <div class="answer-meta"><span class="char-count" id="cc-q29">0 caracteres</span><span class="answered-badge" id="ab-q29">✓ Respondida</span></div>
+      </article>
+      <article class="qa">
+        <div class="qa-header"><div class="num b3">30</div><h2 class="question-text">¿La desigualdad económica frena o impulsa el crecimiento de las ciudades a largo plazo?</h2></div>
+        <textarea class="answer-area" data-id="q30" placeholder="Escribe tu respuesta aquí..."></textarea>
+        <div class="answer-meta"><span class="char-count" id="cc-q30">0 caracteres</span><span class="answered-badge" id="ab-q30">✓ Respondida</span></div>
+      </article>
+    </div>
+  </section>
+
+  <!-- BLOQUE 4 -->
+  <section class="section">
+    <div class="section-header b4"><span class="icon">👷</span>Bloque 4 · Mercado Laboral y Calidad del Empleo</div>
+    <div class="questions-container">
+      <article class="qa">
+        <div class="qa-header"><div class="num b4">31</div><h2 class="question-text">¿Cuál es la tasa de temporalidad laboral en España comparada con la media europea?</h2></div>
+        <textarea class="answer-area" data-id="q31" placeholder="Escribe tu respuesta aquí..."></textarea>
+        <div class="answer-meta"><span class="char-count" id="cc-q31">0 caracteres</span><span class="answered-badge" id="ab-q31">✓ Respondida</span></div>
+      </article>
+      <article class="qa">
+        <div class="qa-header"><div class="num b4">32</div><h2 class="question-text">¿El desempleo juvenil en España sigue siendo estructuralmente elevado respecto a Europa?</h2></div>
+        <textarea class="answer-area" data-id="q32" placeholder="Escribe tu respuesta aquí..."></textarea>
+        <div class="answer-meta"><span class="char-count" id="cc-q32">0 caracteres</span><span class="answered-badge" id="ab-q32">✓ Respondida</span></div>
+      </article>
+      <article class="qa">
+        <div class="qa-header"><div class="num b4">33</div><h2 class="question-text">¿Las ciudades con mayor actividad económica generan automáticamente más bienestar para sus habitantes?</h2></div>
+        <textarea class="answer-area" data-id="q33" placeholder="Escribe tu respuesta aquí..."></textarea>
+        <div class="answer-meta"><span class="char-count" id="cc-q33">0 caracteres</span><span class="answered-badge" id="ab-q33">✓ Respondida</span></div>
+      </article>
+      <article class="qa">
+        <div class="qa-header"><div class="num b4">34</div><h2 class="question-text">¿Existe correlación entre la llegada masiva de turismo y el deterioro de las condiciones laborales locales?</h2></div>
+        <textarea class="answer-area" data-id="q34" placeholder="Escribe tu respuesta aquí..."></textarea>
+        <div class="answer-meta"><span class="char-count" id="cc-q34">0 caracteres</span><span class="answered-badge" id="ab-q34">✓ Respondida</span></div>
+      </article>
+      <article class="qa">
+        <div class="qa-header"><div class="num b4">35</div><h2 class="question-text">¿Por qué jóvenes con estudios universitarios abandonan Barcelona o Madrid para vivir en otras ciudades?</h2></div>
+        <textarea class="answer-area" data-id="q35" placeholder="Escribe tu respuesta aquí..."></textarea>
+        <div class="answer-meta"><span class="char-count" id="cc-q35">0 caracteres</span><span class="answered-badge" id="ab-q35">✓ Respondida</span></div>
+      </article>
+      <article class="qa">
+        <div class="qa-header"><div class="num b4">36</div><h2 class="question-text">¿Cuántos trabajadores en España son pobres a pesar de tener empleo (working poor)?</h2></div>
+        <textarea class="answer-area" data-id="q36" placeholder="Escribe tu respuesta aquí..."></textarea>
+        <div class="answer-meta"><span class="char-count" id="cc-q36">0 caracteres</span><span class="answered-badge" id="ab-q36">✓ Respondida</span></div>
+      </article>
+      <article class="qa">
+        <div class="qa-header"><div class="num b4">37</div><h2 class="question-text">¿La reforma laboral de 2021 ha conseguido reducir realmente la precariedad laboral?</h2></div>
+        <textarea class="answer-area" data-id="q37" placeholder="Escribe tu respuesta aquí..."></textarea>
+        <div class="answer-meta"><span class="char-count" id="cc-q37">0 caracteres</span><span class="answered-badge" id="ab-q37">✓ Respondida</span></div>
+      </article>
+      <article class="qa">
+        <div class="qa-header"><div class="num b4">38</div><h2 class="question-text">¿Cuál es la tasa de desempleo estructural en España y por qué persiste?</h2></div>
+        <textarea class="answer-area" data-id="q38" placeholder="Escribe tu respuesta aquí..."></textarea>
+        <div class="answer-meta"><span class="char-count" id="cc-q38">0 caracteres</span><span class="answered-badge" id="ab-q38">✓ Respondida</span></div>
+      </article>
+      <article class="qa">
+        <div class="qa-header"><div class="num b4">39</div><h2 class="question-text">¿Existe diferencia significativa en la calidad del empleo entre ciudades grandes y ciudades medianas?</h2></div>
+        <textarea class="answer-area" data-id="q39" placeholder="Escribe tu respuesta aquí..."></textarea>
+        <div class="answer-meta"><span class="char-count" id="cc-q39">0 caracteres</span><span class="answered-badge" id="ab-q39">✓ Respondida</span></div>
+      </article>
+      <article class="qa">
+        <div class="qa-header"><div class="num b4">40</div><h2 class="question-text">¿El teletrabajo ha cambiado la distribución geográfica del empleo cualificado en España?</h2></div>
+        <textarea class="answer-area" data-id="q40" placeholder="Escribe tu respuesta aquí..."></textarea>
+        <div class="answer-meta"><span class="char-count" id="cc-q40">0 caracteres</span><span class="answered-badge" id="ab-q40">✓ Respondida</span></div>
+      </article>
+    </div>
+  </section>
+
+  <!-- BLOQUE 5 -->
+  <section class="section">
+    <div class="section-header b5"><span class="icon">⚡</span>Bloque 5 · Energía, Movilidad y Coste de Vida</div>
+    <div class="questions-container">
+      <article class="qa">
+        <div class="qa-header"><div class="num b5">41</div><h2 class="question-text">¿Cómo afecta el precio de la energía al coste de vida en las ciudades españolas?</h2></div>
+        <textarea class="answer-area" data-id="q41" placeholder="Escribe tu respuesta aquí..."></textarea>
+        <div class="answer-meta"><span class="char-count" id="cc-q41">0 caracteres</span><span class="answered-badge" id="ab-q41">✓ Respondida</span></div>
+      </article>
+      <article class="qa">
+        <div class="qa-header"><div class="num b5">42</div><h2 class="question-text">¿La volatilidad del precio eléctrico afecta de forma diferente a hogares ricos y pobres?</h2></div>
+        <textarea class="answer-area" data-id="q42" placeholder="Escribe tu respuesta aquí..."></textarea>
+        <div class="answer-meta"><span class="char-count" id="cc-q42">0 caracteres</span><span class="answered-badge" id="ab-q42">✓ Respondida</span></div>
+      </article>
+      <article class="qa">
+        <div class="qa-header"><div class="num b5">43</div><h2 class="question-text">¿Cuánto representa el coste del transporte en el presupuesto de un hogar de renta media?</h2></div>
+        <textarea class="answer-area" data-id="q43" placeholder="Escribe tu respuesta aquí..."></textarea>
+        <div class="answer-meta"><span class="char-count" id="cc-q43">0 caracteres</span><span class="answered-badge" id="ab-q43">✓ Respondida</span></div>
+      </article>
+      <article class="qa">
+        <div class="qa-header"><div class="num b5">44</div><h2 class="question-text">¿Las ciudades mejor conectadas tienen mayor actividad económica y mejores condiciones laborales?</h2></div>
+        <textarea class="answer-area" data-id="q44" placeholder="Escribe tu respuesta aquí..."></textarea>
+        <div class="answer-meta"><span class="char-count" id="cc-q44">0 caracteres</span><span class="answered-badge" id="ab-q44">✓ Respondida</span></div>
+      </article>
+      <article class="qa">
+        <div class="qa-header"><div class="num b5">45</div><h2 class="question-text">¿El IPC recoge de forma fiel la experiencia de subida de precios que percibe el ciudadano?</h2></div>
+        <textarea class="answer-area" data-id="q45" placeholder="Escribe tu respuesta aquí..."></textarea>
+        <div class="answer-meta"><span class="char-count" id="cc-q45">0 caracteres</span><span class="answered-badge" id="ab-q45">✓ Respondida</span></div>
+      </article>
+      <article class="qa">
+        <div class="qa-header"><div class="num b5">46</div><h2 class="question-text">¿Cuál ha sido la evolución del precio de la cesta de la compra básica en España en los últimos 3 años?</h2></div>
+        <textarea class="answer-area" data-id="q46" placeholder="Escribe tu respuesta aquí..."></textarea>
+        <div class="answer-meta"><span class="char-count" id="cc-q46">0 caracteres</span><span class="answered-badge" id="ab-q46">✓ Respondida</span></div>
+      </article>
+      <article class="qa">
+        <div class="qa-header"><div class="num b5">47</div><h2 class="question-text">¿La transición energética está teniendo un impacto negativo en el coste de vida a corto plazo?</h2></div>
+        <textarea class="answer-area" data-id="q47" placeholder="Escribe tu respuesta aquí..."></textarea>
+        <div class="answer-meta"><span class="char-count" id="cc-q47">0 caracteres</span><span class="answered-badge" id="ab-q47">✓ Respondida</span></div>
+      </article>
+      <article class="qa">
+        <div class="qa-header"><div class="num b5">48</div><h2 class="question-text">¿Existe alguna herramienta que permita comparar el coste real de vida entre ciudades españolas?</h2></div>
+        <textarea class="answer-area" data-id="q48" placeholder="Escribe tu respuesta aquí..."></textarea>
+        <div class="answer-meta"><span class="char-count" id="cc-q48">0 caracteres</span><span class="answered-badge" id="ab-q48">✓ Respondida</span></div>
+      </article>
+      <article class="qa">
+        <div class="qa-header"><div class="num b5">49</div><h2 class="question-text">¿El precio del transporte público en Barcelona es competitivo respecto a otras ciudades europeas?</h2></div>
+        <textarea class="answer-area" data-id="q49" placeholder="Escribe tu respuesta aquí..."></textarea>
+        <div class="answer-meta"><span class="char-count" id="cc-q49">0 caracteres</span><span class="answered-badge" id="ab-q49">✓ Respondida</span></div>
+      </article>
+      <article class="qa">
+        <div class="qa-header"><div class="num b5">50</div><h2 class="question-text">¿Cuánto peso tiene la energía en el IPC y cómo distorsiona la lectura de la inflación general?</h2></div>
+        <textarea class="answer-area" data-id="q50" placeholder="Escribe tu respuesta aquí..."></textarea>
+        <div class="answer-meta"><span class="char-count" id="cc-q50">0 caracteres</span><span class="answered-badge" id="ab-q50">✓ Respondida</span></div>
+      </article>
+    </div>
+  </section>
+
+  <!-- BLOQUE 6 -->
+  <section class="section">
+    <div class="section-header b6"><span class="icon">🔍</span>Bloque 6 · Datos, Transparencia y Necesidad de ISEU+</div>
+    <div class="questions-container">
+      <article class="qa">
+        <div class="qa-header"><div class="num b6">51</div><h2 class="question-text">¿Por qué un ciudadano no puede saber hoy si su ciudad está mejorando o empeorando económicamente?</h2></div>
+        <textarea class="answer-area" data-id="q51" placeholder="Escribe tu respuesta aquí..."></textarea>
+        <div class="answer-meta"><span class="char-count" id="cc-q51">0 caracteres</span><span class="answered-badge" id="ab-q51">✓ Respondida</span></div>
+      </article>
+      <article class="qa">
+        <div class="qa-header"><div class="num b6">52</div><h2 class="question-text">¿Cuántos organismos públicos distintos publican datos económicos sobre Barcelona y están coordinados entre sí?</h2></div>
+        <textarea class="answer-area" data-id="q52" placeholder="Escribe tu respuesta aquí..."></textarea>
+        <div class="answer-meta"><span class="char-count" id="cc-q52">0 caracteres</span><span class="answered-badge" id="ab-q52">✓ Respondida</span></div>
+      </article>
+      <article class="qa">
+        <div class="qa-header"><div class="num b6">53</div><h2 class="question-text">¿Es posible comparar la situación económica de Barcelona con Madrid usando solo datos públicos oficiales?</h2></div>
+        <textarea class="answer-area" data-id="q53" placeholder="Escribe tu respuesta aquí..."></textarea>
+        <div class="answer-meta"><span class="char-count" id="cc-q53">0 caracteres</span><span class="answered-badge" id="ab-q53">✓ Respondida</span></div>
+      </article>
+      <article class="qa">
+        <div class="qa-header"><div class="num b6">54</div><h2 class="question-text">¿Qué ocurre cuando un político, periodista o inversor necesita entender la salud económica de una ciudad en menos de 5 minutos?</h2></div>
+        <textarea class="answer-area" data-id="q54" placeholder="Escribe tu respuesta aquí..."></textarea>
+        <div class="answer-meta"><span class="char-count" id="cc-q54">0 caracteres</span><span class="answered-badge" id="ab-q54">✓ Respondida</span></div>
+      </article>
+      <article class="qa">
+        <div class="qa-header"><div class="num b6">55</div><h2 class="question-text">¿Qué pasaría si existiera un índice público actualizado de salud económica urbana para cada ciudad española?</h2></div>
+        <textarea class="answer-area" data-id="q55" placeholder="Escribe tu respuesta aquí..."></textarea>
+        <div class="answer-meta"><span class="char-count" id="cc-q55">0 caracteres</span><span class="answered-badge" id="ab-q55">✓ Respondida</span></div>
+      </article>
+      <article class="qa">
+        <div class="qa-header"><div class="num b6">56</div><h2 class="question-text">¿Con qué frecuencia se actualizan los principales indicadores económicos oficiales en España?</h2></div>
+        <textarea class="answer-area" data-id="q56" placeholder="Escribe tu respuesta aquí..."></textarea>
+        <div class="answer-meta"><span class="char-count" id="cc-q56">0 caracteres</span><span class="answered-badge" id="ab-q56">✓ Respondida</span></div>
+      </article>
+      <article class="qa">
+        <div class="qa-header"><div class="num b6">57</div><h2 class="question-text">¿Existe algún ranking público que compare la calidad de vida entre ciudades españolas con datos oficiales?</h2></div>
+        <textarea class="answer-area" data-id="q57" placeholder="Escribe tu respuesta aquí..."></textarea>
+        <div class="answer-meta"><span class="char-count" id="cc-q57">0 caracteres</span><span class="answered-badge" id="ab-q57">✓ Respondida</span></div>
+      </article>
+      <article class="qa">
+        <div class="qa-header"><div class="num b6">58</div><h2 class="question-text">¿Qué información económica urbana está disponible en abierto y qué sigue siendo opaca o inaccesible?</h2></div>
+        <textarea class="answer-area" data-id="q58" placeholder="Escribe tu respuesta aquí..."></textarea>
+        <div class="answer-meta"><span class="char-count" id="cc-q58">0 caracteres</span><span class="answered-badge" id="ab-q58">✓ Respondida</span></div>
+      </article>
+      <article class="qa">
+        <div class="qa-header"><div class="num b6">59</div><h2 class="question-text">¿Podría un sistema automatizado detectar señales de deterioro económico antes de que aparezcan en las estadísticas oficiales?</h2></div>
+        <textarea class="answer-area" data-id="q59" placeholder="Escribe tu respuesta aquí..."></textarea>
+        <div class="answer-meta"><span class="char-count" id="cc-q59">0 caracteres</span><span class="answered-badge" id="ab-q59">✓ Respondida</span></div>
+      </article>
+      <article class="qa">
+        <div class="qa-header"><div class="num b6">60</div><h2 class="question-text">¿Qué tipo de decisiones mejorarían si los ciudadanos tuvieran acceso a un índice de salud económica urbana actualizado?</h2></div>
+        <textarea class="answer-area" data-id="q60" placeholder="Escribe tu respuesta aquí..."></textarea>
+        <div class="answer-meta"><span class="char-count" id="cc-q60">0 caracteres</span><span class="answered-badge" id="ab-q60">✓ Respondida</span></div>
+      </article>
+    </div>
+  </section>
+
+  <div class="summary-box">
+    <h2>Instrucciones</h2>
+    <p>Responde cada pregunta con datos, referencias o tu propia argumentación. Las respuestas se guardan automáticamente en el navegador (localStorage). Cuando hayas terminado, usa <strong>Exportar a PDF</strong> para guardar el documento completo como evidencia de validación del TFM.</p>
+  </div>
+</main>
+
+<script>
+  const TOTAL = 60;
+
+  function updateStats() {
+    let answered = 0;
+    for (let i = 1; i <= TOTAL; i++) {
+      const id = 'q' + String(i).padStart(2, '0');
+      const val = localStorage.getItem('iseu_' + id) || '';
+      if (val.trim().length > 10) answered++;
+    }
+    document.getElementById('answered-count').textContent = answered + '/' + TOTAL;
+    const pct = Math.round((answered / TOTAL) * 100);
+    document.getElementById('pct').textContent = pct + '%';
+    document.getElementById('progress-fill').style.width = pct + '%';
+  }
+
+  function initArea(el) {
+    const id = el.dataset.id;
+    const saved = localStorage.getItem('iseu_' + id) || '';
+    el.value = saved;
+    updateCharCount(el);
+    if (saved.trim().length > 10) {
+      el.classList.add('filled');
+      document.getElementById('ab-' + id).classList.add('visible');
+    }
+    el.addEventListener('input', () => {
+      localStorage.setItem('iseu_' + id, el.value);
+      updateCharCount(el);
+      const filled = el.value.trim().length > 10;
+      el.classList.toggle('filled', filled);
+      document.getElementById('ab-' + id).classList.toggle('visible', filled);
+      updateStats();
+    });
+  }
+
+  function updateCharCount(el) {
+    const id = el.dataset.id;
+    document.getElementById('cc-' + id).textContent = el.value.length + ' caracteres';
+  }
+
+  function clearAll() {
+    if (!confirm('¿Borrar todas las respuestas? Esta acción no se puede deshacer.')) return;
+    for (let i = 1; i <= TOTAL; i++) {
+      const id = 'q' + String(i).padStart(2, '0');
+      localStorage.removeItem('iseu_' + id);
+    }
+    document.querySelectorAll('.answer-area').forEach(el => {
+      el.value = '';
+      el.classList.remove('filled');
+      updateCharCount(el);
+    });
+    document.querySelectorAll('.answered-badge').forEach(el => el.classList.remove('visible'));
+    updateStats();
+  }
+
+  document.querySelectorAll('.answer-area').forEach(initArea);
+  updateStats();
+</script>
+</body>
+</html>
