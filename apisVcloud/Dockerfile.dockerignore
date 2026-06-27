@@ -1,0 +1,8 @@
+**
+!apisVcloud/**
+!api_clients/
+!api_clients/intento 3/
+!api_clients/intento 3/APIS/**
+!api_clients/intento 3/pipeline/**
+!api_clients/intento 3/run_pipeline.py
+
