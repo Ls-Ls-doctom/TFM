@@ -9,6 +9,7 @@ import sys
 import time
 import urllib.error
 import urllib.request
+from collections import defaultdict
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
@@ -425,22 +426,79 @@ def build_data_payload(question: str) -> dict:
         for item in sql_payload.get("rows", [])
     ]
 
+    compact_rows = compact_indicator_rows(sql_payload["rows"])
     return {
-        "instruccion": "Usa estos indicadores consultados desde SQLite como evidencia. Cita fuente, variable, territorio, periodo, unidad y calidad cuando sea posible. No inventes datos que no aparezcan aqui.",
+        "instruccion": (
+            "Usa estos indicadores como evidencia y ofrece una opinion concreta. "
+            "Cita fuente, territorio, periodo, valor y unidad. Usa las metricas derivadas cuando existan, "
+            "explica su significado y no contradigas sus valores. No inventes datos."
+        ),
         "pregunta": question,
         "database": "Base de datos",
         "database_ready": sql_payload["ready"],
         "terminos_busqueda": sql_payload["terms"],
         "semantic_sql": compact_semantic_payload(sql_payload.get("semantic", {})),
-        "indicadores": compact_indicator_rows(sql_payload["rows"]),
+        "indicadores": compact_rows,
+        "metricas_derivadas": build_derived_metrics(compact_rows),
         "catalogo": compact_catalog_summary(sql_payload["summary"]),
         "log": log,
     }
 
 
+def build_derived_metrics(rows: list[dict]) -> list[dict]:
+    if not rows:
+        return []
+    latest_period = max((str(row.get("period") or "") for row in rows), default="")
+    latest_rows = [row for row in rows if str(row.get("period") or "") == latest_period]
+    city_metrics: dict[str, dict[str, float]] = defaultdict(dict)
+    for row in latest_rows:
+        city = str(row.get("geo") or "").strip()
+        variable = normalize(str(row.get("variable") or ""))
+        if not city:
+            continue
+        try:
+            value = float(row.get("value"))
+        except (TypeError, ValueError):
+            continue
+        if "contrat" in variable:
+            city_metrics[city]["contracts"] = value
+        if "demand" in variable or "paro" in variable:
+            city_metrics[city]["job_seekers"] = value
+
+    ratios = []
+    for city, metrics in city_metrics.items():
+        contracts = metrics.get("contracts")
+        job_seekers = metrics.get("job_seekers")
+        if contracts is None or not job_seekers:
+            continue
+        ratios.append({
+            "territorio": city,
+            "periodo": latest_period,
+            "contratos": contracts,
+            "demandantes": job_seekers,
+            "contratos_por_demandante": round(contracts / job_seekers, 3),
+        })
+    if len(ratios) < 2:
+        return []
+    ordered_ratios = sorted(ratios, key=lambda item: item["contratos_por_demandante"], reverse=True)
+    return [{
+        "metrica": "contratos_por_demandante",
+        "descripcion": "Proxy de dinamismo laboral: contratos registrados divididos por demandantes de empleo en el mismo periodo.",
+        "criterio": "Un valor mayor indica mas volumen de contratacion por demandante; no equivale a probabilidad individual de conseguir empleo.",
+        "fuente": "SEPE",
+        "orden_descendente": [item["territorio"] for item in ordered_ratios],
+        "territorio_lider_segun_metrica": ordered_ratios[0]["territorio"],
+        "comparacion_calculada": (
+            f"{ordered_ratios[0]['territorio']} ({ordered_ratios[0]['contratos_por_demandante']}) > "
+            f"{ordered_ratios[1]['territorio']} ({ordered_ratios[1]['contratos_por_demandante']})"
+        ),
+        "valores": ordered_ratios,
+    }]
+
+
 def compact_indicator_rows(rows: list[dict]) -> list[dict]:
     keys = ("source", "dataset", "variable", "metric", "geo", "period", "value", "unit", "quality", "score")
-    return [{key: row.get(key) for key in keys if key in row} for row in rows[:8]]
+    return [{key: row.get(key) for key in keys if key in row} for row in rows[:12]]
 
 
 def compact_catalog_summary(summary: dict) -> dict:
@@ -510,7 +568,7 @@ def build_trace(payload: dict) -> dict:
     local_data = build_local_visual_data(question, data_payload)
     return {
         "provider": "assistant",
-        "model": "ISEU Assistant",
+        "model": load_config().get("model", "Modelo configurado"),
         "maxTokens": load_config().get("maxTokens"),
         "question": question,
         "usesData": use_data,
@@ -535,6 +593,8 @@ def build_dashboard_payload() -> dict:
     period_rows = []
     source_variable_rows = []
     city_rows = []
+    city_update_rows = []
+    catalog_rows = []
     detail_rows = int(sqlite_report.get("detail_rows_loaded") or 0)
 
     if DB_PATH.exists():
@@ -634,6 +694,81 @@ def build_dashboard_payload() -> dict:
                     """
                 ).fetchall()
             ]
+            city_update_rows = [
+                dict(row)
+                for row in conn.execute(
+                    """
+                    WITH normalized AS (
+                        SELECT
+                            CASE
+                                WHEN LOWER(geo) LIKE '%barcelona%' THEN 'Barcelona'
+                                WHEN LOWER(geo) LIKE '%madrid%' THEN 'Madrid'
+                                WHEN LOWER(geo) LIKE '%valencia%' THEN 'Valencia'
+                                WHEN LOWER(geo) LIKE '%sevilla%' THEN 'Sevilla'
+                                WHEN LOWER(geo) LIKE '%bilbao%' THEN 'Bilbao'
+                                WHEN LOWER(geo) LIKE '%malaga%' OR LOWER(geo) LIKE '%málaga%' THEN 'Malaga'
+                                WHEN LOWER(geo) LIKE '%zaragoza%' THEN 'Zaragoza'
+                                ELSE NULL
+                            END AS city,
+                            period,
+                            extracted_at,
+                            source
+                        FROM indicadores
+                        WHERE geo IS NOT NULL AND TRIM(geo) <> ''
+                    )
+                    SELECT
+                        city,
+                        MAX(extracted_at) AS received_at,
+                        MAX(period) AS latest_period,
+                        COUNT(*) AS rows,
+                        COUNT(DISTINCT source) AS source_count,
+                        GROUP_CONCAT(DISTINCT source) AS sources
+                    FROM normalized
+                    WHERE city IS NOT NULL
+                    GROUP BY city
+                    ORDER BY received_at DESC, city
+                    """
+                ).fetchall()
+            ]
+            catalog_rows = [
+                dict(row)
+                for row in conn.execute(
+                    """
+                    WITH enriched AS (
+                        SELECT
+                            variable,
+                            metric,
+                            source,
+                            period,
+                            extracted_at,
+                            CASE
+                                WHEN LOWER(geo) LIKE '%barcelona%' THEN 'Barcelona'
+                                WHEN LOWER(geo) LIKE '%madrid%' THEN 'Madrid'
+                                WHEN LOWER(geo) LIKE '%valencia%' THEN 'Valencia'
+                                WHEN LOWER(geo) LIKE '%sevilla%' THEN 'Sevilla'
+                                WHEN LOWER(geo) LIKE '%bilbao%' THEN 'Bilbao'
+                                WHEN LOWER(geo) LIKE '%malaga%' OR LOWER(geo) LIKE '%málaga%' THEN 'Malaga'
+                                WHEN LOWER(geo) LIKE '%zaragoza%' THEN 'Zaragoza'
+                                ELSE NULL
+                            END AS city
+                        FROM indicadores
+                        WHERE variable IS NOT NULL AND TRIM(variable) <> ''
+                    )
+                    SELECT
+                        variable,
+                        MIN(NULLIF(TRIM(metric), '')) AS description,
+                        GROUP_CONCAT(DISTINCT source) AS sources,
+                        MIN(period) AS first_period,
+                        MAX(period) AS latest_period,
+                        MAX(extracted_at) AS received_at,
+                        COUNT(*) AS rows,
+                        COUNT(DISTINCT city) AS city_count
+                    FROM enriched
+                    GROUP BY variable
+                    ORDER BY variable
+                    """
+                ).fetchall()
+            ]
             detail_tables = [
                 "semantic_observations",
                 "indicators",
@@ -683,6 +818,8 @@ def build_dashboard_payload() -> dict:
         },
         "sources": sources,
         "cities": city_rows,
+        "cityUpdates": city_update_rows,
+        "indicatorCatalog": catalog_rows,
         "variables": variables[:80],
         "latestRows": latest_rows,
         "charts": {
@@ -730,33 +867,22 @@ def load_optional_json(path: Path) -> dict:
 def build_local_visual_data(question: str, data_payload: dict) -> dict:
     rows = data_payload.get("indicadores", [])
     table = []
-    numeric_rows = []
 
     for row in rows:
-        value = row.get("value")
-        try:
-            numeric_value = float(value)
-        except (TypeError, ValueError):
-            numeric_value = None
-
         geo = str(row.get("geo") or "").strip()
         variable = str(row.get("variable") or row.get("dataset") or "Indicador").strip()
         period = str(row.get("period") or "").strip()
         unit = str(row.get("unit") or "").strip()
         source = str(row.get("source") or "").strip()
-        label = f"{variable} · {geo}" if geo else variable
-        display_value = format_metric_value(value, unit)
-        status = f"{period} · {row.get('quality', 'calidad n/d')}".strip(" ·")
-
-        table.append([label, display_value, source, status])
-        if numeric_value is not None:
-            numeric_rows.append((label, numeric_value))
-
-    max_abs = max((abs(value) for _, value in numeric_rows), default=0)
-    chart = []
-    for label, value in numeric_rows[:8]:
-        percent = 0 if max_abs == 0 else round((abs(value) / max_abs) * 100)
-        chart.append([label[:46], max(4, min(100, percent)), format_metric_value(value, "")])
+        quality = str(row.get("quality") or "n/d").strip()
+        table.append([
+            variable,
+            geo or "Territorio n/d",
+            period or "Periodo n/d",
+            format_metric_value(row.get("value"), unit),
+            source or "Fuente n/d",
+            quality,
+        ])
 
     sources = sorted({str(row.get("source")) for row in rows if row.get("source")})
     return {
@@ -765,8 +891,123 @@ def build_local_visual_data(question: str, data_payload: dict) -> dict:
         "summary": f"Vista generada para: {question}",
         "source": " / ".join(sources) if sources else "Base de datos activa",
         "confidence": infer_visual_confidence(rows),
+        "tableHeaders": ["Indicador", "Territorio", "Periodo", "Valor", "Fuente", "Calidad"],
         "table": table[:10],
-        "chart": chart,
+        "chart": choose_visualization(question, rows),
+    }
+
+
+def choose_visualization(question: str, rows: list[dict]) -> dict:
+    numeric_rows = []
+    for row in rows:
+        try:
+            value = float(row.get("value"))
+        except (TypeError, ValueError):
+            continue
+        numeric_rows.append({**row, "numeric_value": value})
+
+    if not numeric_rows:
+        return {"type": "empty", "title": "Sin valores numericos", "reason": "No hay valores numericos suficientes."}
+
+    normalized_question = normalize(question)
+    grouped: dict[tuple[str, str], list[dict]] = defaultdict(list)
+    for row in numeric_rows:
+        key = (str(row.get("variable") or "Indicador"), str(row.get("unit") or ""))
+        grouped[key].append(row)
+
+    time_candidates = []
+    for (variable, unit), group in grouped.items():
+        periods = {str(row.get("period") or "") for row in group if row.get("period")}
+        geos = {str(row.get("geo") or "Total") for row in group}
+        if len(periods) >= 2:
+            preference = 10 if "contrat" in normalize(variable) else 0
+            time_candidates.append((len(periods) * max(1, len(geos)) + preference, variable, unit, group))
+
+    if time_candidates:
+        _, variable, unit, group = max(time_candidates, key=lambda item: item[0])
+        labels = sorted({str(row.get("period")) for row in group if row.get("period")})[-8:]
+        series = []
+        for geo in sorted({str(row.get("geo") or "Total") for row in group}):
+            values_by_period = {
+                str(row.get("period")): row["numeric_value"]
+                for row in group
+                if str(row.get("geo") or "Total") == geo
+            }
+            values = [values_by_period.get(period) for period in labels]
+            if sum(value is not None for value in values) >= 2:
+                series.append({"name": geo, "values": values})
+        if series:
+            return {
+                "type": "line",
+                "title": f"Evolucion de {variable}",
+                "reason": "Se eligio una linea porque los datos forman una serie temporal comparable.",
+                "labels": labels,
+                "series": series[:4],
+                "unit": unit,
+            }
+
+    latest_by_geo_variable = {}
+    for row in sorted(numeric_rows, key=lambda item: str(item.get("period") or "")):
+        key = (str(row.get("geo") or "Total"), str(row.get("variable") or "Indicador"))
+        latest_by_geo_variable[key] = row
+    geos = sorted({key[0] for key in latest_by_geo_variable})
+    variables = sorted({key[1] for key in latest_by_geo_variable})
+
+    if len(geos) >= 2 and len(variables) >= 3:
+        radar_variables = variables[:6]
+        series = []
+        for geo in geos[:4]:
+            normalized_values = []
+            raw_values = []
+            for variable in radar_variables:
+                values = [
+                    latest_by_geo_variable[(candidate_geo, variable)]["numeric_value"]
+                    for candidate_geo in geos
+                    if (candidate_geo, variable) in latest_by_geo_variable
+                ]
+                row = latest_by_geo_variable.get((geo, variable))
+                raw_value = row["numeric_value"] if row else None
+                raw_values.append(raw_value)
+                if raw_value is None or not values:
+                    normalized_values.append(0)
+                elif max(values) == min(values):
+                    normalized_values.append(100)
+                else:
+                    normalized_values.append(round((raw_value - min(values)) / (max(values) - min(values)) * 100, 1))
+            series.append({"name": geo, "values": normalized_values, "rawValues": raw_values})
+        return {
+            "type": "radar",
+            "title": "Perfil comparado de ciudades",
+            "reason": "Se eligio un radar para comparar varias dimensiones entre territorios.",
+            "labels": radar_variables,
+            "series": series,
+            "unit": "indice normalizado 0-100",
+        }
+
+    selected_rows = numeric_rows[:8]
+    values = [row["numeric_value"] for row in selected_rows]
+    labels = [
+        " - ".join(filter(None, (str(row.get("variable") or "Indicador"), str(row.get("geo") or ""))))
+        for row in selected_rows
+    ]
+    if any(token in normalized_question for token in ("reparto", "distribucion", "proporcion", "porcentaje")) and all(value >= 0 for value in values):
+        return {
+            "type": "doughnut",
+            "title": "Distribucion de valores",
+            "reason": "Se eligio un grafico de anillo porque la pregunta pide una distribucion proporcional.",
+            "labels": labels,
+            "values": values,
+            "unit": str(selected_rows[0].get("unit") or ""),
+        }
+
+    return {
+        "type": "bar",
+        "title": "Comparacion de indicadores",
+        "reason": "Se eligieron barras porque permiten comparar categorias independientes.",
+        "labels": labels,
+        "values": values,
+        "displayValues": [format_metric_value(row["numeric_value"], str(row.get("unit") or "")) for row in selected_rows],
+        "unit": str(selected_rows[0].get("unit") or ""),
     }
 
 
@@ -779,7 +1020,16 @@ def format_metric_value(value, unit: str) -> str:
         text = f"{number:,.1f}".replace(",", "X").replace(".", ",").replace("X", ".")
     else:
         text = f"{number:.2f}".rstrip("0").rstrip(".").replace(".", ",")
-    return f"{text} {unit}".strip()
+    translated_units = {
+        "persons": "personas",
+        "person": "personas",
+        "contracts": "contratos",
+        "contract": "contratos",
+        "percent": "%",
+        "percentage": "%",
+    }
+    display_unit = translated_units.get(unit.lower().strip(), unit)
+    return f"{text} {display_unit}".strip()
 
 
 def infer_visual_confidence(rows: list[dict]) -> str:
@@ -875,9 +1125,67 @@ def call_lm_studio(payload: dict) -> str:
         message = choices[0].get("message", {})
         content = message.get("content", "").strip()
         if content:
-            return ensure_user_facing_answer(payload, content)
+            answer = ensure_user_facing_answer(payload, content)
+            if should_use_data_context(str(payload.get("message", ""))):
+                return review_data_answer_with_model(payload, answer)
+            return answer
 
     raise RuntimeError("El asistente no devolvio una respuesta final util.")
+
+
+def review_data_answer_with_model(payload: dict, draft_answer: str) -> str:
+    config = load_config()
+    base_url = config["lmStudioBaseUrl"].rstrip("/")
+    url = f"{base_url}/v1/chat/completions"
+    question = str(payload.get("message", "")).strip()
+    data = build_data_payload(question)
+    evidence = {
+        "indicadores": data.get("indicadores", [])[:10],
+        "metricas_derivadas": data.get("metricas_derivadas", []),
+    }
+    review_prompt = (
+        f"Pregunta del usuario:\n{question}\n\n"
+        f"Evidencia disponible:\n{json.dumps(evidence, ensure_ascii=False)}\n\n"
+        f"Borrador que debes revisar:\n{draft_answer}\n\n"
+        "Devuelve exactamente tres frases en espanol: (1) una recomendacion concreta del territorio indicado en "
+        "territorio_lider_segun_metrica; (2) la comparacion del proxy usando solo comparacion_calculada y explicando "
+        "que un valor mayor indica mas contratos por demandante; (3) la limitacion metodologica. No compares ni "
+        "califiques por separado los recuentos brutos de contratos o demandantes. No menciones coste de vida, "
+        "vivienda, salarios ni variables ausentes. No expliques la revision."
+    )
+    body = {
+        "model": config["model"],
+        "temperature": 0.1,
+        "max_tokens": min(int(config.get("maxTokens", 700)), 520),
+        "stream": False,
+        "messages": [
+            {
+                "role": "system",
+                "content": (
+                    "Eres el revisor factual final de ISEU. Tu salida se muestra directamente al usuario. "
+                    "Usa solo la evidencia proporcionada. Obedece territorio_lider_segun_metrica y "
+                    "comparacion_calculada sin reinterpretarlos. Debes mantener una recomendacion clara."
+                ),
+            },
+            {"role": "user", "content": review_prompt},
+        ],
+    }
+    request = urllib.request.Request(
+        url,
+        data=json.dumps(body).encode("utf-8"),
+        headers={"Content-Type": "application/json"},
+        method="POST",
+    )
+    timeout = int(config.get("requestTimeoutSeconds", 90))
+    with urllib.request.urlopen(request, timeout=timeout) as response:
+        response_body = json.loads(response.read().decode("utf-8"))
+    choices = response_body.get("choices", [])
+    if not choices:
+        raise RuntimeError("El modelo revisor no devolvio una respuesta.")
+    reviewed = extract_final_answer(choices[0].get("message", {}).get("content", "")).strip()
+    if not reviewed:
+        raise RuntimeError("El modelo revisor devolvio una respuesta vacia.")
+    return reviewed
 
 
 def iter_lm_studio_chat_message_stream(payload: dict):
@@ -936,7 +1244,7 @@ def ensure_user_facing_answer(payload: dict, answer: str) -> str:
     repaired = extract_final_answer(call_lm_studio_final(payload)).strip()
     if repaired and not any(marker.lower() in repaired.lower() for marker in suspicious):
         return repaired
-    return build_local_fallback_answer(payload)
+    raise RuntimeError("El modelo no devolvio una respuesta final util.")
 
 
 def build_local_fallback_answer(payload: dict) -> str:
@@ -958,6 +1266,10 @@ def build_local_fallback_answer(payload: dict) -> str:
                 )
             return "\n".join(lines)
         return "No he encontrado indicadores suficientes para responder esa pregunta con datos. Prueba a preguntar por empleo, vivienda, coste de vida, energia, poblacion o fuentes disponibles."
+
+    comparison_answer = build_comparison_recommendation(question, rows)
+    if comparison_answer:
+        return comparison_answer
 
     is_move_or_job_query = any(
         token in normalized_question
@@ -982,6 +1294,80 @@ def build_local_fallback_answer(payload: dict) -> str:
     else:
         lines.append("Usa la vista de tablas o graficos para revisar la trazabilidad completa.")
     return "\n".join(lines)
+
+
+def build_comparison_recommendation(question: str, rows: list[dict]) -> str | None:
+    normalized_question = normalize(question)
+    if not any(token in normalized_question for token in ("compar", "mejor", "entre", "o ", "vivir", "mudar")):
+        return None
+
+    cities = sorted({str(row.get("geo") or "").strip() for row in rows if row.get("geo")})
+    if len(cities) < 2:
+        return None
+
+    latest_period = max((str(row.get("period") or "") for row in rows), default="")
+    latest_rows = [row for row in rows if str(row.get("period") or "") == latest_period]
+    city_metrics: dict[str, dict[str, float]] = defaultdict(dict)
+    for row in latest_rows:
+        city = str(row.get("geo") or "").strip()
+        variable = normalize(str(row.get("variable") or ""))
+        try:
+            value = float(row.get("value"))
+        except (TypeError, ValueError):
+            continue
+        if "contrat" in variable:
+            city_metrics[city]["contracts"] = value
+        if "demand" in variable or "paro" in variable:
+            city_metrics[city]["job_seekers"] = value
+
+    ratios = {
+        city: metrics["contracts"] / metrics["job_seekers"]
+        for city, metrics in city_metrics.items()
+        if metrics.get("contracts") is not None and metrics.get("job_seekers", 0) > 0
+    }
+    if len(ratios) >= 2:
+        winner = max(ratios, key=ratios.get)
+        ordered = sorted(ratios, key=ratios.get, reverse=True)
+        facts = []
+        ratio_facts = []
+        for city in ordered[:3]:
+            metrics = city_metrics[city]
+            facts.append(
+                f"{city}: {format_metric_value(metrics['contracts'], 'contratos')} y "
+                f"{format_metric_value(metrics['job_seekers'], 'demandantes')}"
+            )
+            ratio_facts.append(f"{city} {ratios[city]:.2f}".replace(".", ","))
+        return (
+            f"Mi recomendacion es {winner} si tu prioridad principal es encontrar trabajo.\n\n"
+            f"En {latest_period}, SEPE registra " + "; ".join(facts) + ".\n\n"
+            "Como proxy de dinamismo laboral, la relacion contratos por demandante es "
+            + " frente a ".join(ratio_facts)
+            + f", por lo que {winner} muestra una actividad de contratacion claramente mayor en los datos disponibles.\n\n"
+            "Esta es una recomendacion laboral, no una conclusion completa sobre calidad de vida: los recuentos no estan ajustados por poblacion y faltan vivienda, salarios y sector profesional."
+        )
+
+    contracts = {
+        city: metrics["contracts"]
+        for city, metrics in city_metrics.items()
+        if metrics.get("contracts") is not None
+    }
+    if len(contracts) >= 2:
+        winner = max(contracts, key=contracts.get)
+        facts = "; ".join(f"{city}: {format_metric_value(value, 'contratos')}" for city, value in contracts.items())
+        return (
+            f"Con los datos laborales disponibles, me inclino por {winner}.\n\n"
+            f"En {latest_period}, SEPE registra {facts}.\n\n"
+            "La recomendacion es orientativa porque compara volumen de contratacion sin ajustar por poblacion, salarios ni coste de vivienda."
+        )
+    return None
+
+
+def build_direct_recommendation(payload: dict) -> str | None:
+    question = str(payload.get("message", "")).strip()
+    if not should_use_data_context(question):
+        return None
+    data = build_data_payload(question)
+    return build_comparison_recommendation(question, data.get("indicadores", []))
 
 
 def call_lm_studio_final(payload: dict) -> str:
@@ -1259,6 +1645,7 @@ class LocalHandler(BaseHTTPRequestHandler):
             self.send_error(404)
             return
 
+        payload = {}
         try:
             payload = read_json_body(self)
             if payload.get("stream"):
@@ -1266,42 +1653,16 @@ class LocalHandler(BaseHTTPRequestHandler):
                 return
 
             trace = build_trace(payload)
-            question = str(payload.get("message", ""))
-            memory_answer = answer_memory_question(question, compact_history(payload.get("history", [])))
-            answer = memory_answer or call_lm_studio(payload)
-            self.send_json({"answer": answer, "provider": "lmstudio", "trace": trace})
+            answer = call_lm_studio(payload)
+            self.send_json({"answer": answer, "provider": "model", "trace": trace})
         except socket.timeout:
-            self.send_json(
-                {
-                    "error": "El asistente ha tardado demasiado en responder.",
-                    "detail": "Prueba de nuevo en unos segundos o revisa que el servicio de respuesta este activo.",
-                },
-                status=504,
-            )
+            self.send_json({"error": "El modelo no respondio dentro del tiempo limite."}, status=504)
         except TimeoutError:
-            self.send_json(
-                {
-                    "error": "El asistente ha tardado demasiado en responder.",
-                    "detail": "Prueba de nuevo en unos segundos o revisa que el servicio de respuesta este activo.",
-                },
-                status=504,
-            )
+            self.send_json({"error": "El modelo no respondio dentro del tiempo limite."}, status=504)
         except urllib.error.URLError as error:
-            detail = str(error)
-            if isinstance(error, urllib.error.HTTPError):
-                try:
-                    detail = error.read().decode("utf-8", errors="replace")
-                except OSError:
-                    detail = str(error)
-            self.send_json(
-                {
-                    "error": "No se pudo conectar con el asistente.",
-                    "detail": detail,
-                },
-                status=502,
-            )
+            self.send_json({"error": "No se pudo conectar con el modelo.", "detail": str(error)}, status=502)
         except Exception as error:
-            self.send_json({"error": "Error generando la respuesta local.", "detail": str(error)}, status=500)
+            self.send_json({"error": "El modelo fallo al generar la respuesta.", "detail": str(error)}, status=500)
 
     def stream_chat(self, payload: dict) -> None:
         self.send_response(200)
@@ -1321,43 +1682,20 @@ class LocalHandler(BaseHTTPRequestHandler):
             detail = "Preparando contexto de respuesta." if use_data else "Preparando respuesta."
             self.write_sse("status", {"label": "Generando respuesta", "detail": detail})
             finish_reason = "stop"
-            started_answer = False
-            memory_answer = answer_memory_question(question, compact_history(payload.get("history", [])))
-            if memory_answer:
-                self.write_sse("status", {"label": "Redactando", "detail": "Mostrando la respuesta final."})
-                for chunk in chunk_answer(memory_answer):
-                    self.write_sse("delta", {"text": chunk})
-                    time.sleep(0.018)
-                started_answer = True
-            else:
-                answer = call_lm_studio(payload)
-                self.write_sse("status", {"label": "Redactando", "detail": "Mostrando la respuesta final."})
-                for chunk in chunk_answer(answer):
-                    self.write_sse("delta", {"text": chunk})
-                    time.sleep(0.018)
-                started_answer = True
-
-            if not started_answer:
-                answer = call_lm_studio(payload)
-                self.write_sse("status", {"label": "Redactando", "detail": "Mostrando la respuesta final."})
-                for chunk in chunk_answer(answer):
-                    self.write_sse("delta", {"text": chunk})
-                    time.sleep(0.018)
+            answer = call_lm_studio(payload)
+            self.write_sse("status", {"label": "Redactando", "detail": "Mostrando la respuesta del modelo."})
+            for chunk in chunk_answer(answer):
+                self.write_sse("delta", {"text": chunk})
+                time.sleep(0.018)
             self.write_sse("done", {"ok": True, "finishReason": finish_reason})
         except socket.timeout:
-            self.write_sse("error", {"error": "El asistente ha tardado demasiado en responder."})
+            self.write_sse("error", {"error": "El modelo no respondio dentro del tiempo limite."})
         except TimeoutError:
-            self.write_sse("error", {"error": "El asistente ha tardado demasiado en responder."})
+            self.write_sse("error", {"error": "El modelo no respondio dentro del tiempo limite."})
         except urllib.error.URLError as error:
-            detail = str(error)
-            if isinstance(error, urllib.error.HTTPError):
-                try:
-                    detail = error.read().decode("utf-8", errors="replace")
-                except OSError:
-                    detail = str(error)
-            self.write_sse("error", {"error": "No se pudo conectar con el asistente.", "detail": detail})
+            self.write_sse("error", {"error": "No se pudo conectar con el modelo.", "detail": str(error)})
         except Exception as error:
-            self.write_sse("error", {"error": "Error generando la respuesta local.", "detail": str(error)})
+            self.write_sse("error", {"error": "El modelo fallo al generar la respuesta.", "detail": str(error)})
 
     def write_sse(self, event: str, payload: dict) -> None:
         message = f"event: {event}\ndata: {json.dumps(payload, ensure_ascii=False)}\n\n"

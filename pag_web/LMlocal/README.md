@@ -18,6 +18,10 @@ python pag_web\LMlocal\server.py
 http://127.0.0.1:5500
 ```
 
+Tambien puedes abrir los HTML con Live Preview en `http://127.0.0.1:3000`.
+Cuando detecta un entorno local, el frontend consulta automaticamente la API en
+`http://127.0.0.1:5500`; por tanto, `server.py` debe permanecer iniciado.
+
 ## Archivos
 
 - `system_prompt.txt`: prompt de sistema del asistente ISEU.

@@ -32,11 +32,15 @@ const yearBarsChart = document.querySelector("#yearBarsChart");
 const variableScatterChart = document.querySelector("#variableScatterChart");
 const sourceCompareChart = document.querySelector("#sourceCompareChart");
 const latestRows = document.querySelector("#latestRows");
-const variableChips = document.querySelector("#variableChips");
-const variableCountLabel = document.querySelector("#variableCountLabel");
-const API_BASE_URL = window.location.port === "8080" || window.location.protocol === "file:"
-  ? "http://127.0.0.1:5500"
-  : window.location.origin;
+const cityUpdateGrid = document.querySelector("#cityUpdateGrid");
+const cityUpdateCount = document.querySelector("#cityUpdateCount");
+const indicatorCatalogGrid = document.querySelector("#indicatorCatalogGrid");
+const indicatorCatalogCount = document.querySelector("#indicatorCatalogCount");
+const LOCAL_API_BASE_URL = "http://127.0.0.1:5500";
+const LOCAL_HOSTNAMES = new Set(["127.0.0.1", "localhost", "::1", "[::1]"]);
+const isLocalPreview = window.location.protocol === "file:"
+  || LOCAL_HOSTNAMES.has(window.location.hostname);
+const API_BASE_URL = isLocalPreview ? LOCAL_API_BASE_URL : window.location.origin;
 
 let activeTopic = "general";
 let activeView = "general";
@@ -309,18 +313,28 @@ async function loadDashboard() {
     if (pipelineStatus) {
       pipelineStatus.textContent = "Actualizando resumen de datos.";
     }
-    const response = await fetch(`${API_BASE_URL}/api/dashboard`);
+    const response = await fetch(`${API_BASE_URL}/api/dashboard`, {
+      headers: { "Accept": "application/json" },
+      cache: "no-store"
+    });
+    const contentType = response.headers.get("content-type") || "";
+    if (!contentType.includes("application/json")) {
+      throw new Error(`La API de datos no respondio correctamente (${response.status}). Inicia el servicio local en ${LOCAL_API_BASE_URL}.`);
+    }
     const payload = await response.json();
     if (!response.ok) {
       throw new Error(payload.error || "No se pudo cargar el dashboard.");
     }
     renderDashboard(payload);
   } catch (error) {
+    const message = error instanceof TypeError
+      ? `No se puede conectar con la API de datos en ${LOCAL_API_BASE_URL}. Inicia el servicio local.`
+      : error.message;
     if (pipelineStatus) {
-      pipelineStatus.textContent = "No se pudo actualizar el resumen. Revisa que el servicio este iniciado.";
+      pipelineStatus.textContent = message;
     }
     if (sourceChart) {
-      sourceChart.innerHTML = `<p class="trace-empty">${escapeHtml(error.message)}</p>`;
+      sourceChart.innerHTML = `<p class="trace-empty">${escapeHtml(message)}</p>`;
     }
   }
 }
@@ -350,7 +364,8 @@ function renderDashboard(payload) {
   renderExpandedCharts(payload);
   renderSelectionDetail();
   renderLatestRows(getFilteredLatestRows());
-  renderVariableChips(payload.variables || []);
+  renderCityUpdates(payload.cityUpdates || []);
+  renderIndicatorCatalog(payload.indicatorCatalog || []);
 }
 
 function getFilteredLatestRows() {
@@ -944,33 +959,89 @@ function renderLatestRows(rows) {
   `).join("");
 }
 
-function renderVariableChips(variables) {
-  if (!variableChips) {
-    return;
-  }
-  if (variableCountLabel) {
-    variableCountLabel.textContent = `${formatNumber(variables.length)} variables mostradas`;
-  }
-  if (!variables.length) {
-    variableChips.innerHTML = `<p class="trace-empty">No hay catalogo disponible.</p>`;
-    return;
-  }
-  variableChips.innerHTML = variables.slice(0, 36).map((item) => `
-    <button class="variable-chip" type="button" data-prompt="Explica la variable ${escapeHtml(String(item.variable || ""))} con los datos disponibles">
-      <strong>${escapeHtml(String(item.variable || "Variable"))}</strong>
-      <span>${escapeHtml(String(item.source || ""))} &middot; ${escapeHtml(String(item.latest_period || ""))}</span>
-    </button>
-  `).join("");
+function formatReceivedAt(value) {
+  if (!value) return "Sin fecha de recepcion";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return String(value).replace("T", " ");
+  return new Intl.DateTimeFormat("es-ES", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit"
+  }).format(date);
+}
 
-  variableChips.querySelectorAll("[data-prompt]").forEach((button) => {
-    button.addEventListener("click", () => {
-      if (!form || !messages) {
-        window.location.href = `chatbot.html?prompt=${encodeURIComponent(button.dataset.prompt || "")}`;
-        return;
-      }
-      sendMessage(button.dataset.prompt);
-    });
-  });
+function formatDataPeriod(value) {
+  if (!value) return "Sin periodo";
+  const match = String(value).match(/^(\d{4})-(\d{2})/);
+  if (!match) return String(value);
+  const date = new Date(Date.UTC(Number(match[1]), Number(match[2]) - 1, 1));
+  return new Intl.DateTimeFormat("es-ES", { month: "long", year: "numeric", timeZone: "UTC" }).format(date);
+}
+
+function renderCityUpdates(updates) {
+  if (!cityUpdateGrid) {
+    return;
+  }
+  if (cityUpdateCount) {
+    cityUpdateCount.textContent = `${formatNumber(updates.length)} ciudades`;
+  }
+  if (!updates.length) {
+    cityUpdateGrid.innerHTML = `<p class="trace-empty">No hay recepciones por ciudad registradas.</p>`;
+    return;
+  }
+  cityUpdateGrid.innerHTML = updates.map((item) => `
+    <article class="city-update-card">
+      <div class="city-update-heading">
+        <strong>${escapeHtml(String(item.city || "Ciudad"))}</strong>
+        <span>${formatNumber(item.rows)} filas</span>
+      </div>
+      <div class="city-update-received">
+        <span>Recibido por ultima vez</span>
+        <time datetime="${escapeHtml(String(item.received_at || ""))}">${escapeHtml(formatReceivedAt(item.received_at))}</time>
+      </div>
+      <div class="city-update-meta">
+        <span>Periodo mas reciente: <strong>${escapeHtml(formatDataPeriod(item.latest_period))}</strong></span>
+        <span>${escapeHtml(String(item.sources || "Fuente n/d").replaceAll(",", " · "))}</span>
+      </div>
+    </article>
+  `).join("");
+}
+
+function renderIndicatorCatalog(indicators) {
+  if (!indicatorCatalogGrid) return;
+  if (indicatorCatalogCount) {
+    indicatorCatalogCount.textContent = `${formatNumber(indicators.length)} indicadores`;
+  }
+  if (!indicators.length) {
+    indicatorCatalogGrid.innerHTML = `<p class="trace-empty">No hay indicadores catalogados.</p>`;
+    return;
+  }
+  indicatorCatalogGrid.innerHTML = indicators.map((item) => {
+    const firstPeriod = formatDataPeriod(item.first_period);
+    const latestPeriod = formatDataPeriod(item.latest_period);
+    const coverage = firstPeriod === latestPeriod ? latestPeriod : `${firstPeriod} - ${latestPeriod}`;
+    const sources = String(item.sources || "Fuente n/d").replaceAll(",", " · ");
+    return `
+      <article class="indicator-catalog-card">
+        <div class="catalog-card-heading">
+          <div>
+            <span>Indicador</span>
+            <h3>${escapeHtml(String(item.variable || "Indicador"))}</h3>
+          </div>
+          <strong>${formatNumber(item.rows)} registros</strong>
+        </div>
+        <p class="catalog-description">${escapeHtml(String(item.description || "Indicador disponible para consulta y comparacion territorial."))}</p>
+        <dl class="catalog-facts">
+          <div><dt>Fuentes</dt><dd>${escapeHtml(sources)}</dd></div>
+          <div><dt>Cobertura temporal</dt><dd>${escapeHtml(coverage)}</dd></div>
+          <div><dt>Ciudades principales</dt><dd>${formatNumber(item.city_count)} de 7</dd></div>
+          <div><dt>Ultima recepcion</dt><dd>${escapeHtml(formatReceivedAt(item.received_at))}</dd></div>
+        </dl>
+      </article>
+    `;
+  }).join("");
 }
 
 function getDataset() {
@@ -1095,24 +1166,24 @@ function renderSummary(data) {
 
 function renderDataTable(data) {
   const table = data.table || [];
+  const headers = data.tableHeaders || ["Variable", "Valor", "Fuente", "Estado"];
   return `
     <div class="data-table-wrap">
       <table class="data-table">
         <thead>
           <tr>
-            <th>Variable</th>
-            <th>Valor</th>
-            <th>Fuente</th>
-            <th>Estado</th>
+            ${headers.map((header) => `<th>${escapeHtml(String(header || ""))}</th>`).join("")}
           </tr>
         </thead>
         <tbody>
-          ${table.map(([variable, value, source, status]) => `
+          ${table.map((row) => `
             <tr>
-              <td>${escapeHtml(String(variable || ""))}</td>
-              <td>${escapeHtml(String(value || ""))}</td>
-              <td>${escapeHtml(String(source || ""))}</td>
-              <td><span class="status-pill">${escapeHtml(String(status || ""))}</span></td>
+              ${row.map((cell, index) => {
+                const value = escapeHtml(String(cell ?? ""));
+                return index === row.length - 1
+                  ? `<td><span class="status-pill">${value}</span></td>`
+                  : `<td>${value}</td>`;
+              }).join("")}
             </tr>
           `).join("")}
         </tbody>
@@ -1121,28 +1192,143 @@ function renderDataTable(data) {
   `;
 }
 
+function formatChartNumber(value) {
+  return Number(value).toLocaleString("es-ES", { maximumFractionDigits: 2 });
+}
+
+function renderBarChart(chart) {
+  const values = chart.values || [];
+  const maxValue = Math.max(...values.map((value) => Math.abs(Number(value) || 0)), 1);
+  return (chart.labels || []).map((label, index) => {
+    const value = Number(values[index]) || 0;
+    const percent = Math.max(4, Math.min(100, Math.abs(value) / maxValue * 100));
+    const displayValue = chart.displayValues?.[index] || `${formatChartNumber(value)} ${chart.unit || ""}`.trim();
+    return `
+      <div class="bar-row">
+        <div class="bar-meta">
+          <span>${escapeHtml(String(label || ""))}</span>
+          <strong>${escapeHtml(displayValue)}</strong>
+        </div>
+        <div class="bar-track"><div class="bar-fill" style="width:${percent}%"></div></div>
+      </div>
+    `;
+  }).join("");
+}
+
+function renderLineChart(chart) {
+  const labels = chart.labels || [];
+  const series = chart.series || [];
+  const numericValues = series.flatMap((item) => item.values || []).filter((value) => value != null && Number.isFinite(Number(value)));
+  if (labels.length < 2 || !numericValues.length) return "";
+  const width = 680;
+  const height = 280;
+  const left = 64;
+  const right = 24;
+  const top = 24;
+  const bottom = 54;
+  const plotWidth = width - left - right;
+  const plotHeight = height - top - bottom;
+  let minValue = Math.min(...numericValues);
+  let maxValue = Math.max(...numericValues);
+  const padding = (maxValue - minValue || Math.abs(maxValue) || 1) * 0.1;
+  minValue -= padding;
+  maxValue += padding;
+  const x = (index) => left + (index / Math.max(1, labels.length - 1)) * plotWidth;
+  const y = (value) => top + (1 - (Number(value) - minValue) / (maxValue - minValue)) * plotHeight;
+  const grid = Array.from({ length: 5 }, (_, index) => {
+    const gridY = top + index * plotHeight / 4;
+    const gridValue = maxValue - index * (maxValue - minValue) / 4;
+    return `<line x1="${left}" y1="${gridY}" x2="${width - right}" y2="${gridY}" class="chart-grid-line"/><text x="${left - 10}" y="${gridY + 4}" text-anchor="end" class="chart-axis-label">${escapeHtml(formatChartNumber(gridValue))}</text>`;
+  }).join("");
+  const lines = series.map((item, seriesIndex) => {
+    const color = chartPalette[seriesIndex % chartPalette.length];
+    const points = (item.values || []).map((value, index) => value == null ? null : `${x(index)},${y(value)}`).filter(Boolean);
+    const dots = (item.values || []).map((value, index) => value == null ? "" : `<circle cx="${x(index)}" cy="${y(value)}" r="4" fill="${color}"><title>${escapeHtml(`${item.name}: ${formatChartNumber(value)} ${chart.unit || ""}`)}</title></circle>`).join("");
+    return `<polyline points="${points.join(" ")}" fill="none" stroke="${color}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>${dots}`;
+  }).join("");
+  const xLabels = labels.map((label, index) => `<text x="${x(index)}" y="${height - 20}" text-anchor="middle" class="chart-axis-label">${escapeHtml(String(label).slice(0, 10))}</text>`).join("");
+  return `<div class="chart-svg-wrap"><svg class="adaptive-chart-svg" viewBox="0 0 ${width} ${height}" role="img" aria-label="${escapeHtml(chart.title || "Serie temporal")}">${grid}${lines}${xLabels}</svg></div>${renderChartLegend(series)}`;
+}
+
+function renderRadarChart(chart) {
+  const labels = chart.labels || [];
+  const series = chart.series || [];
+  if (labels.length < 3 || !series.length) return "";
+  const width = 680;
+  const height = 320;
+  const cx = 340;
+  const cy = 150;
+  const radius = 105;
+  const point = (index, value = 100) => {
+    const angle = -Math.PI / 2 + index * 2 * Math.PI / labels.length;
+    const scaled = radius * Math.max(0, Math.min(100, Number(value) || 0)) / 100;
+    return [cx + Math.cos(angle) * scaled, cy + Math.sin(angle) * scaled];
+  };
+  const rings = [25, 50, 75, 100].map((level) => `<polygon points="${labels.map((_, index) => point(index, level).join(",")).join(" ")}" class="radar-ring"/>`).join("");
+  const axes = labels.map((label, index) => {
+    const [axisX, axisY] = point(index, 100);
+    const [labelX, labelY] = point(index, 122);
+    return `<line x1="${cx}" y1="${cy}" x2="${axisX}" y2="${axisY}" class="chart-grid-line"/><text x="${labelX}" y="${labelY}" text-anchor="middle" class="chart-axis-label">${escapeHtml(String(label).slice(0, 22))}</text>`;
+  }).join("");
+  const polygons = series.map((item, index) => {
+    const color = chartPalette[index % chartPalette.length];
+    const points = labels.map((_, labelIndex) => point(labelIndex, item.values?.[labelIndex] || 0).join(",")).join(" ");
+    return `<polygon points="${points}" fill="${color}" fill-opacity="0.16" stroke="${color}" stroke-width="3"><title>${escapeHtml(item.name)}</title></polygon>`;
+  }).join("");
+  return `<div class="chart-svg-wrap"><svg class="adaptive-chart-svg" viewBox="0 0 ${width} ${height}" role="img" aria-label="${escapeHtml(chart.title || "Grafico radar")}">${rings}${axes}${polygons}</svg></div>${renderChartLegend(series)}`;
+}
+
+function renderDoughnutChart(chart) {
+  const values = (chart.values || []).map((value) => Math.max(0, Number(value) || 0));
+  const total = values.reduce((sum, value) => sum + value, 0);
+  if (!total) return "";
+  const radius = 72;
+  const circumference = 2 * Math.PI * radius;
+  let offset = 0;
+  const segments = values.map((value, index) => {
+    const length = value / total * circumference;
+    const segment = `<circle cx="110" cy="110" r="${radius}" fill="none" stroke="${chartPalette[index % chartPalette.length]}" stroke-width="28" stroke-dasharray="${length} ${circumference - length}" stroke-dashoffset="${-offset}" transform="rotate(-90 110 110)"><title>${escapeHtml(`${chart.labels?.[index] || "Valor"}: ${formatChartNumber(value)}`)}</title></circle>`;
+    offset += length;
+    return segment;
+  }).join("");
+  const legendSeries = (chart.labels || []).map((name, index) => ({ name: `${name}: ${formatChartNumber(values[index])}` }));
+  return `<div class="doughnut-layout"><svg class="doughnut-svg" viewBox="0 0 220 220" role="img" aria-label="${escapeHtml(chart.title || "Distribucion")}">${segments}<text x="110" y="106" text-anchor="middle" class="doughnut-total">Total</text><text x="110" y="130" text-anchor="middle" class="doughnut-value">${escapeHtml(formatChartNumber(total))}</text></svg>${renderChartLegend(legendSeries)}</div>`;
+}
+
+function renderChartLegend(series) {
+  return `<div class="chart-legend">${(series || []).map((item, index) => `<span><i style="background:${chartPalette[index % chartPalette.length]}"></i>${escapeHtml(String(item.name || "Serie"))}</span>`).join("")}</div>`;
+}
+
 function renderChart(data) {
-  const chart = data.chart || [];
-  if (!chart.length) {
+  let chart = data.chart || {};
+  if (Array.isArray(chart)) {
+    chart = {
+      type: "bar",
+      title: data.title || "Indicadores",
+      labels: chart.map((item) => item[0]),
+      values: chart.map((item) => item[1]),
+      displayValues: chart.map((item) => item[2])
+    };
+  }
+  if (!chart.type || chart.type === "empty") {
     return `
       <div class="chart-card">
         <p class="trace-empty">No hay valores numericos suficientes para graficar esta consulta.</p>
       </div>
     `;
   }
+  const renderers = {
+    line: renderLineChart,
+    radar: renderRadarChart,
+    doughnut: renderDoughnutChart,
+    bar: renderBarChart
+  };
+  const content = (renderers[chart.type] || renderBarChart)(chart);
   return `
-    <div class="chart-card" aria-label="Grafico de ${escapeHtml(String(data.title || "Indicadores"))}">
-      ${chart.map(([label, value, displayValue]) => `
-        <div class="bar-row">
-          <div class="bar-meta">
-            <span>${escapeHtml(String(label || ""))}</span>
-            <strong>${escapeHtml(String(displayValue || value || ""))}</strong>
-          </div>
-          <div class="bar-track">
-            <div class="bar-fill" style="width: ${Math.max(0, Math.min(100, Number(value) || 0))}%"></div>
-          </div>
-        </div>
-      `).join("")}
+    <div class="chart-card adaptive-chart" aria-label="Grafico de ${escapeHtml(String(chart.title || data.title || "Indicadores"))}">
+      <div class="chart-card-heading"><div><span>${escapeHtml(String(chart.type || "grafico"))}</span><h3>${escapeHtml(String(chart.title || data.title || "Indicadores"))}</h3></div></div>
+      ${content}
+      ${chart.reason ? `<p class="chart-reason">${escapeHtml(chart.reason)}</p>` : ""}
     </div>
   `;
 }
@@ -1185,9 +1371,27 @@ function getAssistantViewContent(view = activeView) {
     `;
   }
 
-  return lastAssistantText || `
+  const answer = lastAssistantText || `
     <p>Haz una pregunta y puedo transformar la respuesta en tabla o grafico desde el panel lateral.</p>
     ${renderSummary(data)}
+  `;
+  if (!lastLocalData?.table?.length) {
+    return answer;
+  }
+  return `
+    ${answer}
+    <section class="answer-evidence" aria-label="Evidencia utilizada en la respuesta">
+      <div class="evidence-heading">
+        <div>
+          <span>Evidencia utilizada</span>
+          <h3>Datos que sostienen la recomendacion</h3>
+        </div>
+        <strong>${escapeHtml(String(lastLocalData.confidence || "Media"))}</strong>
+      </div>
+      ${renderDataTable(lastLocalData)}
+      ${renderChart(lastLocalData)}
+      <p class="evidence-source">Fuente: ${escapeHtml(String(lastLocalData.source || "Base de datos"))}. La tabla conserva territorio, periodo y calidad del dato.</p>
+    </section>
   `;
 }
 
@@ -1386,18 +1590,6 @@ async function streamLocalModel(text, topic, onDelta, onMeta, onStatus) {
   return fullText;
 }
 
-function getFallbackAnswer() {
-  return `
-    <p>Puedo orientar la respuesta como lectura ISEU: detectar pilar, buscar variables disponibles y separar dato directo de proxy.</p>
-    <div class="answer-panel">
-      <div class="metric-row"><span>Pilar detectado</span><strong>General</strong></div>
-      <div class="metric-row"><span>Fuentes candidatas</span><strong>INE, SEPE, MITMA/MIVAU, Open Data BCN</strong></div>
-      <div class="metric-row"><span>Datos disponibles</span><strong>Base cargada</strong></div>
-    </div>
-    <p>He dejado listo el panel lateral para tabla o grafico con los datos disponibles.</p>
-  `;
-}
-
 async function sendMessage(text) {
   if (isSending || !form || !input || !messages || !welcomeState) {
     return;
@@ -1462,8 +1654,14 @@ async function sendMessage(text) {
     lastAssistantText = formatAssistantText(answer);
     rememberTurn("assistant", answer);
   } catch (error) {
-    lastAssistantText = match?.html || getFallbackAnswer();
-    rememberTurn("assistant", lastAssistantText.replace(/<[^>]+>/g, " "));
+    lastLocalData = null;
+    const errorMessage = error?.message || "No se pudo obtener una respuesta del proveedor configurado.";
+    lastAssistantText = `
+      <div class="model-error" role="alert">
+        <strong>El modelo fallo</strong>
+        <p>${escapeHtml(errorMessage)}</p>
+      </div>
+    `;
   } finally {
     isSending = false;
     input.disabled = false;
@@ -1551,7 +1749,7 @@ refreshDashboardButton?.addEventListener("click", loadDashboard);
 clearSelectionButton?.addEventListener("click", clearDashboardSelection);
 
 renderLastUpdateTime();
-if (sourceChart || latestRows || variableChips) {
+if (sourceChart || latestRows || cityUpdateGrid || indicatorCatalogGrid) {
   loadDashboard();
 }
 autoResize();

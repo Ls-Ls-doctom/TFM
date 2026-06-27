@@ -205,12 +205,22 @@
           </section>
         </div>
 
-        <section class="dashboard-panel" aria-label="Catalogo de variables">
+        <section class="dashboard-panel" aria-label="Ultima actualizacion por ciudad">
           <div class="panel-heading">
-            <h2>Catalogo consultable</h2>
-            <span id="variableCountLabel">Variables normalizadas</span>
+            <h2>Ultima actualizacion por ciudad</h2>
+            <span id="cityUpdateCount">Recepciones registradas</span>
           </div>
-          <div id="variableChips" class="variable-chips"></div>
+          <p class="update-section-copy">Momento en que el sistema recibio datos por ultima vez. El periodo indica la fecha de referencia del dato, que puede ser anterior.</p>
+          <div id="cityUpdateGrid" class="city-update-grid"></div>
+        </section>
+
+        <section class="dashboard-panel" aria-label="Catalogo de indicadores">
+          <div class="panel-heading">
+            <h2>Catalogo de indicadores</h2>
+            <span id="indicatorCatalogCount">Indicadores disponibles</span>
+          </div>
+          <p class="update-section-copy">Que datos se pueden consultar, de donde proceden, que periodo cubren y cuando se recibieron por ultima vez.</p>
+          <div id="indicatorCatalogGrid" class="indicator-catalog-grid"></div>
         </section>
       </section>
     </main>
