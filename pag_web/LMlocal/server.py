@@ -3,6 +3,7 @@ from __future__ import annotations
 import csv
 import json
 import mimetypes
+import os
 import socket
 import sys
 import time
@@ -10,6 +11,10 @@ import urllib.error
 import urllib.request
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
+
+GROQ_API_KEY = os.environ.get("GROQ_API_KEY", "")
+GROQ_BASE_URL = "https://api.groq.com/openai"
+GROQ_MODEL = "llama-3.3-70b-versatile"
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -56,8 +61,8 @@ def build_user_content(payload: dict) -> str:
         data_section = "\n\nModo conversacion simple: no uses ni menciones SQLite, datos locales, fuentes ni trazabilidad."
 
     return (
-        "/no_think\n"
-        "Responde solo con la respuesta final en espanol, sin mostrar razonamiento interno ni pasos de pensamiento.\n"
+        ("/no_think\n" if not GROQ_API_KEY else "")
+        + "Responde solo con la respuesta final en espanol, sin mostrar razonamiento interno ni pasos de pensamiento.\n"
         "Si el usuario pregunta por el historial, contesta usando el historial reciente, no pidas mas informacion.\n\n"
         "Historial reciente de la conversacion, en orden cronologico:\n"
         f"{format_history_for_prompt(history)}\n\n"
@@ -788,24 +793,35 @@ def infer_visual_confidence(rows: list[dict]) -> str:
 
 def build_lm_studio_request(payload: dict, stream: bool = False) -> urllib.request.Request:
     config = load_config()
-    base_url = config["lmStudioBaseUrl"].rstrip("/")
-    url = f"{base_url}/v1/chat/completions"
-    body = {
-        "model": config["model"],
-        "temperature": config.get("temperature", 0.3),
-        "max_tokens": config.get("maxTokens", 700),
-        "stream": stream,
-        "messages": [
+    if GROQ_API_KEY:
+        base_url = GROQ_BASE_URL
+        model = GROQ_MODEL
+        headers = {"Content-Type": "application/json", "Authorization": f"Bearer {GROQ_API_KEY}"}
+        messages = [
+            {"role": "system", "content": load_system_prompt()},
+            {"role": "user", "content": build_user_content(payload)},
+        ]
+    else:
+        base_url = config["lmStudioBaseUrl"].rstrip("/")
+        model = config["model"]
+        headers = {"Content-Type": "application/json"}
+        messages = [
             {"role": "system", "content": load_system_prompt()},
             {"role": "user", "content": build_user_content(payload)},
             {"role": "assistant", "content": "Respuesta final:"},
-        ],
+        ]
+    url = f"{base_url}/v1/chat/completions"
+    body = {
+        "model": model,
+        "temperature": config.get("temperature", 0.3),
+        "max_tokens": config.get("maxTokens", 700),
+        "stream": stream,
+        "messages": messages,
     }
-
     return urllib.request.Request(
         url,
         data=json.dumps(body).encode("utf-8"),
-        headers={"Content-Type": "application/json"},
+        headers=headers,
         method="POST",
     )
 
@@ -970,7 +986,12 @@ def build_local_fallback_answer(payload: dict) -> str:
 
 def call_lm_studio_final(payload: dict) -> str:
     config = load_config()
-    base_url = config["lmStudioBaseUrl"].rstrip("/")
+    if GROQ_API_KEY:
+        base_url = GROQ_BASE_URL
+        headers = {"Content-Type": "application/json", "Authorization": f"Bearer {GROQ_API_KEY}"}
+    else:
+        base_url = config["lmStudioBaseUrl"].rstrip("/")
+        headers = {"Content-Type": "application/json"}
     url = f"{base_url}/v1/chat/completions"
     question = str(payload.get("message", "")).strip()
     use_data = should_use_data_context(question)
@@ -1014,7 +1035,7 @@ def call_lm_studio_final(payload: dict) -> str:
     request = urllib.request.Request(
         url,
         data=json.dumps(body).encode("utf-8"),
-        headers={"Content-Type": "application/json"},
+        headers=headers,
         method="POST",
     )
     timeout = int(config.get("requestTimeoutSeconds", 90))

@@ -1,0 +1,16 @@
+{
+  "version": 2,
+  "builds": [
+    { "src": "api/*.py", "use": "@vercel/python" },
+    { "src": "pag_web/**", "use": "@vercel/static" }
+  ],
+  "routes": [
+    { "src": "/api/health", "dest": "/api/health.py" },
+    { "src": "/api/dashboard", "dest": "/api/dashboard.py" },
+    { "src": "/api/chat", "dest": "/api/chat.py" },
+    { "src": "/Assets/(.*)", "dest": "/pag_web/Assets/$1" },
+    { "src": "/chatbot.html", "dest": "/pag_web/chatbot.html" },
+    { "src": "/", "dest": "/pag_web/dashboard.html" },
+    { "src": "/(.*)", "dest": "/pag_web/$1" }
+  ]
+}
