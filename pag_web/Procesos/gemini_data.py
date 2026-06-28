@@ -42,21 +42,27 @@ Variables (nombre en BD → significado en español):
   mobility_resources_records → registros de movilidad / bicicletas
 district tiene valores como "Eixample", "Gràcia" para Barcelona (puede ser vacío).
 
-━━━ TABLA: indicadores (Silver — barrio/sección censal, 93 944 filas) ━━━
-Usa esta para DETALLE SUB-CIUDAD (barrio, sección censal, zona) o cuando
-indicators no tenga la variable pedida.
+━━━ TABLA: indicadores (Silver — 93 944 filas) ━━━
+Usa esta cuando indicators no tenga la variable pedida o para barrios Barcelona.
 Columnas: source varchar, dataset varchar, variable varchar, metric varchar,
-geo varchar (nombre de barrio, sección censal o ciudad), period varchar
-(ej. "2023-01-01"), value double, unit varchar, quality varchar, notes varchar
-Variables disponibles (nombre en español tal cual en la BD):
-  Población total · Renta · Renta bruta · Renta bruta media por hogar ·
-  Renta bruta media por persona · Renta disponible · Renta media ·
-  Renta media por unidad de consumo · Renta mediana · Renta mediana por
-  unidad de consumo · Renta neta media por hogar · Renta neta media por
-  persona · Renta por hogar · Renta por persona · Desigualdad Gini ·
-  Desigualdad P80/P20 · Contratos registrados · Demandantes de empleo ·
-  Paro registrado · Accidentes de trafico · Registros de movilidad ·
-  Usuarios bicicleta publica
+geo varchar, period varchar (ej. "2023-01-01"), value double, unit varchar,
+quality varchar, notes varchar
+
+Valores de geo según fuente:
+- INE y SEPE: solo las 7 ciudades ('Barcelona','Bilbao','Madrid','Malaga','Sevilla','Valencia','Zaragoza')
+- Municipal Open Data: barrios de BARCELONA únicamente, formato 'Barrio, Distrito, Barcelona'
+  (ej. 'Gracia, Barcelona', 'Eixample, Barcelona', 'Can Baro, Horta-Guinardo, Barcelona')
+  IMPORTANTE: No hay datos a nivel de barrio para Madrid, Bilbao ni otras ciudades.
+
+Variables disponibles (nombres EXACTOS, copiar tal cual):
+  'Poblacion total' | 'Renta' | 'Renta bruta' | 'Renta bruta media por hogar' |
+  'Renta bruta media por persona' | 'Renta disponible' | 'Renta media' |
+  'Renta media por unidad de consumo' | 'Renta mediana' |
+  'Renta mediana por unidad de consumo' | 'Renta neta media por hogar' |
+  'Renta neta media por persona' | 'Renta por hogar' | 'Renta por persona' |
+  'Desigualdad Gini' | 'Desigualdad P80/P20' | 'Contratos registrados' |
+  'Demandantes de empleo' | 'Paro registrado' | 'Accidentes de trafico' |
+  'Registros de movilidad' | 'Usuarios bicicleta publica'
 
 ━━━ TABLA: observations (contexto enriquecido, 105 774 filas) ━━━
 Usa esta cuando necesites jerarquía ciudad→distrito→barrio o notas contextuales.
@@ -144,13 +150,23 @@ Reglas obligatorias:
 - Nombra la tabla como indicators, indicadores u observations (sin base de datos).
 - Usa comillas dobles para la columna "date" en la tabla indicators.
   En indicadores y observations la columna temporal se llama period (sin comillas).
-- Para comparaciones entre ciudades usa indicators; conserva city, variable, value, unit, source, "date".
-- Para detalle de barrio usa indicadores; conserva geo, variable, metric, value, unit, period.
-- Para notas y jerarquía usa observations; conserva city, district, neighborhood, variable, value, period, notes.
+- Para comparaciones entre ciudades usa indicators; incluye siempre city, variable, value, unit, source.
+- Para detalle de barrio usa indicadores; incluye geo, variable, value, unit, period.
+- Para notas y jerarquía usa observations; incluye city, district, neighborhood, variable, value, period, notes.
 - Athena no admite QUALIFY: no lo uses nunca.
-- Para el dato más reciente de varias ciudades en indicators, usa subconsulta con
-  row_number() OVER (PARTITION BY city, variable ORDER BY "date" DESC) AS rn.
-- Añade LIMIT, máximo 100.
+- REGLA CRÍTICA — comparaciones y rankings: si la pregunta pide comparar VARIAS ciudades,
+  barrios o periodos, usa GROUP BY o subconsultas; NUNCA uses LIMIT 1 en ese caso.
+  Para el dato más reciente de CADA ciudad usa:
+    SELECT city, variable, value, unit, "date" FROM (
+      SELECT *, row_number() OVER (PARTITION BY city ORDER BY "date" DESC) rn
+      FROM indicators WHERE variable='...'
+    ) WHERE rn=1
+- REGLA CRÍTICA — variables exactas: en indicadores el nombre de la variable debe
+  coincidir exactamente (ej: variable = 'Desigualdad Gini', no 'gini' ni 'Gini').
+  En indicators usar los nombres en inglés (ej: variable = 'gini_inequality').
+- Si no hay datos de barrio para una ciudad fuera de Barcelona, no inventes filtros;
+  haz la consulta a nivel ciudad o informa en reason que no hay ese detalle.
+- Añade LIMIT apropiado (máximo 100). Para rankings de todas las ciudades, usa LIMIT 7.
 - Si el indicador solicitado no existe en ninguna tabla, consulta el más cercano
   disponible y explícalo en reason.
 """.strip()
