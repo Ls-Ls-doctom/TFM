@@ -1,0 +1,240 @@
+\chapter{Arquitectura Cloud: Despliegue en AWS y Vercel}
+\label{ch:cloud}
+
+\section{Introducción al despliegue cloud}
+
+La fase local de ISEU+ permitió validar el modelo de datos, los conectores de fuentes oficiales y la lógica analítica del sistema. Una vez comprobada la coherencia del pipeline y la calidad de los indicadores generados, el proyecto migró a una arquitectura en la nube orientada a producción. El objetivo de esta transición no fue únicamente trasladar el código a servidores remotos, sino rediseñar el sistema para que pudiera ejecutarse de forma autónoma, escalarse ante picos de carga y estar accesible desde cualquier dispositivo con conexión a Internet.
+
+La arquitectura cloud de ISEU+ se sustenta en tres pilares: (1) un \textit{data lake} estructurado en Amazon S3 con las capas Bronze, Silver y Gold del modelo medallón; (2) una capa de procesamiento orquestada mediante AWS Elastic Container Service (ECS) con tareas Fargate; y (3) una capa de servicio compuesta por Amazon Athena como motor de consulta SQL, AWS Lambda como API sin servidor y Vercel como plataforma de despliegue del frontend. La Figura~\ref{fig:arquitectura_cloud} sintetiza los componentes y el flujo de datos entre ellos.
+
+\begin{figure}[h!]
+\centering
+\fbox{\parbox{0.9\textwidth}{\centering\vspace{1.5cm}
+\textit{[Diagrama de arquitectura: S3 (Bronze/Silver/Gold) $\rightarrow$ Glue Catalog $\rightarrow$ Athena $\leftarrow$ Lambda API $\leftarrow$ Vercel / Chatbot ISEU+]}
+\vspace{1.5cm}}}
+\caption{\textbf{Arquitectura general del sistema ISEU+ en AWS y Vercel.}\\
+\textit{Flujo de datos desde la extracción (ECS Fargate) hasta la consulta conversacional (Gemini 2.5 Flash vía Vercel).}}
+\label{fig:arquitectura_cloud}
+\end{figure}
+
+\section{Capa de almacenamiento: Amazon S3 y el modelo medallón}
+
+El almacenamiento central de ISEU+ se implementó en un \textit{bucket} de Amazon S3 (\texttt{iseu-datalake-ismael-2026}) siguiendo la arquitectura medallón en tres capas diferenciadas por nivel de procesamiento y calidad del dato.
+
+\subsection{Capa Bronze: datos crudos}
+
+La capa Bronze almacena los archivos originales descargados de las fuentes oficiales sin ninguna transformación. Los datos se organizan por fuente y fecha de extracción bajo el prefijo \texttt{s3://iseu-datalake-ismael-2026/bronze/}. Esta capa actúa como registro de auditoría inmutable: cualquier error en fases posteriores del pipeline puede trazarse hasta el dato original descargado.
+
+\subsection{Capa Silver: datos normalizados}
+
+La capa Silver contiene los datos limpios y normalizados tras aplicar las transformaciones de estandarización de variables, codificación geográfica y control de calidad. Los archivos se almacenan en formato Parquet comprimido con Snappy bajo el prefijo \texttt{silver/athena/}, siguiendo el esquema esperado por AWS Glue para su registro automático en el catálogo de datos. Las tablas Silver registradas en el sistema incluyen datos brutos de los módulos SEPE, INE y Municipal Open Data:
+
+\begin{itemize}
+  \item \texttt{iseu\_silver\_sepe\_paro\_registrado}: evolución mensual del paro registrado por ciudad.
+  \item \texttt{iseu\_silver\_sepe\_contratos\_registrados}: contratos firmados por período y territorio.
+  \item \texttt{iseu\_silver\_sepe\_demandantes\_empleo}: demandantes de empleo activos por período.
+  \item \texttt{iseu\_silver\_ine\_poblacion\_municipal}: población de referencia por municipio.
+  \item \texttt{iseu\_silver\_municipios\_municipal\_prioritario}: datos socioeconómicos municipales del INE con 243 variables y 167.725 registros.
+\end{itemize}
+
+\subsection{Capa Gold: indicadores integrados}
+
+La capa Gold contiene las tablas analíticas finales, construidas a partir de la Silver tras una segunda fase de enriquecimiento y agregación. Es el nivel de datos que consume directamente el motor de consulta y el chatbot. Se definen tres tablas Gold registradas en Athena:
+
+\begin{itemize}
+  \item \texttt{iseu\_indicadores}: tabla principal con 93.944 registros de indicadores normalizados, 22 variables y cobertura temporal 2015-2023. Es la fuente primaria del sistema analítico.
+  \item \texttt{iseu\_semantic\_obs}: tabla de observaciones semánticas con 105.774 registros enriquecidos con jerarquía ciudad--distrito--barrio, notas contextuales y granularidad geográfica.
+  \item \texttt{iseu\_indicators}: tabla Gold compacta con 4.358 registros agregados a nivel de ciudad para comparativas rápidas.
+\end{itemize}
+
+La elección de Parquet como formato de almacenamiento responde a sus características de compresión columnar, optimizadas para las consultas analíticas de Athena: filtros por columna sin leer filas enteras, compresión Snappy que reduce el volumen de datos escaneados y soporte nativo en el ecosistema Hadoop/Hive sobre el que se apoya Glue.
+
+\section{Catálogo de datos: AWS Glue Data Catalog}
+
+AWS Glue Data Catalog actúa como metastore centralizado del sistema. Registra la estructura de cada tabla Parquet en S3: esquema de columnas, tipos de datos, localización física en el bucket y propiedades del formato de serialización. Esta capa de metadatos permite que Amazon Athena ejecute consultas SQL estándar directamente sobre los archivos S3 sin necesidad de un motor de base de datos tradicional.
+
+El catálogo se organiza bajo la base de datos lógica \texttt{iseu}, que agrupa todas las tablas del sistema (Silver y Gold). El handler de la Lambda consulta el catálogo en cada arranque en frío para detectar dinámicamente las tablas disponibles, lo que permite incorporar nuevas fuentes de datos sin modificar el código de la API.
+
+La función \texttt{table\_names()} implementa esta detección dinámica con caché \texttt{lru\_cache} para minimizar las llamadas al catálogo durante el ciclo de vida de la función Lambda:
+
+\begin{verbatim}
+@lru_cache(maxsize=1)
+def table_names() -> dict[str, str | None]:
+    paginator = glue.get_paginator("get_tables")
+    found = {alias: None for alias in _TABLE_LOCATIONS}
+    for page in paginator.paginate(DatabaseName=DATABASE):
+        for table in page.get("TableList", []):
+            name = table["Name"]
+            location = table.get("StorageDescriptor", {}) \
+                            .get("Location", "").lower()
+            for alias, fragment in _TABLE_LOCATIONS.items():
+                if fragment in location and found[alias] is None:
+                    found[alias] = name
+            if "silver/athena/" in location:
+                found[f"silver_{name}"] = name
+    return found
+\end{verbatim}
+
+\section{Motor de consulta: Amazon Athena}
+
+Amazon Athena es el motor SQL sin servidor que permite ejecutar consultas sobre los archivos Parquet almacenados en S3. Athena adopta el dialecto Trino (anteriormente PrestoSQL), compatible con ANSI SQL y con extensiones para funciones de ventana, expresiones regulares y tipos de dato nativos de Hive.
+
+La elección de Athena frente a alternativas como Amazon Redshift o una base de datos relacional clásica responde a tres criterios:
+
+\begin{enumerate}
+  \item \textbf{Modelo de coste por uso}: Athena factura únicamente los datos escaneados por cada consulta (5 USD por terabyte). Para el volumen actual de ISEU+ (aproximadamente 386.000 registros en total), el coste por consulta es inferior a un céntimo de euro.
+  \item \textbf{Ausencia de infraestructura persistente}: no requiere mantener instancias de base de datos activas fuera de los períodos de consulta.
+  \item \textbf{Integración nativa con S3 y Glue}: Athena lee directamente los Parquet registrados en el catálogo sin operaciones de carga o importación.
+\end{enumerate}
+
+Las consultas del sistema se ejecutan mediante el SDK de Python (\texttt{boto3}), con un timeout configurable de 22 segundos y un sistema de \textit{polling} que comprueba el estado de ejecución cada 250 milisegundos. Los resultados se paginan en bloques de 1.000 filas para evitar timeouts en consultas con retornos amplios.
+
+\section{Pipeline de datos: ECS Fargate}
+
+El pipeline de transformación de datos se ejecuta en un contenedor Docker desplegado mediante AWS Elastic Container Service (ECS) con el motor Fargate. Fargate es una modalidad de ejecución sin servidor para contenedores: el usuario define la tarea y AWS aprovisiona, gestiona y libera la infraestructura de cómputo de forma automática.
+
+\subsection{Imagen Docker del pipeline}
+
+La imagen del pipeline se construye a partir de \texttt{python:3.12-slim} e instala las dependencias de extracción, transformación y publicación a S3:
+
+\begin{verbatim}
+FROM python:3.12-slim
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+COPY . .
+CMD ["python", "-m", "apisVcloud.cloud_pipeline"]
+\end{verbatim}
+
+La imagen se publica en Amazon Elastic Container Registry (ECR) y referenciada en la definición de tarea ECS. La definición de tarea (\textit{task definition}) especifica los recursos asignados (0,5 vCPU / 1 GB de RAM en la configuración base), las variables de entorno del sistema y el rol IAM que autoriza el acceso a S3, Glue y ECR.
+
+\subsection{Orquestación del pipeline}
+
+El orquestador \texttt{cloud\_pipeline.py} ejecuta el flujo completo de transformación en cuatro etapas secuenciales:
+
+\begin{enumerate}
+  \item \textbf{Collect}: descarga datos actualizados de las APIs oficiales (INE, SEPE, Open Data BCN) y los almacena en la capa Bronze de S3.
+  \item \textbf{Clean}: aplica las transformaciones de limpieza y normalización, generando la capa Silver.
+  \item \textbf{Build SQLite}: consolida los datos Silver en una base SQLite transitoria con las tablas \texttt{indicadores}, \texttt{indicators} y \texttt{semantic\_observations}.
+  \item \textbf{Export Athena}: convierte las tablas SQLite a formato Parquet, las sube a la capa Gold de S3 y actualiza el AWS Glue Data Catalog.
+\end{enumerate}
+
+La ejecución del pipeline se puede disparar manualmente mediante la CLI de AWS o programar automáticamente mediante Amazon EventBridge Scheduler. El sistema está configurado para ejecutarse en la VPC por defecto de la región \texttt{eu-west-1} (Irlanda), asignando subredes públicas y un grupo de seguridad con salida a Internet para alcanzar las APIs externas.
+
+\section{Capa API: AWS Lambda}
+
+La interfaz de acceso a los datos desde el frontend se implementa mediante una función AWS Lambda (\texttt{iseu-athena-query}) escrita en Python 3.12. Lambda es el servicio de computación sin servidor de AWS: el código se ejecuta únicamente cuando recibe una petición, sin infraestructura persistente, con arranque en frío de menos de un segundo y facturación por milisegundo de ejecución.
+
+\subsection{Endpoints disponibles}
+
+La función Lambda expone cuatro endpoints accesibles a través de Amazon API Gateway:
+
+\begin{itemize}
+  \item \texttt{GET /health}: verificación de disponibilidad del servicio.
+  \item \texttt{GET /dashboard}: construye y devuelve el payload completo del dashboard, incluyendo KPIs agregados, distribución por fuente, evolución temporal, calidad de datos y catálogo de variables. Lanza hasta 15 consultas Athena en paralelo mediante \texttt{ThreadPoolExecutor}.
+  \item \texttt{GET /catalog}: catálogo de fuentes y variables disponibles en el sistema.
+  \item \texttt{POST /sql}: ejecuta una consulta SQL arbitraria sobre las tablas permitidas. La consulta pasa por un validador que verifica que sea un \texttt{SELECT}, que no contenga comentarios ni instrucciones DDL/DML, y que solo referencie las tablas autorizadas (\texttt{indicators}, \texttt{indicadores}, \texttt{observations}).
+\end{itemize}
+
+\subsection{Validación y seguridad SQL}
+
+El endpoint \texttt{/sql} implementa un validador que previene inyecciones y limita el acceso a las operaciones de lectura autorizadas. El validador rechaza consultas que contengan palabras reservadas de modificación (\texttt{INSERT}, \texttt{UPDATE}, \texttt{DELETE}, \texttt{DROP}, \texttt{ALTER}), comentarios SQL (\texttt{--}, \texttt{/* */}) o referencias a tablas no incluidas en la lista de permitidas. Además, impone un \texttt{LIMIT 500} máximo para evitar la transferencia de volúmenes excesivos de datos.
+
+\section{Frontend: Vercel y la interfaz web de ISEU+}
+
+La capa de presentación del sistema se despliega en Vercel, una plataforma de despliegue continuo orientada a aplicaciones web estáticas y funciones serverless. Vercel ofrece integración directa con GitHub: cada \textit{push} a la rama principal desencadena automáticamente la compilación y publicación de la nueva versión, con un tiempo de despliegue inferior a 30 segundos.
+
+\subsection{Estructura del frontend}
+
+La interfaz web se compone de dos páginas HTML estáticas:
+
+\begin{itemize}
+  \item \textbf{Dashboard} (\texttt{dashboard.html}): presenta los KPIs del sistema (número de indicadores, variables, fuentes y registros de detalle), distribución geográfica de los datos, calidad por fuente, evolución temporal y catálogo de variables. Los datos se obtienen dinámicamente llamando al endpoint \texttt{/api/dashboard} de la Lambda mediante una petición \texttt{fetch} al cargar la página.
+  \item \textbf{Chatbot} (\texttt{chatbot.html}): interfaz conversacional en lenguaje natural con tres vistas de respuesta: General (texto), Tablas (filas reales de la consulta Athena) y Gráficos (visualizaciones auto-detectadas). El módulo de gráficos analiza las columnas de los resultados SQL para seleccionar automáticamente entre serie temporal (gráfico de línea) y comparativa categórica (gráfico de barras).
+\end{itemize}
+
+Las llamadas al API de datos se enrutan a través de funciones Python desplegadas en Vercel (\texttt{api/dashboard.py}, \texttt{api/chat.py}, \texttt{api/health.py}), que actúan como intermediarios entre el frontend y los servicios AWS.
+
+\section{Chatbot conversacional: ISEU+ con Gemini 2.5 Flash}
+
+El módulo conversacional de ISEU+ implementa un flujo NL2SQL (\textit{Natural Language to SQL}) en dos fases mediante el modelo Gemini 2.5 Flash de Google. El flujo completo se ejecuta en el servidor Vercel sin mantener estado entre peticiones:
+
+\begin{enumerate}
+  \item \textbf{Planificación SQL}: el sistema envía a Gemini la pregunta del usuario, el historial reciente de la conversación y una descripción estructurada del esquema de datos (tablas, columnas, variables disponibles y sus equivalencias en español e inglés). Gemini devuelve un objeto JSON con tres campos: \texttt{needs\_data} (booleano), \texttt{sql} (la consulta generada) y \texttt{reason} (justificación de la elección de tabla y variables).
+
+  \item \textbf{Ejecución y respuesta}: si \texttt{needs\_data} es verdadero, el sistema llama al endpoint \texttt{/sql} de la Lambda para ejecutar la consulta en Athena. Los resultados (máximo 100 filas) se incorporan como evidencia al segundo prompt enviado a Gemini, que genera la respuesta final en español con trazabilidad de fuente, territorio y período.
+\end{enumerate}
+
+El sistema implementa dos modos de respuesta: \textit{streaming} (SSE, \textit{Server-Sent Events}) para mostrar la respuesta en tiempo real mientras Gemini la genera, y modo estándar JSON para compatibilidad con clientes que no soporten streaming.
+
+\subsection{Descripción del esquema para el planificador SQL}
+
+Un elemento crítico del sistema es la descripción del esquema que recibe el modelo de lenguaje. Esta descripción incluye el nombre de cada tabla, sus columnas con tipos de dato, los valores posibles de las columnas clave (especialmente \texttt{variable} y \texttt{geo}) y las reglas de selección entre tablas. Para la tabla \texttt{indicadores}, el sistema especifica los 22 nombres exactos de variable en español para que el modelo los reproduzca literalmente en la cláusula \texttt{WHERE}, evitando errores de coincidencia parcial.
+
+\subsection{Reglas de seguridad del planificador}
+
+Para garantizar que las consultas generadas sean correctas y seguras, el planificador SQL recibe restricciones explícitas: prohibición de CTEs, JOINs, DDL, DML y comentarios; uso de \texttt{GROUP BY} obligatorio cuando la pregunta compara múltiples entidades; patrón \texttt{row\_number() OVER (PARTITION BY ...)} para recuperar el registro más reciente de cada ciudad; y un \texttt{LIMIT} máximo de 100 filas. El validador de la Lambda actúa como segunda línea de defensa: cualquier consulta que supere estas restricciones es rechazada antes de alcanzar Athena.
+
+\section{Resultados del despliegue}
+
+Tras la migración a la arquitectura cloud, el sistema ISEU+ presenta los siguientes indicadores de resultado:
+
+\begin{longtable}{>{\raggedright\arraybackslash}p{0.40\textwidth} >{\raggedright\arraybackslash}p{0.50\textwidth}}
+\toprule
+\textbf{Indicador} & \textbf{Valor} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Indicador} & \textbf{Valor} \\
+\midrule
+\endhead
+Total de registros en Athena & 386.225 filas \\
+Indicadores normalizados (\texttt{iseu\_indicadores}) & 93.944 registros \\
+Observaciones semánticas (\texttt{iseu\_semantic\_obs}) & 105.774 registros \\
+Variables analíticas disponibles & 22 variables \\
+Ciudades cubiertas & 7 (Barcelona, Bilbao, Madrid, Málaga, Sevilla, Valencia, Zaragoza) \\
+Fuentes de datos integradas & 3 (INE, SEPE, Municipal Open Data) \\
+Cobertura temporal & 2015 -- 2023 \\
+Tablas en AWS Glue Data Catalog & 10 tablas (Gold + Silver) \\
+Tiempo medio de respuesta del chatbot & 4 -- 8 segundos (incluye Athena + Gemini) \\
+Disponibilidad del servicio & 100\% (serverless, sin instancias persistentes) \\
+URL pública & \texttt{https://project-zcvjr.vercel.app} \\
+\bottomrule
+\end{longtable}
+
+\section{Estimación de costes cloud}
+
+El modelo de coste de ISEU+ en producción se basa íntegramente en servicios de facturación por uso, sin infraestructura comprometida de forma permanente. La Tabla~\ref{tab:costes} presenta una estimación para un uso moderado del sistema (100 consultas diarias al chatbot y una ejecución semanal del pipeline).
+
+\begin{longtable}{>{\raggedright\arraybackslash}p{0.22\textwidth} >{\raggedright\arraybackslash}p{0.44\textwidth} >{\raggedright\arraybackslash}p{0.24\textwidth}}
+\toprule
+\textbf{Servicio} & \textbf{Concepto} & \textbf{Coste estimado/mes} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Servicio} & \textbf{Concepto} & \textbf{Coste estimado/mes} \\
+\midrule
+\endhead
+Amazon S3 & Almacenamiento $\sim$500 MB Parquet & $<$ 0,02 USD \\
+Amazon Athena & $\sim$3.000 consultas $\times$ 10 KB escaneados & $<$ 0,01 USD \\
+AWS Lambda & $\sim$3.000 invocaciones $\times$ 3 s & $<$ 0,01 USD \\
+AWS Glue Data Catalog & Hasta 1 M de objetos catalogados & Gratuito \\
+ECS Fargate & 4 ejecuciones $\times$ 30 min $\times$ 0,5 vCPU & $\sim$ 0,20 USD \\
+Amazon ECR & Almacenamiento imagen Docker $\sim$300 MB & $<$ 0,03 USD \\
+Gemini 2.5 Flash API & $\sim$3.000 consultas (plan gratuito) & 0,00 USD \\
+Vercel & Plan Hobby (gratuito para proyectos académicos) & 0,00 USD \\
+\midrule
+\textbf{Total estimado} & & \textbf{$<$ 0,30 USD/mes} \\
+\bottomrule
+\caption{\textbf{Estimación de costes mensuales del sistema ISEU+ en producción.}\\
+\textit{Basada en el uso moderado descrito. Los servicios AWS incluidos en el nivel gratuito (Free Tier) durante los primeros 12 meses no se han contabilizado.}}
+\label{tab:costes}
+\end{longtable}
+
+\section{Conclusiones del despliegue cloud}
+
+La migración de ISEU+ a una arquitectura serverless en AWS y Vercel demuestra que es posible construir y operar un sistema de análisis de datos público con cobertura real y disponibilidad continua con un presupuesto inferior a 0,30 USD mensuales. El modelo medallón en S3 garantiza la trazabilidad completa desde el dato crudo hasta el indicador publicado, mientras que la combinación de Athena y Lambda permite consultas SQL interactivas sobre grandes volúmenes de datos sin comprometer tiempo de respuesta ni incurrir en costes de infraestructura permanente.
+
+El módulo conversacional basado en Gemini 2.5 Flash añade una capa de acceso en lenguaje natural que democratiza el uso del sistema: el usuario no necesita conocer el esquema de datos ni el lenguaje SQL para obtener respuestas trazables y fundamentadas en datos reales. El flujo NL2SQL de dos fases (planificación estructurada + generación de respuesta con evidencia) minimiza las alucinaciones del modelo y garantiza que cada respuesta cuantitativa cite su fuente, territorio y período de referencia.
+
+Como líneas de trabajo futuro en la dimensión cloud, se identifican tres áreas prioritarias: (1) ampliar la cobertura de fuentes incorporando datos de vivienda (MITMA/MIVAU) y energía (REE) en la capa Silver; (2) automatizar el pipeline mediante un programador EventBridge con frecuencia mensual, sincronizado con los calendarios de publicación del INE y el SEPE; y (3) implementar un dominio personalizado y autenticación básica para controlar el acceso al sistema en un entorno de producción académico o institucional.

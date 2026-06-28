@@ -1,0 +1,359 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: ISEU low-cost query layer with Glue, Athena, Lambda and API Gateway.
+
+Parameters:
+  DataBucket:
+    Type: String
+    Default: iseu-datalake-ismael-2026
+  LambdaCodeKey:
+    Type: String
+    Description: S3 key containing the Lambda ZIP package.
+  AllowedOrigin:
+    Type: String
+    Default: "*"
+  DeploymentVersion:
+    Type: String
+    Default: initial
+    Description: Change this value to publish a new API Gateway deployment.
+
+Resources:
+  GlueDatabase:
+    Type: AWS::Glue::Database
+    Properties:
+      CatalogId: !Ref AWS::AccountId
+      DatabaseInput:
+        Name: iseu
+        Description: ISEU Silver and Gold Parquet tables stored in S3.
+
+  GlueCrawlerRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: iseu-glue-crawler-role
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: glue.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSGlueServiceRole
+      Policies:
+        - PolicyName: ReadIseuParquet
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action: s3:ListBucket
+                Resource: !Sub arn:aws:s3:::${DataBucket}
+                Condition:
+                  StringLike:
+                    s3:prefix:
+                      - silver/athena/*
+                      - gold/athena/*
+              - Effect: Allow
+                Action: s3:GetObject
+                Resource:
+                  - !Sub arn:aws:s3:::${DataBucket}/silver/athena/*
+                  - !Sub arn:aws:s3:::${DataBucket}/gold/athena/*
+
+  DataCrawler:
+    Type: AWS::Glue::Crawler
+    Properties:
+      Name: iseu-parquet-crawler
+      Description: Catalogs only Athena-ready Silver and Gold Parquet files.
+      Role: !GetAtt GlueCrawlerRole.Arn
+      DatabaseName: !Ref GlueDatabase
+      TablePrefix: iseu_
+      RecrawlPolicy:
+        RecrawlBehavior: CRAWL_EVERYTHING
+      SchemaChangePolicy:
+        UpdateBehavior: UPDATE_IN_DATABASE
+        DeleteBehavior: LOG
+      Targets:
+        S3Targets:
+          - Path: !Sub s3://${DataBucket}/gold/athena/
+          - Path: !Sub s3://${DataBucket}/silver/athena/
+      Schedule:
+        ScheduleExpression: cron(0 9 1 * ? *)
+
+  AthenaWorkGroup:
+    Type: AWS::Athena::WorkGroup
+    Properties:
+      Name: iseu
+      Description: Controlled Athena workgroup for ISEU web queries.
+      State: ENABLED
+      RecursiveDeleteOption: true
+      WorkGroupConfiguration:
+        EnforceWorkGroupConfiguration: true
+        PublishCloudWatchMetricsEnabled: true
+        BytesScannedCutoffPerQuery: 52428800
+        ResultConfiguration:
+          OutputLocation: !Sub s3://${DataBucket}/athena-results/
+          EncryptionConfiguration:
+            EncryptionOption: SSE_S3
+
+  QueryLambdaRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: iseu-athena-query-role
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+        - PolicyName: QueryIseuAthena
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - athena:StartQueryExecution
+                  - athena:StopQueryExecution
+                  - athena:GetQueryExecution
+                  - athena:GetQueryResults
+                Resource: "*"
+              - Effect: Allow
+                Action:
+                  - glue:GetDatabase
+                  - glue:GetDatabases
+                  - glue:GetTable
+                  - glue:GetTables
+                  - glue:GetPartition
+                  - glue:GetPartitions
+                Resource: "*"
+              - Effect: Allow
+                Action: s3:GetBucketLocation
+                Resource: !Sub arn:aws:s3:::${DataBucket}
+              - Effect: Allow
+                Action: s3:ListBucket
+                Resource: !Sub arn:aws:s3:::${DataBucket}
+                Condition:
+                  StringLike:
+                    s3:prefix:
+                      - gold/athena/*
+                      - silver/athena/*
+                      - athena-results/*
+              - Effect: Allow
+                Action: s3:GetObject
+                Resource:
+                  - !Sub arn:aws:s3:::${DataBucket}/gold/athena/*
+                  - !Sub arn:aws:s3:::${DataBucket}/silver/athena/*
+                  - !Sub arn:aws:s3:::${DataBucket}/athena-results/*
+              - Effect: Allow
+                Action:
+                  - s3:PutObject
+                  - s3:AbortMultipartUpload
+                Resource: !Sub arn:aws:s3:::${DataBucket}/athena-results/*
+
+  QueryLambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: iseu-athena-query
+      Description: Safe structured queries for the ISEU dashboard and chatbot.
+      Runtime: python3.12
+      Handler: handler.lambda_handler
+      Role: !GetAtt QueryLambdaRole.Arn
+      Timeout: 28
+      MemorySize: 256
+      Code:
+        S3Bucket: !Ref DataBucket
+        S3Key: !Ref LambdaCodeKey
+      Environment:
+        Variables:
+          ATHENA_DATABASE: !Ref GlueDatabase
+          ATHENA_WORKGROUP: !Ref AthenaWorkGroup
+          DATA_BUCKET: !Ref DataBucket
+          ALLOWED_ORIGIN: !Ref AllowedOrigin
+          MAX_QUERY_SECONDS: "22"
+
+  RestApi:
+    Type: AWS::ApiGateway::RestApi
+    Properties:
+      Name: iseu-data-api
+      Description: Read-only ISEU data API backed by Athena.
+      EndpointConfiguration:
+        Types: [REGIONAL]
+
+  HealthResource:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      RestApiId: !Ref RestApi
+      ParentId: !GetAtt RestApi.RootResourceId
+      PathPart: health
+
+  DashboardResource:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      RestApiId: !Ref RestApi
+      ParentId: !GetAtt RestApi.RootResourceId
+      PathPart: dashboard
+
+  CatalogResource:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      RestApiId: !Ref RestApi
+      ParentId: !GetAtt RestApi.RootResourceId
+      PathPart: catalog
+
+  IndicatorsResource:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      RestApiId: !Ref RestApi
+      ParentId: !GetAtt RestApi.RootResourceId
+      PathPart: indicators
+
+  SqlResource:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      RestApiId: !Ref RestApi
+      ParentId: !GetAtt RestApi.RootResourceId
+      PathPart: sql
+
+  HealthMethod:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      RestApiId: !Ref RestApi
+      ResourceId: !Ref HealthResource
+      HttpMethod: GET
+      AuthorizationType: NONE
+      ApiKeyRequired: false
+      Integration:
+        Type: AWS_PROXY
+        IntegrationHttpMethod: POST
+        Uri: !Sub arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${QueryLambda.Arn}/invocations
+
+  DashboardMethod:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      RestApiId: !Ref RestApi
+      ResourceId: !Ref DashboardResource
+      HttpMethod: GET
+      AuthorizationType: NONE
+      ApiKeyRequired: true
+      Integration:
+        Type: AWS_PROXY
+        IntegrationHttpMethod: POST
+        Uri: !Sub arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${QueryLambda.Arn}/invocations
+
+  CatalogMethod:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      RestApiId: !Ref RestApi
+      ResourceId: !Ref CatalogResource
+      HttpMethod: GET
+      AuthorizationType: NONE
+      ApiKeyRequired: true
+      Integration:
+        Type: AWS_PROXY
+        IntegrationHttpMethod: POST
+        Uri: !Sub arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${QueryLambda.Arn}/invocations
+
+  IndicatorsMethod:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      RestApiId: !Ref RestApi
+      ResourceId: !Ref IndicatorsResource
+      HttpMethod: POST
+      AuthorizationType: NONE
+      ApiKeyRequired: true
+      Integration:
+        Type: AWS_PROXY
+        IntegrationHttpMethod: POST
+        Uri: !Sub arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${QueryLambda.Arn}/invocations
+
+  SqlMethod:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      RestApiId: !Ref RestApi
+      ResourceId: !Ref SqlResource
+      HttpMethod: POST
+      AuthorizationType: NONE
+      ApiKeyRequired: true
+      Integration:
+        Type: AWS_PROXY
+        IntegrationHttpMethod: POST
+        Uri: !Sub arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${QueryLambda.Arn}/invocations
+
+  LambdaPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !Ref QueryLambda
+      Principal: apigateway.amazonaws.com
+      SourceArn: !Sub arn:${AWS::Partition}:execute-api:${AWS::Region}:${AWS::AccountId}:${RestApi}/*/*/*
+
+  ApiDeployment:
+    Type: AWS::ApiGateway::Deployment
+    DependsOn:
+      - HealthMethod
+      - DashboardMethod
+      - CatalogMethod
+      - IndicatorsMethod
+      - SqlMethod
+    Properties:
+      RestApiId: !Ref RestApi
+      Description: !Sub ISEU API deployment ${DeploymentVersion}
+
+  ApiStage:
+    Type: AWS::ApiGateway::Stage
+    Properties:
+      RestApiId: !Ref RestApi
+      DeploymentId: !Ref ApiDeployment
+      StageName: v1
+      TracingEnabled: false
+      MethodSettings:
+        - ResourcePath: "/*"
+          HttpMethod: "*"
+          MetricsEnabled: true
+          ThrottlingBurstLimit: 10
+          ThrottlingRateLimit: 2
+
+  ApiKey:
+    Type: AWS::ApiGateway::ApiKey
+    DependsOn: ApiStage
+    Properties:
+      Name: iseu-vercel
+      Description: Server-side key for Vercel functions. Never expose in browser JavaScript.
+      Enabled: true
+
+  UsagePlan:
+    Type: AWS::ApiGateway::UsagePlan
+    Properties:
+      UsagePlanName: iseu-web
+      Description: Conservative quota for the public ISEU prototype.
+      ApiStages:
+        - ApiId: !Ref RestApi
+          Stage: !Ref ApiStage
+      Throttle:
+        BurstLimit: 10
+        RateLimit: 2
+      Quota:
+        Limit: 5000
+        Period: MONTH
+
+  UsagePlanKey:
+    Type: AWS::ApiGateway::UsagePlanKey
+    Properties:
+      KeyId: !Ref ApiKey
+      KeyType: API_KEY
+      UsagePlanId: !Ref UsagePlan
+
+Outputs:
+  ApiUrl:
+    Description: Base URL for Vercel server-side functions.
+    Value: !Sub https://${RestApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}/v1
+  ApiKeyId:
+    Description: Retrieve its value securely with apigateway:get-api-key include-value.
+    Value: !Ref ApiKey
+  GlueDatabaseName:
+    Value: !Ref GlueDatabase
+  GlueCrawlerName:
+    Value: !Ref DataCrawler
+  AthenaWorkGroupName:
+    Value: !Ref AthenaWorkGroup

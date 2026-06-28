@@ -1,0 +1,23 @@
+.git/
+.venv/
+.vercel/
+.env*
+*_accessKeys.csv
+*.pem
+__pycache__/
+*.pyc
+tmp/
+output/
+api_clients/
+pag_web/Procesos/Datasets/
+*.sqlite
+*.db
+EDA/
+Articulos/
+LaTeX Informe/
+arquitectura/
+datos de validacion/
+esquemas de datos/
+plantillas/
+versiones/
+*.docx

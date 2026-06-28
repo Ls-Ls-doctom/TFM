@@ -1,6 +1,12 @@
 # Entorno virtual
 .venv/
 
+# Credenciales y secretos locales
+*_accessKeys.csv
+*.pem
+.env
+.env.*
+
 # Cache Python
 __pycache__/
 *.pyc
@@ -21,3 +27,25 @@ pag_web/Procesos/Datasets/limpios/
 .DS_Store
 Thumbs.db
 *.tmp
+.vercel
+.env*
+
+# LaTeX build artifacts
+LaTeX Informe/*.aux
+LaTeX Informe/*.log
+LaTeX Informe/*.out
+LaTeX Informe/*.toc
+LaTeX Informe/*.fls
+LaTeX Informe/*.fdb_latexmk
+LaTeX Informe/*.synctex.gz
+
+# Datos raw del pipeline (regenerables)
+api_clients/*/data_lake/bronze/
+api_clients/*/data_lake/silver/
+api_clients/*/data_lake/gold/
+api_clients/*/reports/
+
+# Carpetas draft/versiones obsoletas
+versiones/
+plantillas/
+tmp/

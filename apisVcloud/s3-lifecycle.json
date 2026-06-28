@@ -1,0 +1,17 @@
+{
+  "Rules": [
+    {
+      "ID": "ExpireAthenaResults",
+      "Status": "Enabled",
+      "Filter": {
+        "Prefix": "athena-results/"
+      },
+      "Expiration": {
+        "Days": 7
+      },
+      "AbortIncompleteMultipartUpload": {
+        "DaysAfterInitiation": 1
+      }
+    }
+  ]
+}

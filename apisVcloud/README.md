@@ -120,6 +120,12 @@ El crawler de Glue debe apuntar a `silver/athena/` y `gold/athena/`, no a los
 CSV originales. SQLite se puede activar con `ISEU_BUILD_SQLITE=true`, pero no es
 necesario cuando las consultas se ejecutan con Athena.
 
+La infraestructura de consulta está definida en `athena-stack.yaml` e incluye
+Glue Data Catalog, el workgroup Athena, Lambda, API Gateway, roles IAM y cuota.
+La web desplegada en Vercel usa Google Gemini para generar SQL `SELECT`; Lambda
+valida y limita la sentencia antes de enviarla a Athena. Los endpoints públicos
+no aceptan escrituras ni acceso directo a otras tablas.
+
 Para una primera prueba se recomienda `full`. Al introducir Step Functions,
 separar `collect` y `transform` permite reintentar solo la fase que falla.
 
