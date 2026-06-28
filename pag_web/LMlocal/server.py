@@ -29,6 +29,7 @@ sys.path.insert(0, str(PROCESOS_DIR))
 
 from analysis_engine import analyze_question, should_analyze
 from sql_data import DB_PATH, fetch_catalog_summary, fetch_relevant_indicators, normalize
+from gemini_data import answer_with_gemini
 
 
 def load_config() -> dict:
@@ -1114,23 +1115,8 @@ def build_lm_studio_chat_stream_request(payload: dict) -> urllib.request.Request
 
 
 def call_lm_studio(payload: dict) -> str:
-    request = build_lm_studio_request(payload, stream=False)
-
-    timeout = int(load_config().get("requestTimeoutSeconds", 90))
-    with urllib.request.urlopen(request, timeout=timeout) as response:
-        response_body = json.loads(response.read().decode("utf-8"))
-
-    choices = response_body.get("choices", [])
-    if choices:
-        message = choices[0].get("message", {})
-        content = message.get("content", "").strip()
-        if content:
-            answer = ensure_user_facing_answer(payload, content)
-            if should_use_data_context(str(payload.get("message", ""))):
-                return review_data_answer_with_model(payload, answer)
-            return answer
-
-    raise RuntimeError("El asistente no devolvio una respuesta final util.")
+    answer, _trace = answer_with_gemini(payload)
+    return answer
 
 
 def review_data_answer_with_model(payload: dict, draft_answer: str) -> str:

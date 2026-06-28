@@ -759,6 +759,9 @@ def variable_label(value: object) -> str:
         "income_per_household": "Renta por hogar",
         "income_per_person": "Renta por persona",
         "mobility_resources_records": "Registros de movilidad",
+        "gini_inequality": "Desigualdad Gini",
+        "inequality_p80p20": "Desigualdad P80/P20",
+        "traffic_accidents": "Accidentes de trafico",
     }
     return labels.get(str(value), str(value))
 
@@ -774,6 +777,9 @@ def metric_label(value: object) -> str:
         "income_per_household": "Renta por hogar",
         "income_per_person": "Renta por persona",
         "mobility_resources_records": "Numero de registros en recursos municipales de movilidad",
+        "gini_inequality": "Indice de Gini de desigualdad de renta por ciudad y ano",
+        "inequality_p80p20": "Ratio P80/P20 de desigualdad de renta por ciudad y ano",
+        "traffic_accidents": "Accidentes de trafico registrados por ciudad y ano",
     }
     return labels.get(str(value), str(value))
 

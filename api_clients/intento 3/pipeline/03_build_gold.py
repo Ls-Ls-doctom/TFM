@@ -100,39 +100,131 @@ def gold_from_municipal(sources: list[dict[str, Any]]) -> list[dict[str, Any]]:
     rows: list[dict[str, Any]] = []
 
     rows.extend(extract_income(df))
+    rows.extend(extract_income_by_district(df))
+    rows.extend(extract_inequality(df))
+    rows.extend(extract_traffic_accidents(df))
     rows.extend(extract_mobility_counts(df))
     sources.append(source_item(path, len(rows), "Municipal prioritario extraido a indicadores"))
     return rows
 
 
-def extract_income(df: pd.DataFrame) -> list[dict[str, Any]]:
-    detail_rows: list[dict[str, Any]] = []
-    income = df[df.get("dataset_family", "") == "income"].copy()
-    if income.empty:
-        return detail_rows
-
+def _income_detail_rows(income: pd.DataFrame) -> pd.DataFrame:
+    """Extrae columnas de renta e indicadores de desigualdad en formato largo."""
+    income_tokens = ("renda", "renta", "income")
+    skip = {"dataset_family", "source_file"}
+    records = []
     for _, row in income.iterrows():
-        city = row.get("city", "")
         date = infer_date(row)
+        city = str(row.get("city", ""))
+        district = str(row.get("nom_districte", "") or "")
         for column in income.columns:
-            if not any(token in column for token in ("renda", "renta", "income")):
-                continue
-            if column in {"dataset_family", "source_file"}:
+            if column in skip or not any(t in column for t in income_tokens):
                 continue
             value = to_number(row.get(column))
             if value is None:
                 continue
-            detail_rows.append(
-                indicator(city, "", normalize_income_variable(column), value, date, "Municipal Open Data", 7, "economy", "eur")
-            )
-    if not detail_rows:
+            records.append({
+                "city": city,
+                "district": district,
+                "variable": normalize_income_variable(column),
+                "value": value,
+                "date": date,
+                "source": "Municipal Open Data",
+                "quality_score": 7,
+                "category": "economy",
+                "unit": "eur",
+            })
+    return pd.DataFrame(records) if records else pd.DataFrame()
+
+
+def extract_income(df: pd.DataFrame) -> list[dict[str, Any]]:
+    income = df[df.get("dataset_family", "") == "income"].copy()
+    if income.empty:
         return []
-    detail = pd.DataFrame(detail_rows)
+    detail = _income_detail_rows(income)
+    if detail.empty:
+        return []
     grouped = detail.groupby(["city", "variable", "date", "source", "category", "unit"], as_index=False).agg(
         value=("value", "mean"),
         quality_score=("quality_score", "max"),
     )
     return grouped.assign(district="").to_dict(orient="records")
+
+
+def extract_income_by_district(df: pd.DataFrame) -> list[dict[str, Any]]:
+    income = df[df.get("dataset_family", "") == "income"].copy()
+    if income.empty or "nom_districte" not in income.columns:
+        return []
+    income = income[income["nom_districte"].notna() & (income["nom_districte"].astype(str).str.strip() != "")]
+    if income.empty:
+        return []
+    detail = _income_detail_rows(income)
+    if detail.empty:
+        return []
+    grouped = detail.groupby(["city", "district", "variable", "date", "source", "category", "unit"], as_index=False).agg(
+        value=("value", "mean"),
+        quality_score=("quality_score", "max"),
+    )
+    return grouped.to_dict(orient="records")
+
+
+def extract_inequality(df: pd.DataFrame) -> list[dict[str, Any]]:
+    income = df[df.get("dataset_family", "") == "income"].copy()
+    if income.empty:
+        return []
+    col_map = {
+        "index_gini": ("gini_inequality", "economy", "index"),
+        "distribucio_p80_20": ("inequality_p80p20", "economy", "ratio"),
+    }
+    records = []
+    for col, (variable, category, unit) in col_map.items():
+        if col not in income.columns:
+            continue
+        for _, row in income.iterrows():
+            value = to_number(row.get(col))
+            if value is None:
+                continue
+            district = str(row.get("nom_districte", "") or "")
+            records.append({
+                "city": str(row.get("city", "")),
+                "district": district,
+                "variable": variable,
+                "value": value,
+                "date": infer_date(row),
+                "source": "Municipal Open Data",
+                "quality_score": 7,
+                "category": category,
+                "unit": unit,
+            })
+    if not records:
+        return []
+    detail = pd.DataFrame(records)
+    # Ciudad + distrito
+    by_district = detail.groupby(["city", "district", "variable", "date", "source", "category", "unit"], as_index=False).agg(
+        value=("value", "mean"), quality_score=("quality_score", "max"),
+    )
+    # Ciudad (agrupado sin distrito)
+    by_city = detail.groupby(["city", "variable", "date", "source", "category", "unit"], as_index=False).agg(
+        value=("value", "mean"), quality_score=("quality_score", "max"),
+    ).assign(district="")
+    return pd.concat([by_city, by_district], ignore_index=True).to_dict(orient="records")
+
+
+def extract_traffic_accidents(df: pd.DataFrame) -> list[dict[str, Any]]:
+    mobility = df[df.get("dataset_family", "") == "mobility"].copy()
+    if mobility.empty or "fecha" not in mobility.columns:
+        return []
+    accidents = mobility[mobility["fecha"].notna()].copy()
+    if accidents.empty:
+        return []
+    accidents["_year"] = pd.to_datetime(accidents["fecha"], errors="coerce").dt.year
+    accidents = accidents.dropna(subset=["_year"])
+    accidents["_date"] = accidents["_year"].astype(int).astype(str) + "-01-01"
+    grouped = accidents.groupby(["city", "_date"]).size().reset_index(name="value")
+    return [
+        indicator(row["city"], "", "traffic_accidents", row["value"], row["_date"], "Municipal Open Data", 6, "mobility", "incidents")
+        for _, row in grouped.iterrows()
+    ]
 
 
 def extract_mobility_counts(df: pd.DataFrame) -> list[dict[str, Any]]:

@@ -48,7 +48,7 @@ class CloudSettings:
             skip_municipal_resources=env_bool("ISEU_SKIP_MUNICIPAL_RESOURCES", False),
             continue_on_collect_error=env_bool("ISEU_CONTINUE_ON_COLLECT_ERROR", True),
             download_bronze=env_bool("ISEU_DOWNLOAD_BRONZE", True),
-            build_sqlite=env_bool("ISEU_BUILD_SQLITE", False),
+            build_sqlite=env_bool("ISEU_BUILD_SQLITE", True),
             upload_workers=max(1, int(os.getenv("ISEU_UPLOAD_WORKERS", "8"))),
         )
         settings.validate()

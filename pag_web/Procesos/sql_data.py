@@ -1,8 +1,11 @@
 from __future__ import annotations
 
 import json
+import os
 import sqlite3
 import unicodedata
+import urllib.error
+import urllib.request
 from functools import lru_cache
 from pathlib import Path
 from typing import Any
@@ -12,7 +15,11 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 DATASETS_DIR = PROJECT_ROOT / "pag_web" / "Procesos" / "Datasets"
 DB_PATH = DATASETS_DIR / "iseu_datos.sqlite"
 SEMANTIC_DICTIONARY_PATH = PROJECT_ROOT / "pag_web" / "Procesos" / "semantic_dictionary.json"
+DATA_API_URL = os.environ.get("ISEU_DATA_API_URL", "").rstrip("/")
+DATA_API_KEY = os.environ.get("ISEU_DATA_API_KEY", "")
 
+
+_KNOWN_CITIES = ("barcelona", "madrid", "valencia", "sevilla", "bilbao", "malaga", "zaragoza")
 
 TOPIC_TERMS = {
     "empleo": ["tasa de paro", "tasa de empleo", "salario", "laboral", "empresas", "paro registrado", "contratos registrados"],
@@ -55,7 +62,28 @@ TOPIC_TERMS = {
 
 
 def database_ready() -> bool:
-    return DB_PATH.exists()
+    return bool(DATA_API_URL) or DB_PATH.exists()
+
+
+def remote_request(path: str, payload: dict[str, Any] | None = None) -> dict[str, Any]:
+    if not DATA_API_URL:
+        raise RuntimeError("ISEU_DATA_API_URL no está configurada.")
+    headers = {"Accept": "application/json"}
+    if DATA_API_KEY:
+        headers["x-api-key"] = DATA_API_KEY
+    if payload is not None:
+        data: bytes | None = json.dumps(payload, ensure_ascii=False).encode("utf-8")
+        headers["Content-Type"] = "application/json"
+        method = "POST"
+    else:
+        data, method = None, "GET"
+    request = urllib.request.Request(f"{DATA_API_URL}/{path.lstrip('/')}", data=data, headers=headers, method=method)
+    try:
+        with urllib.request.urlopen(request, timeout=28) as response:
+            return json.loads(response.read().decode("utf-8"))
+    except urllib.error.HTTPError as error:
+        detail = error.read().decode("utf-8", errors="replace")[:1600]
+        raise RuntimeError(f"La API de datos respondió {error.code}: {detail}") from error
 
 
 def normalize(text: str) -> str:
@@ -151,6 +179,20 @@ def relative(path: Path) -> str:
 
 
 def fetch_catalog_summary() -> dict[str, Any]:
+    if DATA_API_URL:
+        result = remote_request("catalog")
+        result["tables"] = [
+            {
+                "table_name": table,
+                "layer": "athena",
+                "rows_loaded": None,
+                "columns_loaded": None,
+                "description": "Tabla catalogada en Glue Data Catalog.",
+            }
+            for table in result.get("tables", [])
+            if table
+        ]
+        return result
     if not database_ready():
         return {
             "database": relative(DB_PATH),
@@ -227,6 +269,34 @@ def fetch_series(dataset: str | None = None, variable: str | None = None, limit:
 
 
 def fetch_relevant_indicators(question: str, limit: int = 18) -> dict[str, Any]:
+    if DATA_API_URL:
+        normalized_question = normalize(question)
+        semantic = semantic_query(question)
+        terms = question_terms(question)
+        cities = semantic["cities"] or [city for city in _KNOWN_CITIES if city in normalized_question]
+        result = remote_request(
+            "indicators",
+            {
+                "terms": terms[:12],
+                "cities": cities,
+                # Los alias semánticos son nombres legibles; Gold usa claves
+                # normalizadas como contracts_registered. Los términos y la
+                # categoría resuelven ese mapeo sin exigir igualdad literal.
+                "variables": [],
+                "categories": semantic["categories"][:8],
+                "sources": semantic["sources"][:8],
+                "limit": limit,
+            },
+        )
+        result["semantic"] = semantic
+        result["summary"] = {
+            "database": result.get("database", "iseu"),
+            "ready": result.get("ready", False),
+            "sources": [],
+            "variables": [],
+            "tables": [],
+        }
+        return result
     if not database_ready():
         return {
             "database": relative(DB_PATH),

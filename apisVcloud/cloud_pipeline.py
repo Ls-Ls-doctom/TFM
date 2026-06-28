@@ -82,6 +82,9 @@ def build_steps(settings: CloudSettings) -> list[PipelineStep]:
         transform_steps.append(
             PipelineStep("build_sqlite", [python, str(root / "pipeline" / "04_build_sqlite.py")], ("gold", "reports"))
         )
+        transform_steps.append(
+            PipelineStep("export_athena", [python, str(root / "pipeline" / "05_export_athena.py")], ("gold", "reports"))
+        )
     if settings.mode == "collect":
         return collect_steps
     if settings.mode == "transform":
