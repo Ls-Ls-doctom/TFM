@@ -1,0 +1,75 @@
+name: Deploy Pipeline Docker to ECR
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "apisVcloud/**"
+      - "api_clients/intento 3/pipeline/**"
+      - "api_clients/intento 3/APIS/**"
+
+env:
+  AWS_REGION: eu-west-1
+  ECR_REGISTRY: 720644165834.dkr.ecr.eu-west-1.amazonaws.com
+  ECR_REPOSITORY: iseu-pipeline
+  ECS_CLUSTER: iseu-cluster
+  ECS_TASK_FAMILY: iseu-pipeline
+
+jobs:
+  build-and-push:
+    name: Build & push iseu-pipeline image
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build and push Docker image
+        id: build-image
+        run: |
+          IMAGE=$ECR_REGISTRY/$ECR_REPOSITORY:latest
+          docker build \
+            -f apisVcloud/Dockerfile \
+            -t $IMAGE \
+            --build-arg BUILDKIT_INLINE_CACHE=1 \
+            .
+          docker push $IMAGE
+          echo "image=$IMAGE" >> $GITHUB_OUTPUT
+
+      - name: Register new ECS task definition revision
+        run: |
+          TASK_DEF=$(aws ecs describe-task-definition \
+            --task-definition $ECS_TASK_FAMILY \
+            --query 'taskDefinition' \
+            --output json)
+
+          # Inject environment variables and strip read-only fields
+          NEW_DEF=$(echo "$TASK_DEF" | python3 -c "
+import json, sys
+td = json.load(sys.stdin)
+for key in ['taskDefinitionArn','revision','status','requiresAttributes',
+            'compatibilities','registeredAt','registeredBy']:
+    td.pop(key, None)
+# Ensure ISEU_BUILD_SQLITE=true
+for c in td.get('containerDefinitions', []):
+    env = {e['name']: e['value'] for e in c.get('environment', [])}
+    env['ISEU_BUILD_SQLITE'] = 'true'
+    env['ATHENA_DATABASE'] = 'iseu'
+    env['ATHENA_WORKGROUP'] = 'iseu'
+    c['environment'] = [{'name': k, 'value': v} for k, v in env.items()]
+print(json.dumps(td))
+")
+          aws ecs register-task-definition \
+            --cli-input-json "$NEW_DEF"
+          echo "New task definition registered."
