@@ -70,9 +70,9 @@
       <section class="dashboard-screen screen is-active" id="dashboardScreen" aria-label="Dashboard de datos">
         <div class="dashboard-header">
           <div>
-            <p class="eyebrow">Indice de Salud Economica Urbana</p>
-            <h1>Dashboard de visualizacion de datos</h1>
-            <p class="welcome-copy">Resumen automatico de fuentes recopiladas, calidad de carga y variables listas para consultar.</p>
+            <p class="eyebrow">Índice de Salud Económica Urbana</p>
+            <h1>Dashboard de visualización de datos</h1>
+            <p class="welcome-copy">Resumen automático de fuentes recopiladas, calidad de carga y variables listas para consultar.</p>
           </div>
           <a class="primary-action" href="chatbot.html">
             <span class="material-symbols-outlined">forum</span>
@@ -102,10 +102,10 @@
         <section class="dashboard-panel selection-panel" aria-label="Detalle seleccionado">
           <div class="panel-heading">
             <h2>Detalle interactivo</h2>
-            <button class="clear-selection" type="button" id="clearSelection">Limpiar seleccion</button>
+            <button class="clear-selection" type="button" id="clearSelection">Limpiar selección</button>
           </div>
           <div id="selectionDetail" class="selection-detail">
-            <p>Selecciona una fuente, barra, punto o variable para ver una lectura rapida y filtrar la tabla.</p>
+            <p>Selecciona una fuente, barra, punto o variable para ver una lectura rápida y filtrar la tabla.</p>
           </div>
         </section>
 
@@ -121,7 +121,7 @@
 
           <section class="dashboard-panel" aria-label="Ultimos indicadores cargados">
             <div class="panel-heading">
-              <h2>Ultimos indicadores</h2>
+              <h2>Últimos indicadores</h2>
               <span>fuente, periodo, calidad</span>
             </div>
             <div class="data-table-wrap dashboard-table">
@@ -146,7 +146,7 @@
           <section class="dashboard-panel compact-panel" aria-label="Calidad de datos">
             <div class="panel-heading">
               <h2>Calidad de datos</h2>
-              <span>distribucion</span>
+              <span>distribución</span>
             </div>
             <div id="qualityChart" class="compact-chart"></div>
           </section>
@@ -162,7 +162,7 @@
           <section class="dashboard-panel compact-panel" aria-label="Actualidad temporal">
             <div class="panel-heading">
               <h2>Actualidad temporal</h2>
-              <span>por ano</span>
+              <span>por año</span>
             </div>
             <div id="periodChart" class="compact-chart"></div>
           </section>
@@ -176,23 +176,23 @@
           </section>
         </div>
 
-        <div class="analytics-grid" aria-label="Graficos analiticos ampliados">
-          <section class="dashboard-panel analytics-panel" aria-label="Barras por ano">
+        <div class="analytics-grid" aria-label="Gráficos analíticos ampliados">
+          <section class="dashboard-panel analytics-panel" aria-label="Barras por año">
             <div class="panel-heading">
-              <h2>Registros por ano</h2>
+              <h2>Registros por año</h2>
               <span>barras</span>
             </div>
             <div id="yearBarsChart" class="vertical-bars"></div>
-            <p class="chart-explainer">Este grafico ayuda a ver si la base se concentra en anos recientes o si hay series historicas largas.</p>
+            <p class="chart-explainer">Este gráfico ayuda a ver si la base se concentra en años recientes o si hay series históricas largas.</p>
           </section>
 
-          <section class="dashboard-panel analytics-panel" aria-label="Dispersion de variables">
+          <section class="dashboard-panel analytics-panel" aria-label="Dispersión de variables">
             <div class="panel-heading">
               <h2>Volumen vs actualidad</h2>
-              <span>dispersion</span>
+              <span>dispersión</span>
             </div>
             <div id="variableScatterChart" class="scatter-plot"></div>
-            <p class="chart-explainer">Cada punto es una variable: cuanto mas arriba, mas registros; cuanto mas a la derecha, mas actual es su ultimo periodo.</p>
+            <p class="chart-explainer">Cada punto es una variable: cuanto más arriba, más registros; cuanto más a la derecha, más actual es su último período.</p>
           </section>
 
           <section class="dashboard-panel analytics-panel" aria-label="Comparativa por fuente">
@@ -201,16 +201,16 @@
               <span>comparativa</span>
             </div>
             <div id="sourceCompareChart" class="comparison-bars"></div>
-            <p class="chart-explainer">Compara volumen de registros con cantidad de variables aportadas para detectar fuentes profundas frente a fuentes mas diversas.</p>
+            <p class="chart-explainer">Compara volumen de registros con cantidad de variables aportadas para detectar fuentes profundas frente a fuentes más diversas.</p>
           </section>
         </div>
 
-        <section class="dashboard-panel" aria-label="Ultima actualizacion por ciudad">
+        <section class="dashboard-panel" aria-label="Última actualización por ciudad">
           <div class="panel-heading">
-            <h2>Ultima actualizacion por ciudad</h2>
+            <h2>Última actualización por ciudad</h2>
             <span id="cityUpdateCount">Recepciones registradas</span>
           </div>
-          <p class="update-section-copy">Momento en que el sistema recibio datos por ultima vez. El periodo indica la fecha de referencia del dato, que puede ser anterior.</p>
+          <p class="update-section-copy">Momento en que el sistema recibió datos por última vez. El período indica la fecha de referencia del dato, que puede ser anterior.</p>
           <div id="cityUpdateGrid" class="city-update-grid"></div>
         </section>
 

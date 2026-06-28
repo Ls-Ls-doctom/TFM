@@ -90,14 +90,14 @@ const datasets = {
   empleo: {
     label: "Mercado laboral",
     title: "Mercado laboral urbano",
-    summary: "Lectura de paro, contratos, empleo y actividad economica para comparar territorios.",
+    summary: "Lectura de paro, contratos, empleo y actividad económica para comparar territorios.",
     source: "SEPE / INE EPA / Idescat",
     confidence: "Media",
     table: [
       ["Paro registrado", "Municipal España", "SEPE", "OK"],
       ["Contratos registrados", "Municipal España", "SEPE", "OK"],
-      ["Tasa de paro", "Autonomica/proxy", "INE EPA", "OK"],
-      ["Actividad economica", "Disponible segun territorio", "Idescat/otros", "Parcial"]
+      ["Tasa de paro", "Autonómica/proxy", "INE EPA", "OK"],
+      ["Actividad económica", "Disponible según territorio", "Idescat/otros", "Parcial"]
     ],
     chart: [
       ["Paro", 48],
@@ -109,13 +109,13 @@ const datasets = {
   sanidad: {
     label: "Sanidad",
     title: "Bienestar urbano",
-    summary: "Vista de equipamientos, poblacion y cobertura territorial cuando exista fuente comparable.",
+    summary: "Vista de equipamientos, población y cobertura territorial cuando exista fuente comparable.",
     source: "Open Data BCN / INE / Idescat",
     confidence: "Media",
     table: [
-      ["Equipamientos salud", "Segun ciudad", "Open Data BCN", "Parcial"],
-      ["Poblacion", "Territorial", "INE/Idescat", "OK"],
-      ["Crecimiento poblacion", "Segun territorio", "INE/Idescat", "Parcial"],
+      ["Equipamientos salud", "Según ciudad", "Open Data BCN", "Parcial"],
+      ["Población", "Territorial", "INE/Idescat", "OK"],
+      ["Crecimiento población", "Según territorio", "INE/Idescat", "Parcial"],
       ["Cobertura", "Proxy", "ISEU", "Calculado"]
     ],
     chart: [
@@ -127,14 +127,14 @@ const datasets = {
   },
   coste: {
     label: "Coste de vida",
-    title: "Presion economica general",
-    summary: "Vista general de IPC, energia y fiscalidad. No se centra en vivienda.",
+    title: "Presión económica general",
+    summary: "Vista general de IPC, energía y fiscalidad. No se centra en vivienda.",
     source: "INE / REE / Idescat",
     confidence: "Alta-media",
     table: [
       ["IPC general", "119,94", "INE", "2025"],
-      ["Inflacion anual", "2,8 aprox.", "INE", "2025"],
-      ["Precio energia", "Serie horaria", "REE", "OK"],
+      ["Inflación anual", "2,8 aprox.", "INE", "2025"],
+      ["Precio energía", "Serie horaria", "REE", "OK"],
       ["IBI cuota integra", "829.660.903", "Idescat", "2024"]
     ],
     chart: [
@@ -170,38 +170,38 @@ const sampleAnswers = [
     topic: "general",
     keywords: ["hola", "buenos", "buenas", "que tal", "como estas", "como vas"],
     html: `
-      <p>Hola. Soy el asistente ISEU+, centrado en indicadores economicos urbanos de España.</p>
-      <p>Puedo responder sobre mercado laboral, vivienda, coste de vida, energia y calidad de los datos disponibles a partir de INE, REE, MITMA/MIVAU, SEPE, Idescat y Open Data BCN.</p>
+      <p>Hola. Soy el asistente ISEU+, centrado en indicadores económicos urbanos de España.</p>
+      <p>Puedo responder sobre mercado laboral, vivienda, coste de vida, energía y calidad de los datos disponibles a partir de INE, REE, MITMA/MIVAU, SEPE, Idescat y Open Data BCN.</p>
       <div class="answer-panel">
-        <div class="metric-row"><span>Pilares disponibles</span><strong>Empleo, Sanidad, Coste de vida, Energia</strong></div>
+        <div class="metric-row"><span>Pilares disponibles</span><strong>Empleo, Sanidad, Coste de vida, Energía</strong></div>
         <div class="metric-row"><span>Fuentes activas</span><strong>INE, REE, MITMA/MIVAU, SEPE, Idescat, Open Data BCN</strong></div>
         <div class="metric-row"><span>Estado</span><strong>Datos cargados</strong></div>
       </div>
-      <p>Prueba a preguntar por algun tema concreto o usa los accesos directos de abajo.</p>
+      <p>Prueba a preguntar por algún tema concreto o usa los accesos directos de abajo.</p>
     `
   },
   {
     topic: "empleo",
     keywords: ["empleo", "trabajo", "paro", "desempleo", "laboral"],
     html: `
-      <p>Hay que leerlo como una combinacion de mercado laboral y presion economica, no como una unica causa.</p>
-      <p>ISEU miraria si el empleo disponible esta creciendo al mismo ritmo que la poblacion activa, si los sectores fuertes absorben perfiles nuevos y si el coste de vida reduce el margen real de quien busca trabajo.</p>
+      <p>Hay que leerlo como una combinación de mercado laboral y presión económica, no como una única causa.</p>
+      <p>ISEU miraría si el empleo disponible está creciendo al mismo ritmo que la población activa, si los sectores fuertes absorben perfiles nuevos y si el coste de vida reduce el margen real de quien busca trabajo.</p>
       <div class="answer-panel">
         <div class="metric-row"><span>Paro y contratos</span><strong>SEPE municipal España</strong></div>
-        <div class="metric-row"><span>Tasa de paro / empleo</span><strong>INE EPA, proxy autonomico</strong></div>
-        <div class="metric-row"><span>Actividad economica</span><strong>Disponible segun territorio</strong></div>
+        <div class="metric-row"><span>Tasa de paro / empleo</span><strong>INE EPA, proxy autonómico</strong></div>
+        <div class="metric-row"><span>Actividad económica</span><strong>Disponible según territorio</strong></div>
       </div>
-      <p>He actualizado el panel lateral con la tabla y el grafico del pilar laboral.</p>
+      <p>He actualizado el panel lateral con la tabla y el gráfico del pilar laboral.</p>
     `
   },
   {
     topic: "sanidad",
     keywords: ["sanidad", "salud", "hospital", "ambulatorio", "cap", "medico"],
     html: `
-      <p>Para sanidad, el sistema deberia hablar de accesibilidad y bienestar: cuantos equipamientos hay, donde estan y cuanta poblacion cubren.</p>
+      <p>Para sanidad, el sistema debería hablar de accesibilidad y bienestar: cuántos equipamientos hay, dónde están y cuánta población cubren.</p>
       <div class="answer-panel">
         <div class="metric-row"><span>Equipamientos de salud</span><strong>Open Data BCN cuando exista</strong></div>
-        <div class="metric-row"><span>Poblacion de referencia</span><strong>INE / Idescat segun territorio</strong></div>
+        <div class="metric-row"><span>Población de referencia</span><strong>INE / Idescat según territorio</strong></div>
         <div class="metric-row"><span>Lectura ISEU</span><strong>Cobertura + presion demografica</strong></div>
       </div>
       <p>El panel lateral queda filtrado para sanidad, con datos listos para cruzarse con otros indicadores.</p>
@@ -211,13 +211,13 @@ const sampleAnswers = [
     topic: "coste",
     keywords: ["coste", "vida", "ipc", "inflacion", "energia", "precio", "caro", "gasto"],
     html: `
-      <p>Coste de vida se puede responder de forma general con inflacion, energia y presion fiscal disponible.</p>
+      <p>Coste de vida se puede responder de forma general con inflación, energía y presión fiscal disponible.</p>
       <div class="answer-panel">
         <div class="metric-row"><span>IPC general</span><strong>INE mensual</strong></div>
-        <div class="metric-row"><span>Energia</span><strong>REE precio/demanda</strong></div>
+        <div class="metric-row"><span>Energía</span><strong>REE precio/demanda</strong></div>
         <div class="metric-row"><span>IBI</span><strong>Idescat 2024</strong></div>
       </div>
-      <p>Lo dejo como pilar transversal para no convertir la pagina en un modulo de vivienda.</p>
+      <p>Lo dejo como pilar transversal para no convertir la página en un módulo de vivienda.</p>
     `
   },
   {
@@ -417,13 +417,13 @@ function renderSelectionDetail() {
   const filteredRows = getFilteredLatestRows();
   const totalRows = Number(dashboardPayload?.kpis?.indicatorRows) || 0;
   const value = Number(activeSelection.value) || 0;
-  const pct = totalRows > 0 && value > 0 ? `${percentFormatter.format(value / totalRows * 100)}% del total` : "seleccion activa";
+  const pct = totalRows > 0 && value > 0 ? `${percentFormatter.format(value / totalRows * 100)}% del total` : "selección activa";
   const prompt = encodeURIComponent(`Explica ${activeSelection.label} con los datos disponibles`);
 
   selectionDetail.innerHTML = `
     <div class="selection-summary">
       <div>
-        <span>${escapeHtml(activeSelection.kind || "Seleccion")}</span>
+        <span>${escapeHtml(activeSelection.kind || "Selección")}</span>
         <strong>${escapeHtml(activeSelection.label)}</strong>
       </div>
       <div>
@@ -439,8 +439,8 @@ function renderSelectionDetail() {
         <strong>${formatNumber(filteredRows.length)} filas visibles</strong>
       </div>
     </div>
-    <p>${escapeHtml(activeSelection.note || "La seleccion filtra los ultimos indicadores cuando hay coincidencias directas.")}</p>
-    <a class="selection-action" href="chatbot.html?prompt=${prompt}">Preguntar sobre esta seleccion</a>
+    <p>${escapeHtml(activeSelection.note || "La selección filtra los últimos indicadores cuando hay coincidencias directas.")}</p>
+    <a class="selection-action" href="chatbot.html?prompt=${prompt}">Preguntar sobre esta selección</a>
   `;
 }
 
@@ -498,7 +498,7 @@ function renderDashboardCharts(charts) {
     labelKey: "period_group",
     valueKey: "rows",
     type: "year",
-    kind: "Ano",
+    kind: "Año",
     sortAscLabel: true,
     empty: "No hay periodos suficientes."
   });
@@ -530,7 +530,7 @@ function renderVerticalYearBars(container, rows) {
     .sort((a, b) => Number(a.year) - Number(b.year));
 
   if (!values.length) {
-    container.innerHTML = `<p class="trace-empty">No hay anos suficientes para graficar.</p>`;
+    container.innerHTML = `<p class="trace-empty">No hay años suficientes para graficar.</p>`;
     return;
   }
 
@@ -539,7 +539,7 @@ function renderVerticalYearBars(container, rows) {
     const height = Math.max(8, Math.round(row.value / maxValue * 100));
     const color = chartPalette[index % chartPalette.length];
     return `
-      <button class="year-bar-item interactive-chart-item" type="button" title="${escapeHtml(`${row.year}: ${formatNumber(row.value)} registros`)}" data-select-type="year" data-select-kind="Ano" data-select-label="${escapeHtml(row.year)}" data-select-value="${row.value}" data-select-value-label="${escapeHtml(`${formatNumber(row.value)} registros`)}" data-select-note="Este ano concentra los registros mostrados en la serie temporal.">
+      <button class="year-bar-item interactive-chart-item" type="button" title="${escapeHtml(`${row.year}: ${formatNumber(row.value)} registros`)}" data-select-type="year" data-select-kind="Año" data-select-label="${escapeHtml(row.year)}" data-select-value="${row.value}" data-select-value-label="${escapeHtml(`${formatNumber(row.value)} registros`)}" data-select-note="Este año concentra los registros mostrados en la serie temporal.">
         <div class="year-bar-value">${formatNumber(row.value)}</div>
         <div class="year-bar-track">
           <div class="year-bar-fill" style="height:${height}%; background:${color}"></div>
@@ -566,7 +566,7 @@ function renderVariableScatter(container, variables) {
     .filter((item) => item.year && item.rows > 0);
 
   if (points.length < 2) {
-    container.innerHTML = `<p class="trace-empty">No hay variables suficientes para la dispersion.</p>`;
+    container.innerHTML = `<p class="trace-empty">No hay variables suficientes para la dispersión.</p>`;
     return;
   }
 
@@ -585,7 +585,7 @@ function renderVariableScatter(container, variables) {
       const size = Math.max(8, Math.min(22, 7 + Math.log10(point.rows + 1) * 3));
       const title = `${point.label} (${point.source}) · ${point.year} · ${formatNumber(point.rows)} registros`;
       return `
-        <button class="scatter-point" type="button" title="${escapeHtml(title)}" data-select-type="variable" data-select-kind="Variable" data-select-label="${escapeHtml(point.label)}" data-select-value="${point.rows}" data-select-value-label="${escapeHtml(`${formatNumber(point.rows)} registros`)}" data-select-note="Punto de dispersion cruzando volumen de registros y actualidad temporal." style="left:${x}%; top:${y}%; width:${size}px; height:${size}px; background:${point.color}">
+        <button class="scatter-point" type="button" title="${escapeHtml(title)}" data-select-type="variable" data-select-kind="Variable" data-select-label="${escapeHtml(point.label)}" data-select-value="${point.rows}" data-select-value-label="${escapeHtml(`${formatNumber(point.rows)} registros`)}" data-select-note="Punto de dispersión cruzando volumen de registros y actualidad temporal." style="left:${x}%; top:${y}%; width:${size}px; height:${size}px; background:${point.color}">
           <span>${escapeHtml(title)}</span>
         </button>
       `;
@@ -754,7 +754,7 @@ function renderSourceChart(sources) {
     const rows = Number(item.rows) || 0;
     const width = Math.max(4, Math.round((rows / maxRows) * 100));
     return `
-      <button class="source-row interactive-chart-item" type="button" data-select-type="source" data-select-kind="Fuente" data-select-label="${escapeHtml(String(item.source || "Fuente"))}" data-select-value="${rows}" data-select-value-label="${escapeHtml(`${formatNumber(rows)} filas`)}" data-select-note="Fuente seleccionada desde el grafico de barras por volumen.">
+      <button class="source-row interactive-chart-item" type="button" data-select-type="source" data-select-kind="Fuente" data-select-label="${escapeHtml(String(item.source || "Fuente"))}" data-select-value="${rows}" data-select-value-label="${escapeHtml(`${formatNumber(rows)} filas`)}" data-select-note="Fuente seleccionada desde el gráfico de barras por volumen.">
         <div class="bar-meta">
           <span>${escapeHtml(String(item.source || "Fuente"))}</span>
           <strong>${formatNumber(rows)} filas</strong>
@@ -839,7 +839,7 @@ function renderSourceChart(cities) {
     const label = String(item.city || "Ciudad");
     const width = Math.max(4, Math.round((rows / maxRows) * 100));
     return `
-      <button class="source-row interactive-chart-item" type="button" data-select-type="city" data-select-kind="Ciudad" data-select-label="${escapeHtml(label)}" data-select-value="${rows}" data-select-value-label="${escapeHtml(`${formatNumber(rows)} registros · ${formatNumber(variables)} variables · ${formatNumber(sourceCount)} fuentes`)}" data-select-note="Ciudad seleccionada desde el grafico territorial de datos disponibles.">
+      <button class="source-row interactive-chart-item" type="button" data-select-type="city" data-select-kind="Ciudad" data-select-label="${escapeHtml(label)}" data-select-value="${rows}" data-select-value-label="${escapeHtml(`${formatNumber(rows)} registros · ${formatNumber(variables)} variables · ${formatNumber(sourceCount)} fuentes`)}" data-select-note="Ciudad seleccionada desde el gráfico territorial de datos disponibles.">
         <div class="bar-meta">
           <span>${escapeHtml(label)}</span>
           <strong>${formatNumber(variables)} variables · ${formatNumber(sourceCount)} fuentes</strong>
@@ -886,8 +886,8 @@ function renderSourcePie(cities) {
   sourcePie.innerHTML = `
     <div class="pie-chart" style="background: conic-gradient(${slices.join(", ")})">
       <div class="pie-center">
-        <span>Variables</span>
-        <strong>${formatNumber(totalVariables)}</strong>
+        <span>Ciudades</span>
+        <strong>${formatNumber(validCities.length)}</strong>
       </div>
     </div>
     <div class="pie-legend">
@@ -927,7 +927,7 @@ function renderSourceChart(cities) {
     const label = String(item.city || "Ciudad");
     const width = Math.max(6, Math.round((variables / maxVariables) * 100));
     return `
-      <button class="source-row interactive-chart-item" type="button" data-select-type="city" data-select-kind="Ciudad" data-select-label="${escapeHtml(label)}" data-select-value="${rows}" data-select-value-label="${escapeHtml(`${formatNumber(variables)} variables · ${formatNumber(sourceCount)} fuentes · ${formatNumber(rows)} registros`)}" data-select-note="Ciudad seleccionada desde el grafico de cobertura territorial.">
+      <button class="source-row interactive-chart-item" type="button" data-select-type="city" data-select-kind="Ciudad" data-select-label="${escapeHtml(label)}" data-select-value="${rows}" data-select-value-label="${escapeHtml(`${formatNumber(variables)} variables · ${formatNumber(sourceCount)} fuentes · ${formatNumber(rows)} registros`)}" data-select-note="Ciudad seleccionada desde el gráfico de cobertura territorial.">
         <div class="bar-meta">
           <span>${escapeHtml(label)}</span>
           <strong>${formatNumber(variables)} variables · ${formatNumber(sourceCount)} fuentes</strong>
