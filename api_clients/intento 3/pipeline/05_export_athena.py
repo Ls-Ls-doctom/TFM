@@ -1,6 +1,8 @@
 """
-Paso 5 del pipeline: exporta tablas SQLite (indicadores + semantic_observations)
-a Parquet en data_lake/gold/athena/ y registra/actualiza las tablas en Glue.
+Paso 5 del pipeline: exporta a Parquet en S3 y registra en Glue:
+  - gold/athena/indicadores → iseu_indicadores  (Silver unificada, ~94k filas)
+  - gold/athena/semantic_obs → iseu_semantic_obs (~106k filas)
+  - silver/athena/<name> → iseu_<name>  (tablas brutas Silver, ~182k filas)
 Se ejecuta después de 04_build_sqlite.py.
 """
 from __future__ import annotations
@@ -87,6 +89,32 @@ def export_table(conn: sqlite3.Connection, sql_table: str, parquet_dir: Path) ->
     return df
 
 
+def export_and_register(
+    conn: sqlite3.Connection,
+    glue_client: Any,
+    sql_table: str,
+    parquet_dir: Path,
+    s3_location: str,
+    glue_name: str,
+    report: dict[str, Any],
+) -> None:
+    df = export_table(conn, sql_table, parquet_dir)
+    cols = glue_columns(df)
+    if glue_client and s3_location:
+        upsert_glue_table(glue_client, s3_location, glue_name, cols)
+        print(f"  Glue {glue_name}: {len(df)} filas, {len(cols)} columnas — {s3_location}")
+    else:
+        print(f"  (sin ISEU_BUCKET) Parquet generado: {parquet_dir / 'data.parquet'}")
+    report["tables"].append({
+        "sql_table": sql_table,
+        "glue_table": glue_name,
+        "s3_location": s3_location,
+        "rows": int(len(df)),
+        "columns": len(cols),
+        "parquet": relative(parquet_dir / "data.parquet"),
+    })
+
+
 def main() -> int:
     if not DB_PATH.exists():
         raise FileNotFoundError(
@@ -94,30 +122,27 @@ def main() -> int:
         )
 
     glue_client = boto3.client("glue", region_name=REGION) if BUCKET else None
-
     report: dict[str, Any] = {"generated_at": now(), "tables": []}
 
     with sqlite3.connect(DB_PATH) as conn:
+        # Fixed Gold tables
         for sql_table, (s3_subfolder, glue_name) in EXPORT_TABLES.items():
             parquet_dir = ATHENA_DIR / s3_subfolder
-            df = export_table(conn, sql_table, parquet_dir)
             s3_location = f"s3://{BUCKET}/gold/athena/{s3_subfolder}/" if BUCKET else ""
-            cols = glue_columns(df)
+            export_and_register(conn, glue_client, sql_table, parquet_dir, s3_location, glue_name, report)
 
-            if glue_client and BUCKET:
-                upsert_glue_table(glue_client, s3_location, glue_name, cols)
-                print(f"  Glue {glue_name}: {len(df)} filas, {len(cols)} columnas — {s3_location}")
-            else:
-                print(f"  (sin ISEU_BUCKET) Parquet generado: {parquet_dir / 'data.parquet'}")
-
-            report["tables"].append({
-                "sql_table": sql_table,
-                "glue_table": glue_name,
-                "s3_location": s3_location,
-                "rows": int(len(df)),
-                "columns": len(cols),
-                "parquet": relative(parquet_dir / "data.parquet"),
-            })
+        # Silver raw tables (any silver_* in SQLite)
+        silver_names: list[str] = [
+            row[0]
+            for row in conn.execute(
+                "SELECT name FROM sqlite_master WHERE type='table' AND name LIKE 'silver_%' ORDER BY name"
+            ).fetchall()
+        ]
+        for sql_table in silver_names:
+            glue_name = f"iseu_{sql_table}"
+            parquet_dir = ATHENA_DIR.parent.parent / "silver" / "athena" / sql_table
+            s3_location = f"s3://{BUCKET}/silver/athena/{sql_table}/" if BUCKET else ""
+            export_and_register(conn, glue_client, sql_table, parquet_dir, s3_location, glue_name, report)
 
     write_json(REPORTS_DIR / "athena_export.json", report)
     total = sum(t["rows"] for t in report["tables"])

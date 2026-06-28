@@ -100,7 +100,9 @@ def json_default(value: Any) -> str:
 
 @lru_cache(maxsize=1)
 def table_names() -> dict[str, str | None]:
-    """Detect Glue table names by their S3 location."""
+    """Detect Glue table names by their S3 location.
+    Fixed aliases: indicators, indicadores, observations.
+    Dynamic aliases: silver_* for any table at silver/athena/ prefix."""
     paginator = glue.get_paginator("get_tables")
     found: dict[str, str | None] = {alias: None for alias in _TABLE_LOCATIONS}
     available = []
@@ -112,6 +114,9 @@ def table_names() -> dict[str, str | None]:
             for alias, fragment in _TABLE_LOCATIONS.items():
                 if fragment in location and found[alias] is None:
                     found[alias] = name
+            # Detect Silver raw tables exported by the pipeline
+            if "silver/athena/" in location and found.get(f"silver_{name}") is None:
+                found[f"silver_{name}"] = name
 
     if not found["indicators"]:
         raise RuntimeError(f"No se encontró la tabla Gold de indicadores. Tablas disponibles: {available}")
@@ -163,7 +168,8 @@ def coerce_value(column: str, value: str | None) -> Any:
         return None
     integer_columns = {
         "rows", "variables", "sources", "source_count", "city_count",
-        "indicator_rows", "source_count_total", "variable_count", "detail_rows", "obs_rows",
+        "indicator_rows", "source_count_total", "variable_count",
+        "detail_rows", "obs_rows", "gold_rows", "silver_rows",
     }
     float_columns = {"value", "quality_score"}
     if column in integer_columns:
@@ -191,6 +197,8 @@ def run_named_queries(queries: dict[str, str]) -> dict[str, list[dict[str, Any]]
 def build_dashboard() -> dict[str, Any]:
     tables = table_names()
     indicators = quoted_table(str(tables["indicators"]))
+    # Use Silver indicadores as main source (matches local server behaviour)
+    indicadores = quoted_table(str(tables["indicadores"])) if tables.get("indicadores") else indicators
     geo_case = """
         CASE
           WHEN lower(city) = 'barcelona' THEN 'Barcelona'
@@ -208,7 +216,7 @@ def build_dashboard() -> dict[str, Any]:
             SELECT count(*) indicator_rows,
                    count(DISTINCT source) source_count_total,
                    count(DISTINCT variable) variable_count
-            FROM {indicators}
+            FROM {indicadores}
         """,
         "sources": f"""
             SELECT source, count(*) rows, count(DISTINCT variable) variables
@@ -260,17 +268,25 @@ def build_dashboard() -> dict[str, Any]:
         """,
     }
 
-    # Count Silver detail rows (indicadores + observations combined)
-    if tables.get("indicadores"):
-        queries["detail_count"] = f"SELECT count(*) detail_rows FROM {quoted_table(str(tables['indicadores']))}"
+    # detailRows = Gold indicators + semantic_obs + any silver_* tables in Athena
+    # (mirrors local server which counts everything except the main indicadores table)
+    queries["gold_count"] = f"SELECT count(*) gold_rows FROM {indicators}"
     if tables.get("observations"):
         queries["obs_count"] = f"SELECT count(*) obs_rows FROM {quoted_table(str(tables['observations']))}"
+    for alias, tname in tables.items():
+        if alias.startswith("silver_"):
+            safe = re.sub(r"[^a-z0-9_]", "_", alias)
+            queries[f"cnt_{safe}"] = f"SELECT count(*) silver_rows FROM {quoted_table(str(tname))}"
 
     result = run_named_queries(queries)
     metrics = (result.get("metrics") or [{}])[0]
     detail_count = (
-        ((result.get("detail_count") or [{}])[0].get("detail_rows") or 0)
+        ((result.get("gold_count") or [{}])[0].get("gold_rows") or 0)
         + ((result.get("obs_count") or [{}])[0].get("obs_rows") or 0)
+        + sum(
+            (result.get(f"cnt_{re.sub(r'[^a-z0-9_]', '_', alias)}") or [{}])[0].get("silver_rows") or 0
+            for alias in tables if alias.startswith("silver_")
+        )
     )
     cities = result.get("cities", [])
     updated_at = gold_last_modified()
