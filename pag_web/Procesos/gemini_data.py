@@ -91,6 +91,7 @@ def answer_with_gemini(payload: dict[str, Any]) -> tuple[str, dict[str, Any]]:
         "usesData": bool(plan.get("needs_data")),
         "sql": query_result.get("sql") if query_result else None,
         "rows": query_result.get("rowCount", 0) if query_result else 0,
+        "queryRows": (query_result.get("rows", [])[:50] if query_result else []),
         "reason": plan.get("reason", ""),
     }
     return answer, trace
@@ -145,37 +146,9 @@ def generate_final_answer(
     plan: dict[str, Any],
     query_result: dict[str, Any] | None,
 ) -> str:
-    evidence = {
-        "sql": query_result.get("sql") if query_result else None,
-        "rows": query_result.get("rows", [])[:100] if query_result else [],
-        "row_count": query_result.get("rowCount", 0) if query_result else 0,
-        "plan_reason": plan.get("reason", ""),
-    }
-    prompt = f"""
-Pregunta actual: {question}
-
-Historial reciente:
-{format_history(history)}
-
-Evidencia recuperada:
-{json.dumps(evidence, ensure_ascii=False, separators=(',', ':'))}
-
-Redacta la respuesta final en español. Si hay filas, usa exclusivamente esos
-datos para las afirmaciones cuantitativas, menciona territorio, periodo, valor,
-unidad y fuente, y distingue claramente cualquier proxy o limitación. Si la
-consulta no devuelve filas, dilo con claridad. Si no era necesaria una consulta,
-responde de forma conversacional sin inventar que consultaste datos. No muestres
-razonamiento interno. No incluyas bloques de código SQL salvo que el usuario los
-pida expresamente. No describas una fecha pasada como futura. No afirmes que un
-dato es proyección, estimación o previsión salvo que la evidencia lo indique de
-forma explícita.
-""".strip()
     return gemini_text(
-        system_instruction=(
-            "Eres el asistente ISEU. Respondes con claridad, trazabilidad y prudencia "
-            "metodológica. Nunca inventas indicadores ausentes."
-        ),
-        prompt=prompt,
+        system_instruction=_ANSWER_SYSTEM,
+        prompt=_build_answer_prompt(question, history, plan, query_result),
         temperature=0.25,
         max_tokens=900,
     )
@@ -267,6 +240,117 @@ def gemini_request(system_instruction: str, prompt: str, generation_config: dict
     if not text:
         raise RuntimeError("Gemini no devolvió texto utilizable.")
     return text
+
+
+def gemini_stream_text(system_instruction: str, prompt: str, temperature: float, max_tokens: int):
+    """Yields text chunks from Gemini streaming API (streamGenerateContent?alt=sse)."""
+    model = urllib.parse.quote(GEMINI_MODEL, safe="-._")
+    url = f"{GEMINI_BASE_URL}/{model}:streamGenerateContent?alt=sse"
+    body = json.dumps({
+        "systemInstruction": {"parts": [{"text": system_instruction}]},
+        "contents": [{"role": "user", "parts": [{"text": prompt}]}],
+        "generationConfig": {"temperature": temperature, "maxOutputTokens": max_tokens},
+    }, ensure_ascii=False).encode("utf-8")
+    req = urllib.request.Request(
+        url, data=body,
+        headers={"Content-Type": "application/json", "x-goog-api-key": GEMINI_API_KEY},
+        method="POST",
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=30) as resp:
+            for raw in resp:
+                line = raw.decode("utf-8", errors="replace").rstrip("\r\n")
+                if not line.startswith("data:"):
+                    continue
+                json_str = line[5:].strip()
+                try:
+                    chunk = json.loads(json_str)
+                    for cand in chunk.get("candidates", []):
+                        for part in cand.get("content", {}).get("parts", []):
+                            text = part.get("text", "")
+                            if text:
+                                yield text
+                except (json.JSONDecodeError, KeyError):
+                    continue
+    except Exception:
+        # On streaming failure, fall back to non-streaming
+        yield gemini_text(system_instruction, prompt, temperature, max_tokens)
+
+
+def _build_answer_prompt(
+    question: str,
+    history: list[dict[str, str]],
+    plan: dict[str, Any],
+    query_result: dict[str, Any] | None,
+) -> str:
+    evidence = {
+        "sql": query_result.get("sql") if query_result else None,
+        "rows": query_result.get("rows", [])[:100] if query_result else [],
+        "row_count": query_result.get("rowCount", 0) if query_result else 0,
+        "plan_reason": plan.get("reason", ""),
+    }
+    return f"""
+Pregunta actual: {question}
+
+Historial reciente:
+{format_history(history)}
+
+Evidencia recuperada:
+{json.dumps(evidence, ensure_ascii=False, separators=(',', ':'))}
+
+Redacta la respuesta final en español. Si hay filas, usa exclusivamente esos
+datos para las afirmaciones cuantitativas, menciona territorio, periodo, valor,
+unidad y fuente, y distingue claramente cualquier proxy o limitación. Si la
+consulta no devuelve filas, dilo con claridad. Si no era necesaria una consulta,
+responde de forma conversacional sin inventar que consultaste datos. No muestres
+razonamiento interno. No incluyas bloques de código SQL salvo que el usuario los
+pida expresamente. No describas una fecha pasada como futura. No afirmes que un
+dato es proyección, estimación o previsión salvo que la evidencia lo indique de
+forma explícita.
+""".strip()
+
+
+_ANSWER_SYSTEM = (
+    "Eres el asistente ISEU. Respondes con claridad, trazabilidad y prudencia "
+    "metodológica. Nunca inventas indicadores ausentes."
+)
+
+
+def answer_with_gemini_stream(payload: dict[str, Any]):
+    """Generator of (event_name, event_data) tuples for SSE streaming response."""
+    if not GEMINI_API_KEY:
+        raise RuntimeError("Falta configurar GEMINI_API_KEY en Vercel.")
+    question = str(payload.get("message") or "").strip()
+    if not question:
+        raise ValueError("La pregunta está vacía.")
+    history = compact_history(payload.get("history", []))
+
+    yield "status", {"label": "Pensando", "detail": "Analizando la consulta."}
+    plan = generate_sql_plan(question, history)
+    query_result: dict[str, Any] | None = None
+
+    if plan.get("needs_data"):
+        sql = str(plan.get("sql") or "").strip()
+        if sql:
+            yield "status", {"label": "Recuperando datos", "detail": "Consultando Athena."}
+            query_result = remote_request("sql", {"sql": sql})
+
+    yield "status", {"label": "Generando respuesta", "detail": "Escribiendo..."}
+    prompt = _build_answer_prompt(question, history, plan, query_result)
+    for chunk in gemini_stream_text(_ANSWER_SYSTEM, prompt, 0.25, 900):
+        yield "delta", {"text": chunk}
+
+    trace = {
+        "provider": "google",
+        "model": GEMINI_MODEL,
+        "usesData": bool(plan.get("needs_data")),
+        "sql": query_result.get("sql") if query_result else None,
+        "rows": query_result.get("rowCount", 0) if query_result else 0,
+        "queryRows": (query_result.get("rows", [])[:50] if query_result else []),
+        "reason": plan.get("reason", ""),
+    }
+    yield "meta", trace
+    yield "done", {"finishReason": "stop"}
 
 
 def compact_history(history: Any) -> list[dict[str, str]]:

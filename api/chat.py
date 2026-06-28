@@ -7,7 +7,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent / "pag_web"
 sys.path.insert(0, str(ROOT / "Procesos"))
 
-from gemini_data import answer_with_gemini, compact_history
+from gemini_data import answer_with_gemini, answer_with_gemini_stream, compact_history
 
 
 def read_json_body(request_handler: BaseHTTPRequestHandler) -> dict:
@@ -50,22 +50,61 @@ class handler(BaseHTTPRequestHandler):
             question = str(payload.get("message", "")).strip()
             history = compact_history(payload.get("history", []))
             payload["history"] = history
-            answer = memory_answer(question, history)
-            if answer:
-                trace = {"provider": "google", "model": "memory", "usesData": False, "rows": 0, "sql": None}
+            use_stream = bool(payload.get("stream", False))
+
+            mem = memory_answer(question, history)
+            if mem:
+                if use_stream:
+                    self._sse_headers()
+                    self._send_event("delta", {"text": mem})
+                    self._send_event("meta", {"provider": "google", "model": "memory",
+                                              "usesData": False, "rows": 0, "queryRows": []})
+                    self._send_event("done", {"finishReason": "stop"})
+                else:
+                    trace = {"provider": "google", "model": "memory",
+                             "usesData": False, "rows": 0, "queryRows": []}
+                    self._json({"answer": mem, "provider": "google-gemini", "trace": trace})
+                return
+
+            if use_stream:
+                self._sse_headers()
+                for event_name, event_data in answer_with_gemini_stream(payload):
+                    self._send_event(event_name, event_data)
             else:
                 answer, trace = answer_with_gemini(payload)
-            body = json.dumps(
-                {"answer": answer, "provider": "google-gemini", "trace": trace},
-                ensure_ascii=False,
-            ).encode("utf-8")
-            self.send_response(200)
+                self._json({"answer": answer, "provider": "google-gemini", "trace": trace})
+
         except Exception as error:  # noqa: BLE001
             body = json.dumps(
                 {"error": "No se pudo generar la respuesta.", "detail": str(error)[:800]},
                 ensure_ascii=False,
             ).encode("utf-8")
             self.send_response(500)
+            self.send_header("Content-Type", "application/json; charset=utf-8")
+            self.send_header("Access-Control-Allow-Origin", "*")
+            self.send_header("Content-Length", str(len(body)))
+            self.end_headers()
+            self.wfile.write(body)
+
+    def _sse_headers(self):
+        self.send_response(200)
+        self.send_header("Content-Type", "text/event-stream; charset=utf-8")
+        self.send_header("Cache-Control", "no-cache")
+        self.send_header("Connection", "keep-alive")
+        self.send_header("Access-Control-Allow-Origin", "*")
+        self.end_headers()
+
+    def _send_event(self, event_name: str, data: dict):
+        line = f"event: {event_name}\ndata: {json.dumps(data, ensure_ascii=False)}\n\n"
+        self.wfile.write(line.encode("utf-8"))
+        try:
+            self.wfile.flush()
+        except Exception:  # noqa: BLE001
+            pass
+
+    def _json(self, data: dict, status: int = 200):
+        body = json.dumps(data, ensure_ascii=False).encode("utf-8")
+        self.send_response(status)
         self.send_header("Content-Type", "application/json; charset=utf-8")
         self.send_header("Access-Control-Allow-Origin", "*")
         self.send_header("Content-Length", str(len(body)))

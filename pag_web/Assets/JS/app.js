@@ -49,6 +49,8 @@ let lastAssistantText = "";
 let lastUserQuestion = "";
 let lastTrace = null;
 let lastLocalData = null;
+let lastQueryRows = [];
+let lastQuerySql = null;
 let isSending = false;
 let conversationHistory = [];
 let dashboardPayload = null;
@@ -1099,6 +1101,10 @@ function renderTraceLog(trace) {
   if (trace?.localData?.table?.length) {
     lastLocalData = trace.localData;
   }
+  if (trace?.queryRows !== undefined) {
+    lastQueryRows = Array.isArray(trace.queryRows) ? trace.queryRows : [];
+    lastQuerySql = trace.sql || null;
+  }
   const datasetsUsed = trace?.datasets || [];
   const statusRows = [];
 
@@ -1333,9 +1339,109 @@ function renderChart(data) {
   `;
 }
 
+function renderActualQueryTable(rows) {
+  if (!rows || !rows.length) {
+    return '<p class="trace-empty">Esta consulta no recuperó filas desde Athena.</p>';
+  }
+  const cols = Object.keys(rows[0]);
+  const displayRows = rows.slice(0, 50);
+  const header = cols.map((c) => `<th>${escapeHtml(c)}</th>`).join("");
+  const body = displayRows.map((row) =>
+    `<tr>${cols.map((c) => `<td>${escapeHtml(String(row[c] ?? ""))}</td>`).join("")}</tr>`
+  ).join("");
+  const note = rows.length > 50 ? `<p class="trace-empty">Mostrando 50 de ${rows.length} filas.</p>` : "";
+  return `
+    <div class="data-table-wrap">
+      <table class="data-table">
+        <thead><tr>${header}</tr></thead>
+        <tbody>${body}</tbody>
+      </table>
+    </div>${note}
+  `;
+}
+
+function autoDetectCharts(rows) {
+  if (!rows || !rows.length) return [];
+  const keys = Object.keys(rows[0]);
+  const lcKeys = keys.map((k) => k.toLowerCase());
+
+  const valueKey = keys.find((_, i) => ["value", "n", "rows", "count", "total", "variables"].includes(lcKeys[i]));
+  const labelKey = keys.find((_, i) => ["city", "variable", "geo", "source", "quality", "district", "neighborhood"].includes(lcKeys[i]));
+  const periodKey = keys.find((_, i) => ["period", "date", "year", "period_group", "mes", "fecha"].includes(lcKeys[i]));
+
+  if (!valueKey) return [];
+
+  const toNum = (v) => {
+    const n = parseFloat(String(v ?? "").replace(/\./g, "").replace(",", "."));
+    return Number.isFinite(n) ? n : null;
+  };
+
+  const charts = [];
+
+  // Time series: period column with ≥3 distinct values
+  if (periodKey) {
+    const periods = [...new Set(rows.map((r) => r[periodKey]))].filter(Boolean).sort();
+    if (periods.length >= 3) {
+      const seriesKeys = labelKey
+        ? [...new Set(rows.map((r) => r[labelKey]))].filter(Boolean).slice(0, 4)
+        : [null];
+      const series = seriesKeys.map((lbl) => ({
+        name: lbl || "Valor",
+        values: periods.map((p) => {
+          const row = rows.find((r) => r[periodKey] === p && (!lbl || r[labelKey] === lbl));
+          return row ? toNum(row[valueKey]) : null;
+        }),
+      }));
+      if (series.some((s) => s.values.some((v) => v !== null))) {
+        charts.push({
+          type: "line",
+          title: "Evolución temporal",
+          labels: periods.map((p) => String(p).substring(0, 7)),
+          series,
+          unit: rows[0].unit || "",
+        });
+      }
+    }
+  }
+
+  // Bar chart: label column with ≥2 distinct values
+  if (labelKey && charts.length < 2) {
+    const labels = [...new Set(rows.map((r) => r[labelKey]))].filter(Boolean).slice(0, 12);
+    if (labels.length >= 2) {
+      const values = labels.map((lbl) => {
+        const matching = rows.filter((r) => r[labelKey] === lbl);
+        const nums = matching.map((r) => toNum(r[valueKey])).filter((v) => v !== null);
+        return nums.length ? nums.reduce((a, b) => a + b, 0) / nums.length : 0;
+      });
+      if (values.some((v) => v !== 0)) {
+        charts.push({
+          type: "bar",
+          title: `Comparativa por ${labelKey}`,
+          labels,
+          values,
+          unit: rows[0].unit || "",
+        });
+      }
+    }
+  }
+
+  return charts.slice(0, 2);
+}
+
+function renderChartFromData(chart) {
+  if (!chart) return "";
+  const renderers = { line: renderLineChart, bar: renderBarChart, radar: renderRadarChart, doughnut: renderDoughnutChart };
+  const content = (renderers[chart.type] || renderBarChart)(chart);
+  return `
+    <div class="chart-card adaptive-chart">
+      <div class="chart-card-heading"><div><span>${escapeHtml(chart.type)}</span><h3>${escapeHtml(chart.title || "Gráfico")}</h3></div></div>
+      ${content}
+    </div>
+  `;
+}
+
 function getViewData() {
-  const data = getDataset();
-  return activeView === "coste" ? datasets.coste : data;
+  return getDataset();
 }
 
 function getAssistantViewContent(view = activeView) {
@@ -1345,29 +1451,32 @@ function getAssistantViewContent(view = activeView) {
     : "Resumen de la consulta: el usuario aun no ha escrito una pregunta.";
 
   if (view === "tablas") {
+    if (lastQueryRows.length > 0) {
+      return `
+        <p>${requestSummary}</p>
+        ${lastQuerySql ? `<p style="font-size:0.78rem;opacity:0.6;margin-bottom:0.5rem">SQL: <code>${escapeHtml(lastQuerySql)}</code></p>` : ""}
+        ${renderActualQueryTable(lastQueryRows)}
+      `;
+    }
     return `
       <p>${requestSummary}</p>
-      <p>He generado una tabla con las variables relacionadas con <strong>${data.title}</strong>.</p>
-      ${renderDataTable(data)}
-      <p>La tabla se asocia a la pregunta porque agrupa las variables que ayudan a explicar ese tema: valor observado, fuente y estado de disponibilidad.</p>
+      <p class="trace-empty">Esta consulta no recuperó filas desde Athena. Prueba a hacer una pregunta que necesite datos concretos.</p>
     `;
   }
 
   if (view === "graficos") {
+    if (lastQueryRows.length > 0) {
+      const charts = autoDetectCharts(lastQueryRows);
+      if (charts.length > 0) {
+        return `
+          <p>${requestSummary}</p>
+          ${charts.map(renderChartFromData).join("")}
+        `;
+      }
+    }
     return `
       <p>${requestSummary}</p>
-      <p>He generado un grafico con los indicadores recuperados para <strong>${escapeHtml(String(data.title || "Indicadores"))}</strong>.</p>
-      ${renderChart(data)}
-      <p>El grafico escala los valores numericos de la consulta para comparar magnitudes; la tabla conserva fuente, periodo y calidad.</p>
-    `;
-  }
-
-  if (view === "coste") {
-    return `
-      <p>${requestSummary}</p>
-      <p>He cambiado la respuesta al modulo de coste de vida general.</p>
-      ${renderSummary(data)}
-      <p>El foco queda en IPC, energia y fiscalidad disponible, sin convertirlo en un bloque de vivienda.</p>
+      <p class="trace-empty">No hay datos suficientes para generar gráficos. Prueba a preguntar por valores numéricos comparables.</p>
     `;
   }
 
@@ -1457,7 +1566,7 @@ function getLocalContext(topic) {
     activeTopic: topic,
     dataset: data,
     availableSources: ["INE", "REE", "MITMA/MIVAU", "SEPE", "Idescat", "Open Data BCN"],
-    uiViews: ["general", "tablas", "graficos", "coste"]
+    uiViews: ["general", "tablas", "graficos"]
   };
 }
 
@@ -1538,7 +1647,21 @@ async function streamLocalModel(text, topic, onDelta, onMeta, onStatus) {
     })
   });
 
-  if (!response.ok || !response.body) {
+  if (!response.ok) {
+    return askLocalModel(text, topic);
+  }
+
+  // Fall back to JSON parsing if the server returned non-SSE content
+  const contentType = response.headers.get("content-type") || "";
+  if (contentType.includes("application/json")) {
+    const data = await response.json().catch(() => ({}));
+    if (data.trace) {
+      renderTraceLog(data.trace);
+    }
+    return data.answer || "";
+  }
+
+  if (!response.body) {
     return askLocalModel(text, topic);
   }
 
@@ -1607,6 +1730,8 @@ async function sendMessage(text) {
   activeTopic = match?.topic || "general";
   activeView = "general";
   lastUserQuestion = cleanText;
+  lastQueryRows = [];
+  lastQuerySql = null;
 
   welcomeState.style.display = "none";
   messages.classList.add("is-visible");
