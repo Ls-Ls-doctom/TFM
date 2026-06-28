@@ -260,14 +260,18 @@ def build_dashboard() -> dict[str, Any]:
         """,
     }
 
-    # Parallel count of detail rows if indicadores table exists
+    # Count Silver detail rows (indicadores + observations combined)
     if tables.get("indicadores"):
-        detail_table = quoted_table(str(tables["indicadores"]))
-        queries["detail_count"] = f"SELECT count(*) detail_rows FROM {detail_table}"
+        queries["detail_count"] = f"SELECT count(*) detail_rows FROM {quoted_table(str(tables['indicadores']))}"
+    if tables.get("observations"):
+        queries["obs_count"] = f"SELECT count(*) obs_rows FROM {quoted_table(str(tables['observations']))}"
 
     result = run_named_queries(queries)
     metrics = (result.get("metrics") or [{}])[0]
-    detail_count = (result.get("detail_count") or [{}])[0].get("detail_rows", 0)
+    detail_count = (
+        ((result.get("detail_count") or [{}])[0].get("detail_rows") or 0)
+        + ((result.get("obs_count") or [{}])[0].get("obs_rows") or 0)
+    )
     cities = result.get("cities", [])
     updated_at = gold_last_modified()
     city_updates = [

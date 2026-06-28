@@ -18,27 +18,42 @@ GEMINI_FALLBACK_MODEL = os.environ.get("GEMINI_FALLBACK_MODEL", "gemini-2.5-flas
 GEMINI_BASE_URL = "https://generativelanguage.googleapis.com/v1beta/models"
 
 SCHEMA_DESCRIPTION = """
-Tabla lógica: indicators
-Motor SQL: Amazon Athena (dialecto Trino)
-Columnas:
-- city varchar: Barcelona, Bilbao, Madrid, Malaga, Sevilla, Valencia, Zaragoza
-- district double: actualmente nulo; no usar salvo petición explícita
-- variable varchar
-- value double
-- date timestamp; escribir siempre como "date"
-- source varchar
-- quality_score bigint
-- category varchar
-- unit varchar
-- year bigint
-- month bigint
+Tienes acceso a tres tablas en Amazon Athena (dialecto Trino). Elige la más
+apropiada según la pregunta:
 
-Variables disponibles:
-- population_total (demography, persons)
-- income, income_median, income_per_household, income_per_person (economy, eur)
-- contracts_registered (employment, contracts)
-- job_seekers, unemployed_registered (employment, persons)
-- mobility_resources_records (mobility, records)
+━━━ TABLA: indicators (Gold — ciudad, 4 358 filas) ━━━
+Usa esta cuando la pregunta compare ciudades o pida un resumen general.
+Columnas: city varchar, district varchar, variable varchar, value double,
+"date" varchar, source varchar, quality_score bigint, category varchar,
+unit varchar, year bigint, month bigint
+Ciudades: Barcelona, Bilbao, Madrid, Malaga, Sevilla, Valencia, Zaragoza
+Variables: population_total · income · income_median · income_per_household ·
+income_per_person · gini_inequality · inequality_p80p20 · contracts_registered ·
+job_seekers · unemployed_registered · traffic_accidents · mobility_resources_records
+district tiene valores como "Eixample", "Gràcia" para Barcelona (puede ser vacío).
+
+━━━ TABLA: indicadores (Silver — barrio/sección censal, 93 944 filas) ━━━
+Usa esta cuando la pregunta pida detalle sub-ciudad (barrio, sección censal,
+código postal) o cuando indicators no tenga la variable pedida.
+Columnas: source varchar, dataset varchar, variable varchar, metric varchar,
+geo varchar (área geográfica: nombre de barrio, sección censal, ciudad…),
+period varchar (ej. "2023-01-01"), value double, unit varchar, quality varchar,
+notes varchar
+Variables disponibles (22): las mismas de indicators más detalle de renta bruta,
+mediana, renta disponible, media por unidad de consumo, desigualdad, etc.
+
+━━━ TABLA: observations (contexto enriquecido, 105 774 filas) ━━━
+Usa esta cuando necesites datos con jerarquía ciudad→distrito→barrio o cuando
+quieras el texto de notas contextuales para la respuesta.
+Columnas: city varchar, district varchar, neighborhood varchar, geo varchar,
+period varchar, variable varchar, metric varchar, value double, unit varchar,
+category varchar, granularity varchar (city|district|neighborhood), notes varchar,
+source varchar, quality varchar
+
+Regla de elección:
+- Comparar ciudades → indicators
+- Detalle de barrio / sección censal → indicadores
+- Análisis con notas / jerarquía completa → observations
 """.strip()
 
 SQL_RESPONSE_SCHEMA = {
@@ -94,22 +109,23 @@ Historial reciente:
 
 Decide si la pregunta necesita consultar los datos ISEU. Si no necesita datos,
 devuelve needs_data=false y sql vacío. Si necesita datos, genera UNA consulta
-SELECT de Athena sobre la tabla exacta indicators.
+SELECT de Athena usando la tabla más adecuada del esquema anterior.
 
 Reglas obligatorias:
 - Solo SELECT; nunca CTE, JOIN, DDL, DML, comentarios ni punto y coma.
-- Usa únicamente las columnas y variables indicadas.
-- Cita la tabla como indicators, sin base de datos ni esquema.
-- Usa comillas dobles para "date".
-- Para comparaciones, conserva city, variable, value, unit, source y "date" en la salida.
+- Usa únicamente las columnas de la tabla elegida.
+- Nombra la tabla como indicators, indicadores u observations (sin base de datos).
+- Usa comillas dobles para la columna "date" en la tabla indicators.
+  En indicadores y observations la columna temporal se llama period (sin comillas).
+- Para comparaciones entre ciudades usa indicators; conserva city, variable, value, unit, source, "date".
+- Para detalle de barrio usa indicadores; conserva geo, variable, metric, value, unit, period.
+- Para notas y jerarquía usa observations; conserva city, district, neighborhood, variable, value, period, notes.
 - Athena no admite QUALIFY: no lo uses nunca.
-- Para una sola ciudad, el dato más reciente se obtiene con ORDER BY "date" DESC LIMIT 1.
-- Para el dato más reciente de varias ciudades puedes usar una subconsulta con
-  row_number() OVER (PARTITION BY city, variable ORDER BY "date" DESC) AS rn y
-  filtrar rn = 1 en la consulta exterior.
+- Para el dato más reciente de varias ciudades en indicators, usa subconsulta con
+  row_number() OVER (PARTITION BY city, variable ORDER BY "date" DESC) AS rn.
 - Añade LIMIT, máximo 100.
-- Si el indicador solicitado no existe, consulta solo el indicador disponible
-  más cercano cuando sea metodológicamente razonable y explícalo en reason.
+- Si el indicador solicitado no existe en ninguna tabla, consulta el más cercano
+  disponible y explícalo en reason.
 """.strip()
     return gemini_json(
         system_instruction=(
