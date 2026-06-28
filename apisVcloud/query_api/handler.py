@@ -163,7 +163,7 @@ def coerce_value(column: str, value: str | None) -> Any:
         return None
     integer_columns = {
         "rows", "variables", "sources", "source_count", "city_count",
-        "indicator_rows", "source_count_total", "variable_count", "detail_rows",
+        "indicator_rows", "source_count_total", "variable_count", "detail_rows", "obs_rows",
     }
     float_columns = {"value", "quality_score"}
     if column in integer_columns:
