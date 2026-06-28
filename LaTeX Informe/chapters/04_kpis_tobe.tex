@@ -1,0 +1,226 @@
+\chapter{Indicadores clave de rendimiento y escenario TO-BE}
+\label{ch:kpis-tobe}
+
+Este capitulo transforma los resultados tecnicos de ISEU+ en un sistema de evaluacion. Un KPI no es simplemente una cifra visible en un panel: es una medida vinculada a una pregunta, una regla de calculo, una fuente, una periodicidad y un umbral que permite decidir. Se distinguen tres planos: los indicadores urbanos que describen las ciudades, los indicadores de calidad que describen los datos y los indicadores operativos que describen la plataforma. Esta separacion evita confundir, por ejemplo, una mejora del desempleo de una ciudad con una mejora del tiempo de respuesta del sistema.
+
+El escenario AS-IS corresponde al despliegue verificado al cierre del proyecto: siete ciudades, tres familias de fuentes, cobertura principal 2015--2023, 386.225 registros consultables en Athena, una aplicacion publica en Vercel y un asistente NL2SQL basado en Gemini. El escenario TO-BE establece la evolucion deseada sin presentar como terminado aquello que todavia es una linea futura. Todos los objetivos se formulan con horizonte, responsable y criterio de aceptacion.
+
+\section{Marco de medicion}
+
+El marco de medicion adopta una cadena simple: dato, metrica, indicador, objetivo y decision. El dato es una observacion individual; la metrica es una operacion reproducible sobre observaciones; el indicador aporta contexto y comparabilidad; el objetivo fija el estado deseado; y la decision define que accion se activa cuando el valor se aparta del umbral. Esta cadena obliga a que cada tarjeta del dashboard pueda explicarse y reproducirse mediante SQL.
+
+Para evitar indicadores decorativos se aplican cinco condiciones. Deben ser relevantes para una pregunta del proyecto, calculables con datos disponibles, comparables en el tiempo, trazables hasta una fuente oficial y accionables. Cuando una medida no cumple alguna condicion se mantiene como metadato exploratorio, no como KPI. Tambien se distingue entre valor observado y estimado: ISEU+ no interpola automaticamente periodos ausentes ni convierte una ausencia en cero.
+
+\begin{table}[H]
+\centering
+\caption{Ficha minima exigida para cada KPI.}
+\label{tab:ficha-kpi}
+\begin{tabularx}{\textwidth}{p{0.25\textwidth}X}
+\toprule
+\textbf{Campo} & \textbf{Contenido requerido} \\
+\midrule
+Nombre y proposito & Pregunta que responde y usuario que toma la decision. \\
+Formula & Expresion, filtros, agregacion y tratamiento de nulos. \\
+Dimensiones & Territorio, periodo, fuente, variable y granularidad. \\
+Calidad & Cobertura, actualidad, unicidad y limitaciones conocidas. \\
+Objetivo & Linea base, umbral, horizonte y sentido de mejora. \\
+Trazabilidad & Tabla Athena, columna, organismo y fecha de extraccion. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Linea base AS-IS}
+
+La linea base se obtiene de los artefactos generados por el pipeline y de las consultas que alimentan el dashboard. Athena contiene 386.225 filas considerando conjuntamente tablas Gold y Silver. La tabla \texttt{iseu\_indicadores} aporta 93.944 observaciones normalizadas y \texttt{iseu\_semantic\_obs} 105.774 observaciones enriquecidas. La tabla compacta \texttt{iseu\_indicators} contiene 4.358 filas para comparaciones rapidas a nivel urbano. Estas magnitudes no deben sumarse como si fueran personas o hechos independientes: varias tablas representan el mismo fenomeno con diferente nivel de detalle.
+
+El catalogo analitico expone 22 nombres de variable en la tabla enriquecida. El catalogo compacto agrupa doce familias operativas; por ello ambas cifras son correctas dentro de su capa. La cobertura territorial general es de siete ciudades, aunque el detalle de distrito y barrio se concentra en Barcelona. La cobertura temporal declarada es 2015--2023, con ventanas diferentes por fuente. Esta asimetria constituye parte de la linea base y no un error que deba ocultarse.
+
+\begin{table}[H]
+\centering
+\caption{Linea base verificable del sistema al cierre del proyecto.}
+\label{tab:linea-base}
+\begin{tabularx}{\textwidth}{XrX}
+\toprule
+\textbf{Dimension} & \textbf{Valor} & \textbf{Interpretacion} \\
+\midrule
+Filas consultables & 386.225 & Suma operativa de capas registradas, no hechos unicos. \\
+Indicadores principales & 93.944 & Tabla normalizada de consumo analitico. \\
+Observaciones semanticas & 105.774 & Contexto territorial y notas. \\
+Gold compacto & 4.358 & Comparacion rapida entre ciudades. \\
+Variables analiticas & 22 & Nombres publicados por la capa enriquecida. \\
+Ciudades & 7 & Cobertura inicial del producto. \\
+Fuentes & 3 familias & INE, SEPE y datos abiertos municipales. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{KPIs urbanos de renta}
+
+La dimension de renta incluye renta bruta, renta disponible, renta mediana, renta por persona, renta por hogar y medidas por unidad de consumo. El KPI principal no debe reducirse a un promedio nacional ni mezclar unidades territoriales. Para cada ciudad se selecciona el ultimo periodo comun disponible cuando se realiza una comparacion transversal; para una serie temporal se conserva cada periodo publicado. La mediana complementa a la media porque reduce la influencia de valores extremos y aproxima mejor la posicion del hogar central.
+
+La formula generica es $R_{c,t}=\sum_i v_{i,c,t}w_{i,c,t}/\sum_i w_{i,c,t}$ cuando existen ponderadores oficiales. Si la fuente ya publica el indicador agregado, ISEU+ no vuelve a ponderarlo: conserva el valor oficial y registra la unidad. El KPI de brecha entre ciudades se expresa como diferencia absoluta y como indice relativo respecto de la mediana del conjunto. El objetivo TO-BE es incorporar una regla automatica que bloquee comparaciones cuando los periodos no sean equivalentes y que muestre de forma visible el desfase temporal.
+
+\subsection{Criterios de lectura de la renta}
+
+Una renta mayor no implica por si sola mayor bienestar. El sistema debe contextualizarla con desigualdad, empleo y, en una etapa futura, vivienda. Tampoco es correcto interpretar una renta por hogar como renta por persona. Por eso las respuestas del chatbot incluyen unidad, territorio, periodo y fuente; si la pregunta es ambigua, el asistente selecciona una variable disponible y explicita el criterio utilizado.
+
+Como criterio de aceptacion, cualquier respuesta cuantitativa sobre renta debe devolver al menos cinco campos de evidencia: ciudad o geografia, variable exacta, valor, unidad y periodo. Debe ademas conservar la fuente INE. En el TO-BE, las pruebas automaticas contendran preguntas con sinonimos y verificaran que la consulta no mezcle renta bruta con disponible ni media con mediana.
+
+\section{KPIs urbanos de desigualdad}
+
+El coeficiente de Gini y la relacion P80/P20 describen la distribucion, no el nivel de renta. El primero se aproxima a cero cuando la distribucion es mas igualitaria y aumenta con la concentracion. La relacion P80/P20 compara la renta acumulada o equivalente de los extremos de la distribucion segun la definicion de la operacion estadistica. ISEU+ conserva la denominacion y el valor publicados por el INE, evitando recalcularlos a partir de agregados insuficientes.
+
+El KPI comparativo se presenta por ciudad y periodo. Para rankings se exige usar el ultimo periodo disponible de cada ciudad mediante una funcion de ventana, pero la interfaz debe avisar si esos ultimos periodos no coinciden. El objetivo no es etiquetar ciudades como buenas o malas, sino detectar brechas persistentes y facilitar preguntas reproducibles. En el TO-BE se añadira una vista conjunta renta--desigualdad que permita distinguir crecimiento inclusivo, estancamiento, polarizacion y mejora distributiva.
+
+\section{KPIs urbanos de empleo}
+
+Los indicadores de empleo disponibles son paro registrado, contratos registrados y demandantes de empleo. Son registros administrativos del SEPE y no equivalen a la tasa de paro de la Encuesta de Poblacion Activa. El dashboard y el asistente deben utilizar siempre la expresion ``paro registrado'' cuando esa sea la variable consultada. El valor absoluto sirve para seguir la carga administrativa, pero no permite comparar justamente ciudades de distinto tamaño sin una poblacion de referencia compatible.
+
+El AS-IS muestra series y ultimos valores. El TO-BE incorpora razones por mil habitantes cuando numerador y denominador compartan periodo y ambito territorial. La formula sera $T_{c,t}=1000\,P_{c,t}/N_{c,t}$, donde $P$ es el paro registrado y $N$ la poblacion de referencia. Si falta el denominador del mismo periodo, el sistema no calculara la tasa. Para contratos se medira asimismo variacion interanual, distinguiendo flujo mensual de stock.
+
+\subsection{Alertas de mercado laboral}
+
+Se propone una alerta temprana cuando el paro registrado aumenta durante tres periodos consecutivos, siempre que la serie tenga frecuencia y cobertura suficientes. Otra alerta señalara una caida interanual de contratos superior al umbral definido por el analista. Estas alertas no son predicciones causales: son reglas descriptivas que invitan a revisar la fuente y el contexto.
+
+El criterio TO-BE exige que toda alerta almacene la consulta SQL, los periodos comparados, el valor que activo el umbral y la fecha de generacion. Asi se evita que una notificacion sobreviva a una correccion posterior de los datos sin dejar rastro. Las alertas se mostraran como apoyo a la decision, nunca como diagnostico automatico.
+
+\section{KPIs urbanos de demografia, movilidad y seguridad vial}
+
+La poblacion total actua como indicador y como denominador potencial. Debe controlarse el año de referencia y la definicion territorial, ya que municipio y area metropolitana no son intercambiables. Los registros de movilidad, usuarios de bicicleta publica y accidentes de trafico aportan contexto urbano, pero actualmente proceden principalmente de Open Data BCN. Por tanto, no constituyen una base homogenea para clasificar las siete ciudades.
+
+El KPI de cobertura territorial muestra el porcentaje de ciudades con observacion valida por variable y periodo. Esta medida hace visible el sesgo de disponibilidad. El TO-BE prioriza integrar fuentes municipales equivalentes de Madrid, Valencia, Sevilla, Zaragoza, Malaga y Bilbao antes de publicar rankings de movilidad. Para seguridad vial se propone normalizar por poblacion y, si la fuente lo permite, por volumen de desplazamientos, documentando la diferencia entre accidente, siniestro y persona afectada.
+
+\section{KPIs de cobertura y completitud}
+
+La completitud mide la proporcion de valores presentes respecto de los esperados bajo una malla declarada de ciudad, variable y periodo. Su formula es $C=100\,n_{validos}/n_{esperados}$. El denominador no debe construirse suponiendo que todas las fuentes publican todas las combinaciones. Se deriva del contrato de cada conjunto: frecuencia, inicio, fin y ambito. Un periodo aun no publicado no se clasifica como ausente.
+
+Se calculan tres vistas: completitud global, por fuente y por variable. El umbral TO-BE es al menos 95\% para conjuntos con contrato estable y 90\% para fuentes municipales heterogeneas. Una caida de cinco puntos respecto de la ejecucion anterior generara advertencia. La pagina de calidad mostrara las combinaciones ausentes para que el usuario pueda diferenciar un fallo de ingesta de una limitacion original.
+
+\section{KPIs de actualidad}
+
+La actualidad se define como la distancia entre la fecha de publicacion o extraccion y el ultimo periodo disponible. No se usa un unico umbral porque una serie mensual del SEPE y una operacion anual del INE tienen calendarios distintos. El KPI de retraso se compara con el acuerdo de servicio de cada fuente: periodo esperado mas tolerancia. Esta formulacion evita marcar como obsoleta una estadistica anual publicada conforme a calendario.
+
+El objetivo TO-BE es registrar \texttt{extracted\_at}, \texttt{published\_at} cuando exista y \texttt{period} en todas las tablas Gold. EventBridge ejecutara el pipeline mensualmente y el sistema comprobara si hubo novedades antes de sustituir el artefacto vigente. Si una fuente no cambia, la ejecucion se considera correcta pero se registra como ``sin nueva version''.
+
+\section{KPIs de validez, consistencia y unicidad}
+
+La validez comprueba tipos, unidades, dominios y rangos. La consistencia verifica relaciones internas, como que una ciudad pertenezca al catalogo geografico o que el periodo tenga formato admitido. La unicidad controla que la clave logica de una observacion no se repita. Las claves incluyen fuente, conjunto, variable, geografia, periodo y, cuando procede, categoria. No se elimina un duplicado sin conservar una regla de resolucion.
+
+El TO-BE fija cero duplicados en Gold para la clave logica y al menos 99,5\% de filas validas. Un incumplimiento critico detendra la publicacion de Gold, aunque Bronze se conserve para diagnostico. Los resultados quedaran en \texttt{reports/} y los fallos irrecuperables en \texttt{errors/}. La regla refleja un principio: es preferible mantener la version anterior conocida que publicar silenciosamente una tabla corrupta.
+
+\section{KPIs de trazabilidad y reproducibilidad}
+
+La trazabilidad evalua si una cifra puede recorrer el camino inverso desde la interfaz hasta el objeto Bronze. Cada observacion Gold debe conservar fuente, conjunto, periodo, geografia y una referencia al origen o al informe de ejecucion. A nivel de proceso, la sincronizacion por SHA-256 permite identificar contenido repetido y evita cargas duplicadas. El codigo y la infraestructura versionados completan la evidencia.
+
+El KPI de trazabilidad es el porcentaje de filas Gold con metadatos minimos no nulos. El objetivo es 100\%. La reproducibilidad se valida ejecutando el pipeline sobre una copia controlada de Bronze y comparando conteos, esquema y hashes de salida. Se acepta una diferencia solo si proviene de una dependencia no determinista documentada. Cada despliegue debe enlazar version de codigo, definicion de tarea y fecha de ejecucion.
+
+\section{KPIs operativos del pipeline}
+
+Los KPIs operativos cubren tasa de ejecuciones correctas, duracion, volumen descargado, objetos nuevos, objetos omitidos por hash y errores por fuente. CloudWatch Logs y los informes de \texttt{cloud\_runs} son las fuentes de observabilidad. La linea base confirma una ejecucion integral en Fargate y la publicacion de las capas en S3; no existe todavia una serie historica suficiente para afirmar un percentil de disponibilidad anual.
+
+El TO-BE fija exito mensual superior al 95\% en una ventana movil de doce ejecuciones, duracion inferior a dos horas para el volumen actual y alerta inmediata tras agotar dos reintentos. Una fuente externa caida puede registrarse como exito parcial si la politica \texttt{continue-on-error} esta activa, pero esa ejecucion no contara como completa para el KPI de frescura de la fuente afectada.
+
+\section{KPIs de consulta Athena y API}
+
+Para Athena se mediran tiempo de ejecucion, bytes escaneados, consultas correctas y consultas canceladas. Para Lambda se observaran invocaciones, errores, duracion, arranques en frio y respuestas por endpoint. El timeout del handler esta configurado a 22 segundos; por ello una consulta que excede ese limite se cancela activamente y se registra como fallo controlado.
+
+Los objetivos TO-BE son un percentil 95 inferior a ocho segundos para \texttt{/dashboard}, inferior a cuatro segundos para consultas SQL simples y tasa de error menor al 1\% excluyendo peticiones invalidas. Los bytes escaneados deben mantenerse bajos mediante Parquet, seleccion de columnas y filtros. Un aumento sostenido desencadenara revision de particiones y del tamaño de archivos, no un incremento automatico de infraestructura.
+
+\section{KPIs del chatbot NL2SQL}
+
+La evaluacion del asistente se separa en planificacion, ejecucion y respuesta. La exactitud de ejecucion indica si el SQL produce el resultado esperado; la seguridad mide el rechazo de operaciones no permitidas; la fidelidad comprueba si la respuesta usa exclusivamente las filas recuperadas; y la trazabilidad comprueba si menciona fuente, territorio, periodo y unidad. La fluidez linguistica es secundaria frente a estas propiedades.
+
+El TO-BE propone un banco versionado de al menos cien preguntas: saludos, consultas simples, comparaciones, series temporales, geografia de barrio, variables inexistentes e intentos adversariales. Los umbrales son 90\% de exactitud de ejecucion en preguntas soportadas, 100\% de bloqueo de DDL/DML en el conjunto adversarial y cero afirmaciones cuantitativas no respaldadas. Cada cambio de modelo o prompt ejecutara el banco antes del despliegue.
+
+\subsection{Latencia y experiencia conversacional}
+
+La latencia percibida incluye planificacion con Gemini, consulta Athena, redaccion final y transmision SSE. El streaming reduce el tiempo hasta el primer texto aunque no reduzca el tiempo total. Se mediran tiempo hasta primer evento, tiempo hasta primer token, tiempo total y abandonos. El objetivo TO-BE es primer estado visible antes de un segundo y respuesta completa en menos de diez segundos para el percentil 95 de preguntas simples.
+
+La interfaz ya presenta estados como ``Pensando'', ``Recuperando datos'' y ``Generando respuesta''. En la evolucion se mostrara tambien si se consultaron datos y cuantas filas sustentan la respuesta, sin revelar razonamiento interno ni secretos. Cuando Athena no devuelva filas, el asistente debe decirlo de forma explicita en lugar de completar el hueco con conocimiento general.
+
+\section{KPIs de producto y accesibilidad}
+
+Los indicadores de producto incluyen sesiones, preguntas por sesion, porcentaje de consultas con datos, uso de tablas y graficos, errores visibles y retorno de usuarios. No se almacenara el contenido completo de las preguntas por defecto; la analitica debe ser agregada y respetar minimizacion de datos. Para un TFM, el exito inicial se valida con pruebas de tareas y no con crecimiento comercial.
+
+La accesibilidad se evaluara mediante navegacion por teclado, contraste, textos alternativos, foco visible y adaptacion movil. El TO-BE busca conformidad WCAG 2.1 nivel AA en las vistas principales y una tasa de finalizacion de tareas superior al 85\% en una prueba con usuarios. Las tarjetas del dashboard deben conservar significado sin depender exclusivamente del color.
+
+\section{KPIs de coste y eficiencia}
+
+El coste se expresa por mes, por ejecucion del pipeline y por mil consultas. La arquitectura evita instancias permanentes: S3 cobra almacenamiento y solicitudes, Athena datos escaneados, Lambda invocacion y duracion, Fargate recursos durante la tarea, y Gemini segun tokens y plan vigente. Las cifras del capitulo de arquitectura son estimaciones bajo un escenario concreto, no una tarifa garantizada.
+
+El TO-BE incorpora presupuestos y alertas en AWS, limites de consultas, registro de bytes escaneados y seguimiento del consumo de Gemini. El objetivo inicial es mantener el coste de infraestructura por debajo de 5 USD al mes durante la fase academica, dejando margen respecto del consumo observado. Si el uso crece, se comparara coste por consulta antes de cambiar a servicios con capacidad reservada.
+
+\section{Cuadro de mando de objetivos}
+
+\begin{longtable}{p{0.24\textwidth}p{0.18\textwidth}p{0.18\textwidth}p{0.28\textwidth}}
+\caption{Objetivos TO-BE y criterios de aceptacion.}\label{tab:objetivos-tobe}\\
+\toprule
+\textbf{KPI} & \textbf{Linea base} & \textbf{Objetivo} & \textbf{Evidencia} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{KPI} & \textbf{Linea base} & \textbf{Objetivo} & \textbf{Evidencia} \\
+\midrule
+\endhead
+Cobertura urbana & 7 ciudades & 10 ciudades & Catalogo y filas Gold. \\
+Variables & 22 analiticas & $\geq$30 & Esquema Glue y catalogo. \\
+Completitud estable & Por medir historicamente & $\geq$95\% & Informe por ejecucion. \\
+Duplicados Gold & Control de pipeline & 0 & Prueba de clave logica. \\
+Exito mensual & Sin serie anual & $\geq$95\% & CloudWatch y reports. \\
+SQL correcto & Pruebas manuales & $\geq$90\% & Banco de 100 preguntas. \\
+SQL peligroso & Validador activo & 100\% bloqueado & Suite adversarial. \\
+Trazabilidad Gold & Metadatos disponibles & 100\% & Auditoria de campos. \\
+Coste academico & Bajo pago por uso & $<$5 USD/mes & AWS Budgets y facturas. \\
+Accesibilidad & Revision visual & WCAG AA & Auditoria automatica/manual. \\
+\bottomrule
+\end{longtable}
+
+\section{Arquitectura objetivo TO-BE}
+
+La arquitectura objetivo conserva el nucleo serverless porque el volumen no justifica un almacen analitico permanente. Fargate seguira ejecutando la extraccion y transformacion; S3 mantendra Bronze, Silver y Gold; Glue catalogara; Athena consultara; Lambda expondra una superficie minima; Vercel servira la experiencia; y Gemini planificara y redactara con evidencia. La evolucion se centra en gobierno, pruebas y observabilidad, no en sustituir componentes que ya cumplen su funcion.
+
+Se incorporaran contratos de datos por fuente, un manifiesto de versiones, pruebas de calidad antes de promover Gold, alarmas de CloudWatch, presupuestos, y una suite NL2SQL en integracion continua. La API adoptara autenticacion y cuotas si el servicio deja de ser una demostracion publica. Las tablas se particionaran cuando el historial y los bytes escaneados demuestren que la mejora compensa el aumento de complejidad.
+
+\section{Hoja de ruta por horizontes}
+
+\textbf{Horizonte 1, estabilizacion (0--3 meses).} Consolidar informes de ejecucion, corregir documentacion operativa, automatizar pruebas de esquema y calidad, crear alarmas y medir una linea base real de latencia. Formalizar el banco NL2SQL y revisar accesibilidad.
+
+\textbf{Horizonte 2, ampliacion (3--6 meses).} Integrar vivienda y energia cuando las licencias y formatos lo permitan, ampliar portales municipales, alcanzar diez ciudades y normalizar denominadores. Añadir vistas comparables de coste residencial y transicion energetica sin mezclarlas prematuramente en un indice unico.
+
+\textbf{Horizonte 3, madurez (6--12 meses).} Implantar gobierno de datos, versionado de contratos, panel de observabilidad, autenticacion y evaluacion continua del modelo. Estudiar un indice compuesto solo despues de validar ponderaciones con expertos y analisis de sensibilidad.
+
+\section{Riesgos y respuestas}
+
+\begin{longtable}{p{0.25\textwidth}p{0.14\textwidth}p{0.14\textwidth}p{0.35\textwidth}}
+\caption{Matriz resumida de riesgos del TO-BE.}\label{tab:riesgos-tobe}\\
+\toprule
+\textbf{Riesgo} & \textbf{Prob.} & \textbf{Impacto} & \textbf{Respuesta} \\
+\midrule
+\endfirsthead
+Cambio de API oficial & Media & Alta & Contrato, pruebas y conservacion de Bronze. \\
+Periodos no comparables & Alta & Alta & Ultimo periodo comun y aviso visible. \\
+SQL incorrecto del LLM & Media & Alta & Esquema cerrado, validador y banco de pruebas. \\
+Consulta costosa & Baja & Media & Limites, Parquet y metrica de bytes. \\
+Clave expuesta & Baja & Alta & Secretos de entorno, rotacion y minimo privilegio. \\
+Sesgo territorial & Alta & Media & KPI de cobertura y ampliacion antes de rankings. \\
+Dependencia de proveedor & Media & Media & Interfaces simples, datos en formatos abiertos. \\
+\bottomrule
+\end{longtable}
+
+\section{Gobernanza, responsables y cadencia}
+
+Cada dominio necesita un responsable. El propietario de datos valida definiciones y fuentes; el responsable tecnico mantiene conectores e infraestructura; el responsable de calidad revisa informes y autoriza la promocion; y el propietario de producto prioriza necesidades de usuarios. En un proyecto individual una persona puede asumir varios roles, pero la distincion evita que una decision tecnica se presente como decision metodologica.
+
+La cadencia propuesta es mensual para ingesta y revision operativa, trimestral para catalogo y objetivos, y semestral para arquitectura y costes. Los cambios de fuente o formula requieren registro de decision. Un KPI solo entra en produccion cuando tiene ficha, consulta reproducible, prueba y texto de limitaciones.
+
+\section{Criterios de aceptacion del escenario futuro}
+
+El TO-BE se considerara alcanzado cuando exista evidencia acumulada, no solo componentes desplegados. Deben completarse doce ejecuciones mensuales con informes, diez ciudades con un nucleo comparable, al menos treinta variables catalogadas, pruebas automaticas de calidad y un banco NL2SQL con resultados por version. La API debe mantener los umbrales de error y latencia y el coste debe estar cubierto por alertas.
+
+Tambien se exige que la documentacion diferencie dato oficial, transformacion propia e inferencia del modelo. La interfaz debe mostrar fuente, periodo y unidad; las limitaciones territoriales deben ser visibles; y un usuario debe poder reproducir una cifra mediante una consulta guardada. Estos criterios convierten la evolucion tecnologica en una mejora verificable del producto academico.
+
+\section{Sintesis}
+
+El sistema ya resuelve el recorrido completo desde fuentes oficiales hasta una consulta conversacional publica. Sus principales fortalezas son la trazabilidad por capas, el pago por uso, la consulta SQL sobre formatos abiertos y la separacion entre planificacion del modelo y ejecucion segura. Sus principales limites son la heterogeneidad territorial, la ausencia de una serie operativa larga y la necesidad de evaluar sistematicamente el NL2SQL.
+
+Los KPIs propuestos permiten gestionar esas limitaciones sin ocultarlas. El escenario TO-BE no consiste en añadir servicios por inercia, sino en aumentar cobertura comparable, calidad, reproducibilidad y evidencia. La arquitectura solo debera cambiar cuando las mediciones demuestren que el volumen, la latencia, el coste o el gobierno ya no pueden resolverse adecuadamente con el diseño actual.

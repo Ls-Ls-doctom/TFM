@@ -1,0 +1,52 @@
+\chapter*{Resumen}
+\addcontentsline{toc}{chapter}{Resumen}
+
+ISEU+ (Índice de Salud Económica Urbana) es una plataforma de análisis económico urbano desarrollada como Trabajo de Fin de Máster cuyo objetivo es integrar, normalizar y hacer accesibles los datos socioeconómicos oficiales de las principales ciudades españolas. El proyecto responde a un problema concreto: los datos públicos sobre empleo, renta, demografía, movilidad y desigualdad existen y son de libre acceso, pero se encuentran dispersos entre diferentes organismos, publicados en formatos heterogéneos y a niveles territoriales que dificultan su comparación directa.
+
+El sistema implementa un pipeline de datos estructurado en tres capas (Bronze, Silver y Gold) siguiendo la arquitectura medallón, con almacenamiento en Amazon S3, registro en AWS Glue Data Catalog, consulta mediante Amazon Athena y exposición de resultados a través de una función AWS Lambda sin servidor. El frontend, desplegado en Vercel, ofrece un dashboard de visualización y un chatbot conversacional que permite formular preguntas en lenguaje natural y obtener respuestas fundamentadas en los datos mediante un flujo NL2SQL impulsado por Gemini 2.5 Flash.
+
+El sistema integra datos de tres fuentes oficiales (INE, SEPE y Open Data BCN) para siete ciudades españolas: Barcelona, Bilbao, Madrid, Málaga, Sevilla, Valencia y Zaragoza. El resultado es un total de 386.225 registros disponibles en Athena, con 93.944 indicadores normalizados que cubren 22 variables analíticas con cobertura temporal entre 2015 y 2023. El coste operativo estimado del sistema en producción es inferior a 0{,}30 USD mensuales gracias al modelo \textit{serverless} basado íntegramente en servicios facturados por uso.
+
+\textbf{Palabras clave:} análisis económico urbano, data lake, arquitectura medallón, AWS Athena, NL2SQL, Gemini 2.5 Flash, indicadores socioeconómicos, ciudades españolas.
+
+\vspace{1.5em}
+
+\chapter*{Abstract}
+\addcontentsline{toc}{chapter}{Abstract}
+
+ISEU+ (Urban Economic Health Index) is an urban economic analysis platform developed as a Master's Final Project aimed at integrating, normalising and making accessible official socioeconomic data for Spain's major cities. The project addresses a concrete problem: public data on employment, income, demographics, mobility and inequality exist and are freely accessible, but are scattered across different agencies, published in heterogeneous formats and at territorial levels that make direct comparison difficult.
+
+The system implements a three-layer data pipeline (Bronze, Silver and Gold) following the medallion architecture, with storage in Amazon S3, registration in AWS Glue Data Catalog, querying via Amazon Athena and result exposure through a serverless AWS Lambda function. The frontend, deployed on Vercel, provides a visualisation dashboard and a conversational chatbot that allows users to ask questions in natural language and receive data-grounded answers via an NL2SQL pipeline powered by Gemini 2.5 Flash.
+
+The system integrates data from three official sources (INE, SEPE and Open Data BCN) for seven Spanish cities: Barcelona, Bilbao, Madrid, Málaga, Sevilla, Valencia and Zaragoza. The result is a total of 386,225 records available in Athena, with 93,944 normalised indicators covering 22 analytical variables with temporal coverage from 2015 to 2023.
+
+\textbf{Keywords:} urban economic analysis, data lake, medallion architecture, AWS Athena, NL2SQL, Gemini 2.5 Flash, socioeconomic indicators, Spanish cities.
+
+\chapter*{Acrónimos y abreviaturas}
+\addcontentsline{toc}{chapter}{Acrónimos y abreviaturas}
+
+\begin{longtable}{>{\bfseries}p{0.18\textwidth} p{0.72\textwidth}}
+API    & \textit{Application Programming Interface} — interfaz de programación de aplicaciones \\
+AWS    & \textit{Amazon Web Services} — plataforma de servicios en la nube de Amazon \\
+BCN    & Barcelona \\
+CSV    & \textit{Comma-Separated Values} — formato de archivo de valores separados por comas \\
+DDL    & \textit{Data Definition Language} — lenguaje de definición de datos SQL \\
+DML    & \textit{Data Manipulation Language} — lenguaje de manipulación de datos SQL \\
+ECS    & \textit{Elastic Container Service} — servicio de orquestación de contenedores de AWS \\
+ECR    & \textit{Elastic Container Registry} — registro de imágenes Docker de AWS \\
+ETL    & \textit{Extract, Transform, Load} — proceso de extracción, transformación y carga \\
+IAM    & \textit{Identity and Access Management} — servicio de gestión de identidades de AWS \\
+INE    & Instituto Nacional de Estadística \\
+ISEU+  & Índice de Salud Económica Urbana (versión plus) \\
+JSON   & \textit{JavaScript Object Notation} — formato de intercambio de datos \\
+KPI    & \textit{Key Performance Indicator} — indicador clave de rendimiento \\
+LLM    & \textit{Large Language Model} — modelo de lenguaje de gran tamaño \\
+NL2SQL & \textit{Natural Language to SQL} — traducción de lenguaje natural a SQL \\
+NLP    & \textit{Natural Processing Language} — procesamiento del lenguaje natural \\
+S3     & \textit{Simple Storage Service} — servicio de almacenamiento de objetos de AWS \\
+SEPE   & Servicio Público de Empleo Estatal \\
+SQL    & \textit{Structured Query Language} — lenguaje de consulta estructurada \\
+SSE    & \textit{Server-Sent Events} — protocolo de streaming de servidor a cliente \\
+TFM    & Trabajo de Fin de Máster \\
+VPC    & \textit{Virtual Private Cloud} — red virtual privada en AWS \\
+\end{longtable}

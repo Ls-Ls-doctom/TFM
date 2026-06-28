@@ -1,26 +1,29 @@
 {
-  "generated_at": "2026-06-24T14:47:55",
+  "generated_at": "2026-06-28T22:05:34",
   "gold_dir": "data_lake\\gold",
   "indicator_file": "data_lake\\gold\\indicators.csv",
-  "rows_total": 3975,
+  "rows_total": 4358,
   "rows_by_city": {
-    "Barcelona": 579,
+    "Barcelona": 957,
     "Bilbao": 561,
     "Madrid": 561,
     "Malaga": 562,
     "Sevilla": 562,
-    "Valencia": 586,
+    "Valencia": 591,
     "Zaragoza": 564
   },
   "rows_by_variable": {
     "contracts_registered": 1242,
-    "income": 15,
-    "income_median": 15,
+    "gini_inequality": 99,
+    "income": 105,
+    "income_median": 105,
     "income_per_household": 6,
     "income_per_person": 6,
+    "inequality_p80p20": 99,
     "job_seekers": 1372,
     "mobility_resources_records": 3,
     "population_total": 35,
+    "traffic_accidents": 5,
     "unemployed_registered": 1281
   },
   "sources": [
@@ -46,7 +49,7 @@
     },
     {
       "file": "data_lake\\silver\\municipios\\municipal_prioritario.csv",
-      "rows_used": 45,
+      "rows_used": 428,
       "note": "Municipal prioritario extraido a indicadores"
     }
   ]

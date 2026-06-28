@@ -1,0 +1,140 @@
+\chapter{Justificación e importancia de la problemática}
+\label{ch:justificacion}
+
+\section{Contexto: las ciudades españolas como unidad de análisis}
+
+Las ciudades concentran la mayor parte de la actividad económica, del empleo y de la población en España. Según el Instituto Nacional de Estadística \parencite{INE2023Padron}, más del 80\,\% de la población española reside en municipios de más de 10.000 habitantes, y las siete principales áreas metropolitanas —Madrid, Barcelona, Valencia, Sevilla, Zaragoza, Málaga y Bilbao— agrupan aproximadamente el 40\,\% del PIB nacional. Esta concentración hace que las ciudades no sean únicamente unidades administrativas, sino motores económicos cuya situación condiciona directamente la calidad de vida de millones de personas.
+
+Sin embargo, la salud económica de una ciudad es un concepto multidimensional que no puede reducirse a un único indicador. La renta disponible media de los hogares, el nivel de desigualdad interna, la tasa de desempleo, la dinámica de creación de contratos, el acceso a servicios de movilidad o la carga de accidentes de tráfico son dimensiones que, tomadas por separado, ofrecen una imagen incompleta. Es necesario combinarlas en un sistema integrado que permita comparar territorios con equidad metodológica y con trazabilidad de las fuentes.
+
+España dispone de una red extensa de organismos productores de estadística oficial: el INE publica datos de renta, demografía y empleo con desagregación hasta nivel de sección censal; el SEPE ofrece series mensuales de paro registrado, contratos y demandantes de empleo; los ayuntamientos de las grandes ciudades han desarrollado portales de datos abiertos con información de movilidad, servicios y actividad urbana. La información, por tanto, existe. El problema no es la ausencia de datos, sino la dificultad de integrarlos.
+
+\section{El problema central: fragmentación e incompatibilidad de los datos públicos}
+
+Los datos económicos oficiales de las ciudades españolas presentan cuatro tipos de fragmentación estructural que dificultan su uso conjunto \parencite{Kitchin2014DataRevolution}.
+
+\subsection{Fragmentación por organismo productor}
+
+Cada fuente oficial —INE, SEPE, ayuntamientos, comunidades autónomas— define sus propias variables, periodicidades y niveles de desagregación geográfica de forma independiente. El INE publica la renta con cobertura hasta sección censal y frecuencia anual, mientras que el SEPE publica paro registrado con frecuencia mensual pero solo hasta nivel de municipio. Los datos municipales de Open Data BCN incluyen información de barrio con frecuencia anual o trimestral pero solo para Barcelona. No existe un marco común que permita alinear estas fuentes sin un proceso de transformación explícito.
+
+\subsection{Fragmentación por formato y acceso}
+
+Las fuentes oficiales no siguen un estándar común de publicación. El INE expone sus datos a través de una API REST en formato JSON-stat \parencite{INE2022API}, el SEPE publica archivos de texto delimitado por comas en su sede electrónica, y los portales de datos abiertos municipales utilizan APIs propias con esquemas y paginación heterogéneos. El acceso programático requiere, en la práctica, desarrollar un conector específico para cada fuente.
+
+\subsection{Fragmentación territorial}
+
+Los niveles territoriales no son directamente comparables entre fuentes. El INE trabaja con secciones censales (España tiene más de 36.000), municipios (más de 8.000) y provincias (50). El SEPE agrega a nivel provincial para algunas series y municipal para otras. Los ayuntamientos publican datos por barrios o distritos con delimitaciones que no coinciden con las del INE. Esta divergencia de granularidad obliga a definir criterios explícitos de agrupación antes de cualquier comparación.
+
+\subsection{Fragmentación temporal}
+
+Las frecuencias de actualización varían enormemente. Mientras el SEPE publica datos de paro registrado mensualmente con un retraso de pocas semanas, el INE publica los datos de renta por sección censal con un retraso de 18 a 24 meses respecto al período de referencia. Los datos municipales de Barcelona se actualizan con frecuencias que van de lo mensual a lo anual según la variable. Esto implica que cualquier análisis comparativo debe gestionar explícitamente las fechas de referencia de cada indicador.
+
+\section{Limitaciones de las plataformas de análisis existentes}
+
+Existen iniciativas que han intentado abordar parcialmente el problema de la comparación interurbana en España. Sin embargo, presentan limitaciones significativas que justifican el desarrollo de ISEU+.
+
+\subsection{El Atlas de distribución de renta de los hogares (INE)}
+
+El INE publica el Atlas de distribución de renta de los hogares \parencite{INE2023Atlas}, que ofrece datos de renta media, mediana y desigualdad hasta nivel de sección censal. Es una fuente de gran valor analítico, pero está limitada a las variables de renta y no permite la integración directa con indicadores de empleo, movilidad o calidad de vida. Además, no ofrece una interfaz de comparación interactiva entre ciudades.
+
+\subsection{El portal de datos abiertos de la Agencia Estatal de Evaluación}
+
+La AEVAL y otras agencias de evaluación publican informes periódicos sobre servicios públicos y calidad de vida, pero con frecuencia reducida, cobertura territorial limitada y sin interfaces de consulta en tiempo real.
+
+\subsection{Eurostat Urban Audit}
+
+El proyecto Urban Audit de Eurostat \parencite{Eurostat2023UrbanAudit} ofrece comparativas entre ciudades europeas en más de 180 indicadores, pero su actualización es bienal, su cobertura de ciudades españolas se limita a las grandes áreas metropolitanas y la granularidad territorial no llega al nivel de barrio o distrito para la mayoría de variables.
+
+\subsection{Portales de \textit{open data} municipales}
+
+Los portales de datos abiertos de ciudades como Barcelona, Madrid o Sevilla ofrecen información detallada sobre sus propios territorios, pero no están diseñados para la comparación interurbana. Cada portal tiene su propio esquema de datos, su propio sistema de búsqueda y sus propias convenciones de nomenclatura, lo que hace inviable la comparación directa sin un proceso de normalización.
+
+\subsection{Herramientas comerciales de inteligencia de negocio}
+
+Plataformas como Tableau, Power BI o Google Data Studio permiten construir dashboards comparativos, pero requieren que el usuario final realice el proceso de integración y limpieza de datos, un trabajo técnico que escapa a las capacidades del ciudadano o del investigador no especializado en ingeniería de datos \parencite{Davenport2012BigData}.
+
+\section{Relevancia de la comparativa interurbana}
+
+La comparación sistemática entre ciudades no es únicamente un ejercicio académico: tiene implicaciones directas para la toma de decisiones en múltiples ámbitos.
+
+\subsection{Políticas públicas de empleo y renta}
+
+Los organismos locales, regionales y nacionales necesitan datos comparables para diseñar y evaluar políticas de empleo y de redistribución de renta. Saber que la tasa de paro registrado de Málaga es sistemáticamente superior a la de Bilbao, y que esa diferencia se mantiene incluso después de controlar por el tamaño de la ciudad, es un insumo necesario para priorizar actuaciones territoriales. Sin embargo, esa comparación requiere series homogéneas y actualizadas que hoy no están disponibles en un formato directamente accesible.
+
+\subsection{Movilidad y decisiones residenciales de los ciudadanos}
+
+Los ciudadanos que se plantean cambiar de ciudad de residencia en busca de oportunidades laborales o mejores condiciones de vida necesitan información comparable. La pregunta ``¿dónde vivo mejor con un salario medio?'' implica comparar renta disponible, acceso al empleo, coste de vida y calidad de los servicios urbanos. Esta información existe de forma dispersa pero no está integrada en ningún sistema de consulta accesible.
+
+\subsection{Investigación académica en economía urbana}
+
+La economía urbana como disciplina \parencite{Glaeser2011TriumphCity} se apoya en la disponibilidad de datos comparables entre ciudades para estudiar fenómenos como la concentración del empleo cualificado, la gentrificación, las economías de aglomeración o la desigualdad intrametropolitana. En España, la disponibilidad de microdatos comparables a nivel de ciudad es limitada en comparación con otros países europeos, lo que reduce la producción científica sobre estos temas.
+
+\subsection{Transparencia y rendición de cuentas}
+
+Un sistema que integra y publica indicadores económicos comparables contribuye a la transparencia institucional: permite a los ciudadanos verificar si las promesas de desarrollo económico se materializan en datos reales y comparar la evolución de su ciudad respecto a otras de tamaño o características similares.
+
+\section{La oportunidad tecnológica: Big Data y la nube como habilitadores}
+
+La coincidencia de tres factores tecnológicos hace que sea el momento adecuado para abordar este problema con soluciones basadas en datos:
+
+\textbf{Primero}, la proliferación de APIs abiertas de los organismos oficiales españoles. En los últimos años, el INE, el SEPE y numerosos ayuntamientos han publicado APIs programáticas que permiten el acceso automatizado a datos actualizados. Este acceso era técnicamente complejo o directamente imposible hace diez años.
+
+\textbf{Segundo}, la madurez de las arquitecturas de datos en la nube. Servicios como Amazon S3, AWS Glue y Amazon Athena permiten construir sistemas de análisis de datos a escala con costes marginales próximos a cero para volúmenes de la magnitud que maneja ISEU+ \parencite{Armbrust2010CloudComputing}. La curva de aprendizaje para desplegar este tipo de arquitecturas ha disminuido significativamente con la aparición de herramientas de infraestructura como código y servicios gestionados.
+
+\textbf{Tercero}, la disponibilidad de modelos de lenguaje de gran tamaño (LLM) capaces de generar código SQL a partir de preguntas en lenguaje natural \parencite{Guo2019Towards}. Esta capacidad elimina la barrera técnica de acceso a los datos: el ciudadano no necesita conocer el esquema de la base de datos ni el lenguaje SQL para formular consultas complejas y obtener respuestas fundamentadas.
+
+\section{Motivación específica del proyecto ISEU+}
+
+ISEU+ surge de la convergencia de los problemas identificados y las oportunidades tecnológicas disponibles. El proyecto no pretende reemplazar a los organismos estadísticos oficiales —que son la fuente de verdad de los datos— sino construir una capa de integración, normalización y acceso que haga posible la comparación entre ciudades sin que el usuario tenga que realizar el trabajo de ingeniería de datos.
+
+La hipótesis central del proyecto es que es posible construir y operar un sistema de estas características con recursos modestos —tanto económicos como computacionales— si se utilizan correctamente los servicios en la nube de pago por uso. Esta hipótesis se valida a lo largo del proyecto: el coste operativo estimado del sistema en producción, con 100 consultas diarias al chatbot y una ejecución semanal del pipeline, es inferior a 0{,}30 USD mensuales.
+
+La elección de las siete ciudades iniciales —Barcelona, Bilbao, Madrid, Málaga, Sevilla, Valencia y Zaragoza— responde a su condición de capitales de provincia con más de 300.000 habitantes y a la disponibilidad de datos comparables en las fuentes seleccionadas. Esta elección no es definitiva: la arquitectura del sistema está diseñada para incorporar nuevas ciudades y nuevas fuentes sin modificar la lógica del pipeline.
+
+\section{Objetivos del proyecto}
+
+\subsection{Objetivo general}
+
+Desarrollar una plataforma de análisis económico urbano basada en Big Data que integre datos oficiales de múltiples fuentes, los normalice en un modelo de indicadores comparable entre ciudades españolas y los haga accesibles mediante un interfaz conversacional en lenguaje natural con trazabilidad completa de las fuentes.
+
+\subsection{Objetivos específicos}
+
+\begin{enumerate}
+  \item Identificar y conectar fuentes de datos oficiales relevantes para el análisis socioeconómico de ciudades españolas, con prioridad en aquellas con acceso programático y actualización periódica.
+
+  \item Diseñar e implementar un pipeline de datos reproducible que cubra las fases de extracción, limpieza, normalización y publicación en un sistema de almacenamiento analítico en la nube.
+
+  \item Construir un modelo de indicadores que permita comparar ciudades en las dimensiones de empleo, renta, desigualdad, demografía y movilidad, con metadatos de fuente, territorio y período para cada indicador.
+
+  \item Desplegar el sistema en una arquitectura \textit{serverless} de bajo coste sobre AWS y Vercel, que garantice disponibilidad pública sin infraestructura permanente comprometida.
+
+  \item Implementar un chatbot conversacional que responda preguntas en lenguaje natural sobre los indicadores disponibles, generando las consultas SQL necesarias de forma automática y citando la fuente, el territorio y el período de cada dato en la respuesta.
+
+  \item Validar el sistema mediante un conjunto de preguntas representativas de las necesidades de información de ciudadanos, investigadores y responsables de políticas públicas.
+\end{enumerate}
+
+\section{Preguntas de investigación}
+
+El proyecto se articula en torno a las siguientes preguntas de investigación:
+
+\begin{enumerate}
+  \item \textit{¿Es posible construir un sistema de comparación interurbana de indicadores económicos a partir de fuentes oficiales abiertas, con calidad metodológica suficiente para el análisis académico?}
+
+  \item \textit{¿Puede una arquitectura \textit{serverless} sobre servicios en la nube de pago por uso ofrecer disponibilidad, rendimiento y coste adecuados para un sistema de este tipo?}
+
+  \item \textit{¿Puede un flujo NL2SQL basado en un LLM de propósito general generar consultas SQL correctas y seguras sobre un esquema de datos real, sin entrenamiento específico?}
+
+  \item \textit{¿Qué brechas de información persisten tras integrar las fuentes disponibles y qué implicaciones tienen para la completitud del análisis?}
+\end{enumerate}
+
+\section{Alcance y delimitaciones}
+
+El alcance del proyecto se define en las siguientes dimensiones:
+
+\textbf{Territorial}: el sistema cubre siete ciudades españolas (Barcelona, Bilbao, Madrid, Málaga, Sevilla, Valencia y Zaragoza) en la versión inicial. La cobertura geográfica de algunas variables es desigual: los datos de barrio solo están disponibles para Barcelona a través de Open Data BCN.
+
+\textbf{Temático}: el sistema integra indicadores de empleo (paro, contratos, demandantes), renta (bruta, disponible, mediana, por hogar/persona), desigualdad (Gini, P80/P20), demografía (población total), movilidad (registros de movilidad, usuarios de bicicleta pública) y seguridad vial (accidentes de tráfico). Quedan fuera del alcance actual los datos de vivienda (precio de compra y alquiler), energía y turismo, identificados como extensiones prioritarias.
+
+\textbf{Temporal}: la cobertura temporal varía por variable y fuente. El rango más amplio corresponde a los datos del SEPE (2015--2023 para paro y contratos) y del INE (2015--2021 para renta). Los datos de Open Data BCN tienen cobertura hasta 2022 para la mayoría de variables.
+
+\textbf{Técnico}: el sistema se basa íntegramente en servicios gestionados de AWS y Vercel. No incluye el despliegue de infraestructura propia (servidores, bases de datos relacionales) ni el almacenamiento de datos sensibles más allá de los que las fuentes oficiales publicen libremente.

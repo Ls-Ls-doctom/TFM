@@ -1,12 +1,12 @@
 {
-  "loaded_at": "2026-06-24T14:49:06",
+  "loaded_at": "2026-06-28T22:07:56",
   "database": "data_lake\\gold\\iseu_indicadores.sqlite",
   "web_database": "D:\\Proyectos\\TFM\\pag_web\\Procesos\\Datasets\\iseu_datos.sqlite",
   "source_file": "data_lake\\gold\\indicators.csv",
-  "rows_loaded": 3975,
-  "indicadores_rows_loaded": 93561,
-  "semantic_observations_rows_loaded": 105391,
-  "catalog_rows": 9,
+  "rows_loaded": 4358,
+  "indicadores_rows_loaded": 93944,
+  "semantic_observations_rows_loaded": 105774,
+  "catalog_rows": 12,
   "silver_detail_tables": [
     {
       "table_name": "silver_ine_poblacion_municipal",
@@ -54,12 +54,12 @@
   "silver_detail_rows_loaded": 182149,
   "rows_by_city": [
     {
-      "city": "Valencia",
-      "rows": 586
+      "city": "Barcelona",
+      "rows": 957
     },
     {
-      "city": "Barcelona",
-      "rows": 579
+      "city": "Valencia",
+      "rows": 591
     },
     {
       "city": "Zaragoza",
@@ -96,16 +96,24 @@
       "rows": 1242
     },
     {
-      "variable": "population_total",
-      "rows": 35
-    },
-    {
       "variable": "income",
-      "rows": 15
+      "rows": 105
     },
     {
       "variable": "income_median",
-      "rows": 15
+      "rows": 105
+    },
+    {
+      "variable": "gini_inequality",
+      "rows": 99
+    },
+    {
+      "variable": "inequality_p80p20",
+      "rows": 99
+    },
+    {
+      "variable": "population_total",
+      "rows": 35
     },
     {
       "variable": "income_per_household",
@@ -114,6 +122,10 @@
     {
       "variable": "income_per_person",
       "rows": 6
+    },
+    {
+      "variable": "traffic_accidents",
+      "rows": 5
     },
     {
       "variable": "mobility_resources_records",

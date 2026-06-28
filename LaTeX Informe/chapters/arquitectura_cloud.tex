@@ -9,9 +9,17 @@ La arquitectura cloud de ISEU+ se sustenta en tres pilares: (1) un \textit{data 
 
 \begin{figure}[h!]
 \centering
-\fbox{\parbox{0.9\textwidth}{\centering\vspace{1.5cm}
-\textit{[Diagrama de arquitectura: S3 (Bronze/Silver/Gold) $\rightarrow$ Glue Catalog $\rightarrow$ Athena $\leftarrow$ Lambda API $\leftarrow$ Vercel / Chatbot ISEU+]}
-\vspace{1.5cm}}}
+\fbox{\parbox{0.88\textwidth}{\centering
+\textbf{INE · SEPE · datos abiertos municipales}\\[0.25cm]
+$\downarrow$ extracción programada\\[0.2cm]
+\fbox{\parbox{0.72\textwidth}{\centering ECS Fargate · contenedor del pipeline · EventBridge mensual}}\\[0.2cm]
+$\downarrow$ Parquet y metadatos\\[0.2cm]
+\fbox{\parbox{0.72\textwidth}{\centering Amazon S3 · Bronze $\rightarrow$ Silver $\rightarrow$ Gold}}\\[0.2cm]
+$\downarrow$ catálogo y consulta\\[0.2cm]
+\fbox{\parbox{0.72\textwidth}{\centering AWS Glue $\rightarrow$ Amazon Athena $\rightarrow$ AWS Lambda}}\\[0.2cm]
+$\downarrow$ API HTTPS\\[0.2cm]
+\fbox{\parbox{0.72\textwidth}{\centering Vercel · dashboard y chatbot · Gemini 2.5 Flash}}
+}}
 \caption{\textbf{Arquitectura general del sistema ISEU+ en AWS y Vercel.}\\
 \textit{Flujo de datos desde la extracción (ECS Fargate) hasta la consulta conversacional (Gemini 2.5 Flash vía Vercel).}}
 \label{fig:arquitectura_cloud}
@@ -19,7 +27,7 @@ La arquitectura cloud de ISEU+ se sustenta en tres pilares: (1) un \textit{data 
 
 \section{Capa de almacenamiento: Amazon S3 y el modelo medallón}
 
-El almacenamiento central de ISEU+ se implementó en un \textit{bucket} de Amazon S3 (\texttt{iseu-datalake-ismael-2026}) siguiendo la arquitectura medallón en tres capas diferenciadas por nivel de procesamiento y calidad del dato.
+El almacenamiento central de ISEU+ se implementó en el bucket oficial del proyecto en Amazon S3, siguiendo la arquitectura medallón en tres capas diferenciadas por nivel de procesamiento y calidad del dato. Su identificador y región se mantienen como configuración operativa del despliegue.
 
 \subsection{Capa Bronze: datos crudos}
 
@@ -106,7 +114,7 @@ COPY . .
 CMD ["python", "-m", "apisVcloud.cloud_pipeline"]
 \end{verbatim}
 
-La imagen se publica en Amazon Elastic Container Registry (ECR) y referenciada en la definición de tarea ECS. La definición de tarea (\textit{task definition}) especifica los recursos asignados (0,5 vCPU / 1 GB de RAM en la configuración base), las variables de entorno del sistema y el rol IAM que autoriza el acceso a S3, Glue y ECR.
+La imagen se publica en Amazon Elastic Container Registry (ECR) y queda referenciada en la definición de tarea ECS. La definición desplegada asigna 1 vCPU y 4 GB de RAM, además de las variables de entorno y los roles IAM que separan la ejecución del contenedor del acceso de la tarea a S3.
 
 \subsection{Orquestación del pipeline}
 
@@ -119,7 +127,7 @@ El orquestador \texttt{cloud\_pipeline.py} ejecuta el flujo completo de transfor
   \item \textbf{Export Athena}: convierte las tablas SQLite a formato Parquet, las sube a la capa Gold de S3 y actualiza el AWS Glue Data Catalog.
 \end{enumerate}
 
-La ejecución del pipeline se puede disparar manualmente mediante la CLI de AWS o programar automáticamente mediante Amazon EventBridge Scheduler. El sistema está configurado para ejecutarse en la VPC por defecto de la región \texttt{eu-west-1} (Irlanda), asignando subredes públicas y un grupo de seguridad con salida a Internet para alcanzar las APIs externas.
+La ejecución puede dispararse manualmente mediante la CLI de AWS y se encuentra programada mediante Amazon EventBridge Scheduler el día 1 de cada mes a las 07:00, zona \texttt{Europe/Madrid}, con dos reintentos. El sistema opera en la región \texttt{eu-west-1} (Irlanda), usando subredes públicas e IP pública para alcanzar las APIs externas sin asumir el coste fijo de una pasarela NAT; el contenedor no publica puertos de entrada.
 
 \section{Capa API: AWS Lambda}
 
@@ -197,14 +205,14 @@ Fuentes de datos integradas & 3 (INE, SEPE, Municipal Open Data) \\
 Cobertura temporal & 2015 -- 2023 \\
 Tablas en AWS Glue Data Catalog & 10 tablas (Gold + Silver) \\
 Tiempo medio de respuesta del chatbot & 4 -- 8 segundos (incluye Athena + Gemini) \\
-Disponibilidad del servicio & 100\% (serverless, sin instancias persistentes) \\
+Modelo de disponibilidad & Servicios gestionados, sin instancias persistentes propias \\
 URL pública & \texttt{https://project-zcvjr.vercel.app} \\
 \bottomrule
 \end{longtable}
 
 \section{Estimación de costes cloud}
 
-El modelo de coste de ISEU+ en producción se basa íntegramente en servicios de facturación por uso, sin infraestructura comprometida de forma permanente. La Tabla~\ref{tab:costes} presenta una estimación para un uso moderado del sistema (100 consultas diarias al chatbot y una ejecución semanal del pipeline).
+El modelo de coste de ISEU+ se basa en servicios de facturación por uso, sin infraestructura comprometida de forma permanente. La Tabla~\ref{tab:costes} presenta un escenario académico de bajo tráfico con unas 3.000 consultas mensuales y una ejecución mensual del pipeline. Es una aproximación: las tarifas, el nivel gratuito, los tokens del modelo y los bytes realmente escaneados pueden modificar el total.
 
 \begin{longtable}{>{\raggedright\arraybackslash}p{0.22\textwidth} >{\raggedright\arraybackslash}p{0.44\textwidth} >{\raggedright\arraybackslash}p{0.24\textwidth}}
 \toprule
@@ -219,12 +227,12 @@ Amazon S3 & Almacenamiento $\sim$500 MB Parquet & $<$ 0,02 USD \\
 Amazon Athena & $\sim$3.000 consultas $\times$ 10 KB escaneados & $<$ 0,01 USD \\
 AWS Lambda & $\sim$3.000 invocaciones $\times$ 3 s & $<$ 0,01 USD \\
 AWS Glue Data Catalog & Hasta 1 M de objetos catalogados & Gratuito \\
-ECS Fargate & 4 ejecuciones $\times$ 30 min $\times$ 0,5 vCPU & $\sim$ 0,20 USD \\
+ECS Fargate & 1 ejecución mensual, hasta 2 h, 1 vCPU / 4 GB & $\sim$ 0,12 USD \\
 Amazon ECR & Almacenamiento imagen Docker $\sim$300 MB & $<$ 0,03 USD \\
-Gemini 2.5 Flash API & $\sim$3.000 consultas (plan gratuito) & 0,00 USD \\
+Gemini 2.5 Flash API & Consumo de entrada y salida & Según tokens y plan vigente \\
 Vercel & Plan Hobby (gratuito para proyectos académicos) & 0,00 USD \\
 \midrule
-\textbf{Total estimado} & & \textbf{$<$ 0,30 USD/mes} \\
+\textbf{Infraestructura estimada} & Excluye consumo variable de Gemini & \textbf{$<$ 0,30 USD/mes} \\
 \bottomrule
 \caption{\textbf{Estimación de costes mensuales del sistema ISEU+ en producción.}\\
 \textit{Basada en el uso moderado descrito. Los servicios AWS incluidos en el nivel gratuito (Free Tier) durante los primeros 12 meses no se han contabilizado.}}
@@ -233,8 +241,8 @@ Vercel & Plan Hobby (gratuito para proyectos académicos) & 0,00 USD \\
 
 \section{Conclusiones del despliegue cloud}
 
-La migración de ISEU+ a una arquitectura serverless en AWS y Vercel demuestra que es posible construir y operar un sistema de análisis de datos público con cobertura real y disponibilidad continua con un presupuesto inferior a 0,30 USD mensuales. El modelo medallón en S3 garantiza la trazabilidad completa desde el dato crudo hasta el indicador publicado, mientras que la combinación de Athena y Lambda permite consultas SQL interactivas sobre grandes volúmenes de datos sin comprometer tiempo de respuesta ni incurrir en costes de infraestructura permanente.
+La migración de ISEU+ a una arquitectura serverless en AWS y Vercel demuestra que es posible construir un sistema público con cobertura real y un coste de infraestructura muy reducido en el escenario académico medido. El modelo medallón en S3 garantiza la trazabilidad desde el dato crudo hasta el indicador publicado, mientras que Athena y Lambda permiten consultas SQL interactivas sin mantener un motor analítico permanentemente encendido.
 
-El módulo conversacional basado en Gemini 2.5 Flash añade una capa de acceso en lenguaje natural que democratiza el uso del sistema: el usuario no necesita conocer el esquema de datos ni el lenguaje SQL para obtener respuestas trazables y fundamentadas en datos reales. El flujo NL2SQL de dos fases (planificación estructurada + generación de respuesta con evidencia) minimiza las alucinaciones del modelo y garantiza que cada respuesta cuantitativa cite su fuente, territorio y período de referencia.
+El módulo conversacional basado en Gemini 2.5 Flash añade una capa de acceso en lenguaje natural: el usuario no necesita conocer el esquema ni SQL para formular una consulta. El flujo NL2SQL de dos fases (planificación estructurada y redacción con evidencia) busca reducir afirmaciones no respaldadas; las reglas del sistema exigen que las respuestas cuantitativas indiquen fuente, territorio y período, aunque esta propiedad debe verificarse mediante pruebas continuas.
 
-Como líneas de trabajo futuro en la dimensión cloud, se identifican tres áreas prioritarias: (1) ampliar la cobertura de fuentes incorporando datos de vivienda (MITMA/MIVAU) y energía (REE) en la capa Silver; (2) automatizar el pipeline mediante un programador EventBridge con frecuencia mensual, sincronizado con los calendarios de publicación del INE y el SEPE; y (3) implementar un dominio personalizado y autenticación básica para controlar el acceso al sistema en un entorno de producción académico o institucional.
+Como líneas de trabajo futuro se identifican tres áreas prioritarias: (1) ampliar la cobertura con vivienda (MITMA/MIVAU) y energía (REE); (2) monitorizar la programación mensual ya desplegada y adaptar su calendario a cada publicación oficial; y (3) implementar dominio propio, autenticación, cuotas y presupuestos si el sistema evoluciona de demostración académica a servicio institucional.

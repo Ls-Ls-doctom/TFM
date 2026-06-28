@@ -38,6 +38,12 @@ LaTeX Informe/*.toc
 LaTeX Informe/*.fls
 LaTeX Informe/*.fdb_latexmk
 LaTeX Informe/*.synctex.gz
+LaTeX Informe/*.bbl
+LaTeX Informe/*.bcf
+LaTeX Informe/*.blg
+LaTeX Informe/*.lof
+LaTeX Informe/*.lot
+LaTeX Informe/*.run.xml
 
 # Datos raw del pipeline (regenerables)
 api_clients/*/data_lake/bronze/

@@ -1,0 +1,221 @@
+\chapter{Marco teórico y revisión de la literatura}
+\label{ch:literatura}
+
+\section{Big Data y análisis de datos urbanos}
+
+\subsection{El paradigma del Big Data}
+
+El concepto de Big Data fue popularizado a principios de la segunda década del siglo XXI para describir conjuntos de datos que superan la capacidad de las herramientas tradicionales de procesamiento \parencite{Laney2001ThreeVs}. La definición más extendida lo caracteriza mediante las llamadas ``tres V'': volumen (grandes cantidades de datos), velocidad (generación y procesamiento en tiempo real o cuasi-real) y variedad (datos estructurados, semiestructurados y no estructurados procedentes de múltiples fuentes).
+
+Posteriormente, la literatura amplió este modelo con dos V adicionales: veracidad (calidad y fiabilidad de los datos) y valor (capacidad de extraer conocimiento útil del conjunto de datos) \parencite{IBM2012FourVs}. Estas dimensiones son especialmente relevantes en el contexto de los datos estadísticos oficiales: el INE y el SEPE generan datos con alta veracidad pero que requieren un trabajo explícito de integración para extraer valor comparativo.
+
+\subsection{Ciudades y datos: la ciudad como sistema de información}
+
+La noción de \textit{smart city} o ciudad inteligente ha promovido la idea de que los entornos urbanos pueden instrumentarse con sensores, transacciones digitales y registros administrativos para generar un flujo continuo de datos sobre su funcionamiento \parencite{Batty2013NewScienceCities}. Sin embargo, la mayor parte de la literatura sobre ciudades inteligentes se ha centrado en datos de tiempo real (tráfico, consumo energético, transporte público) generados por sensores o plataformas digitales, mientras que los datos estadísticos oficiales —que son más robustos metodológicamente pero de menor frecuencia— han recibido menos atención.
+
+\textcite{Kitchin2014DataRevolution} plantea que la revolución de los datos no reside únicamente en el volumen o la velocidad, sino en la capacidad de combinar fuentes heterogéneas para obtener una comprensión más completa de los fenómenos sociales y económicos. Esta perspectiva es central en ISEU+: el valor del sistema no proviene de ninguna de las fuentes individuales, sino de su integración en un modelo común.
+
+\subsection{Indicadores urbanos comparativos: experiencias internacionales}
+
+La construcción de sistemas de indicadores comparativos entre ciudades tiene una tradición consolidada a nivel internacional. El proyecto URBAN AUDIT de Eurostat \parencite{Eurostat2023UrbanAudit} es el referente más directo: recopila más de 180 indicadores para más de 900 ciudades europeas en dimensiones de demografía, mercado laboral, condiciones de vida, formación, medio ambiente y gobernanza. Sin embargo, como se indicó en el capítulo anterior, su actualización bienal y su limitada desagregación territorial para las ciudades españolas restringen su utilidad para el análisis dinámico.
+
+El \textit{City Health Dashboard} de la Universidad de Nueva York \parencite{Pinheiro2019CityHealth} es un ejemplo de sistema que integra múltiples fuentes de datos sanitarios, económicos y ambientales para más de 500 ciudades estadounidenses, con actualización anual y visualización interactiva. La diferencia con ISEU+ radica en que este proyecto se apoya en una infraestructura institucional y un equipo de mantenimiento permanente, mientras que ISEU+ demuestra que es posible construir un sistema equivalente con recursos técnicos mínimos mediante servicios en la nube.
+
+\section{Arquitecturas de datos en la nube}
+
+\subsection{El concepto de \textit{data lake}}
+
+Un \textit{data lake} o lago de datos es un repositorio centralizado que almacena datos en su formato original, sin imponer una estructura previa \parencite{Dixon2010DataLake}. A diferencia de un \textit{data warehouse} tradicional —que requiere definir el esquema antes de la carga y optimiza el almacenamiento para consultas predefinidas— un data lake acepta datos de cualquier tipo (estructurados, semiestructurados, no estructurados) y permite explorarlos, transformarlos y consultarlos \textit{a posteriori}.
+
+Esta flexibilidad tiene un coste: sin una metodología de organización explícita, un data lake puede convertirse en un ``pantano de datos'' (\textit{data swamp}) donde la información existe pero es inaccesible por falta de metadatos, documentación o estructura \parencite{Inmon2016DataLakeWarehouse}. La arquitectura medallón, descrita en la siguiente sección, es la respuesta más extendida a este problema.
+
+\subsection{La arquitectura medallón: Bronze, Silver y Gold}
+
+La arquitectura medallón, popularizada por Databricks \parencite{Databricks2021MedallionArch}, organiza un data lake en tres capas que representan niveles crecientes de calidad y procesamiento:
+
+\textbf{Capa Bronze}: almacena los datos en su estado original, tal como fueron descargados de las fuentes. No se aplica ninguna transformación: los archivos se guardan en su formato nativo (CSV, JSON, XML) con un sello de tiempo de extracción. Esta capa sirve como fuente de auditoría: si se detecta un error en fases posteriores, siempre es posible volver al dato original.
+
+\textbf{Capa Silver}: contiene los datos limpiados, normalizados y estructurados. En esta fase se aplican transformaciones de estandarización (unificación de codificaciones geográficas, formatos de fecha, nombres de variables), se eliminan duplicados y se completan valores ausentes cuando es metodológicamente justificable. Los datos de la capa Silver son los que se utilizan para construir los indicadores de la capa Gold.
+
+\textbf{Capa Gold}: almacena los indicadores finales, listos para el análisis y la presentación. Los datos de esta capa están optimizados para ser consumidos por el motor de consulta (Athena) y por el frontend del sistema. La capa Gold es la que expone el valor analítico del sistema.
+
+La adopción de la arquitectura medallón en ISEU+ garantiza que cualquier cambio en las fuentes o en la lógica de transformación puede propagarse de forma controlada capa a capa, sin perder el registro de los datos originales.
+
+\subsection{Formatos de almacenamiento analítico: Parquet y Snappy}
+
+La elección del formato de almacenamiento tiene implicaciones directas sobre el rendimiento y el coste de las consultas analíticas. Los formatos orientados a columnas, como Apache Parquet \parencite{Apache2023Parquet}, almacenan los valores de cada columna de forma contigua en disco, lo que permite a los motores de consulta leer únicamente las columnas necesarias para responder a una pregunta, sin cargar las filas completas.
+
+En el contexto de Athena, donde el coste se mide por los datos escaneados (5 USD por terabyte), la compresión columnar de Parquet puede reducir el volumen de datos leído en un factor de 10 a 20 respecto a un archivo CSV equivalente. El algoritmo de compresión Snappy, elegido en ISEU+, ofrece una relación equilibrada entre velocidad de descompresión y ratio de compresión, lo que lo hace idóneo para consultas interactivas donde la latencia es un factor crítico.
+
+\subsection{Computación \textit{serverless} y el modelo de pago por uso}
+
+El modelo \textit{serverless} o sin servidor se refiere a arquitecturas en las que el proveedor de nube gestiona automáticamente el aprovisionamiento, el escalado y la administración de la infraestructura de cómputo \parencite{Roberts2018ServerlessArchitectures}. El desarrollador solo proporciona el código de la función o la lógica del contenedor; la infraestructura subyacente es completamente opaca.
+
+Este modelo tiene dos ventajas fundamentales para proyectos como ISEU+: primero, elimina el coste de infraestructura en períodos de inactividad —una Lambda que no recibe peticiones no genera coste computacional—; segundo, escala automáticamente ante picos de demanda sin intervención manual. La contrapartida es el llamado ``arranque en frío'' (\textit{cold start}): la primera invocación de una función tras un período de inactividad incurre en una latencia adicional de inicialización, generalmente inferior a un segundo para funciones Python de tamaño reducido.
+
+\section{Servicios de Amazon Web Services utilizados en ISEU+}
+
+\subsection{Amazon Simple Storage Service (S3)}
+
+Amazon S3 es el servicio de almacenamiento de objetos de AWS \parencite{AWS2023S3}. A diferencia de un sistema de archivos tradicional, S3 no organiza los datos en directorios con estructura jerárquica real: cada objeto se identifica mediante una clave única (una ruta arbitraria) dentro de un \textit{bucket}. Sin embargo, es posible simular una estructura de directorios utilizando el carácter de separación de ruta en las claves, lo que permite organizar los objetos de forma intuitiva.
+
+Las características más relevantes de S3 para ISEU+ son:
+
+\begin{itemize}
+  \item \textbf{Durabilidad}: S3 garantiza una durabilidad del 99{,}999999999\,\% (once nueves) mediante replicación automática entre al menos tres zonas de disponibilidad dentro de la región.
+  \item \textbf{Escalabilidad}: no existe límite práctico en el volumen de datos que puede almacenar un bucket. El coste es proporcional al almacenamiento efectivo (aproximadamente 0{,}023 USD por GB/mes en la clase de almacenamiento estándar).
+  \item \textbf{Integración nativa con el ecosistema AWS}: S3 es el punto de integración central entre Glue, Athena, Lambda y ECS, lo que simplifica enormemente la arquitectura de datos.
+  \item \textbf{Políticas de ciclo de vida}: es posible definir reglas automáticas que transicionen los objetos a clases de almacenamiento más baratas (S3 Intelligent-Tiering, S3 Glacier) después de un período de inactividad, reduciendo el coste de almacenamiento de datos históricos.
+\end{itemize}
+
+\subsection{AWS Glue Data Catalog}
+
+AWS Glue es un servicio de integración de datos que incluye, entre otros componentes, el Glue Data Catalog \parencite{AWS2023Glue}: un repositorio centralizado de metadatos que describe la estructura de los datos almacenados en S3. Funciona como un metastore compatible con Apache Hive, lo que lo hace directamente utilizable por Athena, Amazon EMR y otros servicios del ecosistema Hadoop/Spark.
+
+El catálogo registra para cada tabla: el esquema de columnas con sus tipos de dato, la localización física de los datos en S3, el formato de serialización (Parquet, ORC, CSV, JSON...) y las propiedades de particionamiento. Esta información permite a Athena ejecutar consultas SQL sobre archivos S3 sin necesidad de cargar los datos en una base de datos relacional.
+
+La API de Glue permite registrar y actualizar tablas de forma programática, lo que se aprovecha en el pipeline de ISEU+ para actualizar el catálogo automáticamente cada vez que el pipeline de datos publica una nueva versión de los indicadores en S3.
+
+\subsection{Amazon Athena}
+
+Amazon Athena es un motor de consulta SQL sin servidor que analiza datos directamente en Amazon S3 \parencite{AWS2023Athena}. Se basa en el motor de código abierto Trino (anteriormente conocido como PrestoSQL), lo que lo hace compatible con el estándar ANSI SQL y con extensiones avanzadas como funciones de ventana (\textit{window functions}), expresiones regulares, operaciones con fechas y tipos de dato complejos (arrays, maps).
+
+Las características de Athena más relevantes para ISEU+ son:
+
+\begin{itemize}
+  \item \textbf{Modelo de coste}: Athena factura exclusivamente por los datos escaneados en cada consulta (5 USD por terabyte). Para el volumen de datos de ISEU+ (aproximadamente 500 MB en formato Parquet), el coste por consulta es inferior a 0{,}001 USD.
+  \item \textbf{Sin infraestructura persistente}: no hay instancias de base de datos que mantener o escalar. Athena aprovisiona y libera recursos de cómputo automáticamente para cada consulta.
+  \item \textbf{Workgroups}: Athena permite organizar las consultas en grupos de trabajo con límites de coste, configuración de resultados y políticas de acceso independientes. ISEU+ utiliza el workgroup \texttt{iseu} para aislar las consultas del sistema del resto de la cuenta AWS.
+  \item \textbf{Concurrencia}: Athena puede ejecutar múltiples consultas en paralelo sin límite explícito para el plan estándar, lo que permite que el endpoint \texttt{/dashboard} lance hasta 15 consultas simultáneas mediante \texttt{ThreadPoolExecutor}.
+\end{itemize}
+
+\subsection{AWS Lambda}
+
+AWS Lambda es el servicio de computación sin servidor de AWS \parencite{AWS2023Lambda}. Permite ejecutar funciones de código arbitrario en respuesta a eventos (peticiones HTTP, mensajes en cola, cambios en S3) sin aprovisionar ni gestionar servidores. La función se ejecuta en un entorno de ejecución gestionado por AWS, que garantiza aislamiento entre invocaciones y escala automáticamente.
+
+Las funciones Lambda se facturan por número de invocaciones (1 millón de invocaciones gratuitas al mes en el nivel gratuito permanente) y por tiempo de ejecución (medido en GB-segundos, donde GB es la memoria asignada). Para una función con 512 MB de memoria y un tiempo de ejecución medio de 3 segundos por consulta, el coste de 3.000 consultas diarias sería inferior a 0{,}01 USD mensuales.
+
+El principal desafío de Lambda para consultas interactivas es el llamado ``arranque en frío'': cuando una función no ha recibido tráfico durante un período de tiempo, el entorno de ejecución es liberado y la siguiente invocación debe inicializar el proceso Python, importar las dependencias y establecer las conexiones con los servicios AWS. En ISEU+, el arranque en frío tiene un impacto acotado porque el handler utiliza \texttt{lru\_cache} para almacenar en caché la lista de tablas del catálogo Glue durante el ciclo de vida del contenedor de ejecución.
+
+\subsection{Amazon Elastic Container Service y AWS Fargate}
+
+Amazon ECS \parencite{AWS2023ECS} es el servicio de orquestación de contenedores de AWS. Permite definir tareas (\textit{tasks}) que ejecutan uno o más contenedores Docker con una configuración declarativa: imagen, recursos de CPU y memoria, variables de entorno, roles IAM y configuración de red. Las tareas ECS pueden ejecutarse sobre instancias EC2 administradas por el usuario o mediante AWS Fargate, que elimina completamente la necesidad de gestionar la infraestructura de las instancias.
+
+AWS Fargate \parencite{AWS2023Fargate} es un motor de ejecución de contenedores sin servidor: el usuario define la tarea y Fargate aprovisiona, gestiona y libera la infraestructura de cómputo de forma automática. La facturación es por vCPU y memoria asignadas durante el tiempo de ejecución de la tarea. Para una tarea con 0{,}5 vCPU, 1 GB de RAM y 30 minutos de ejecución, el coste es aproximadamente 0{,}05 USD.
+
+En ISEU+, ECS Fargate se utiliza para ejecutar el pipeline de datos completo (extracción, limpieza, construcción de Gold y publicación en Athena) de forma periódica o bajo demanda. La tarea se define en la \textit{task definition} \texttt{iseu-pipeline} y se puede disparar mediante la CLI de AWS, la consola web o Amazon EventBridge Scheduler.
+
+\subsection{Amazon Elastic Container Registry (ECR)}
+
+Amazon ECR \parencite{AWS2023ECR} es el servicio de registro de imágenes Docker de AWS. Almacena las imágenes del contenedor del pipeline en un repositorio privado dentro de la misma cuenta y región AWS que los demás servicios, eliminando la latencia y el coste de descarga de imágenes desde registros externos (como Docker Hub) durante el arranque del contenedor.
+
+\subsection{Amazon EventBridge Scheduler}
+
+Amazon EventBridge Scheduler \parencite{AWS2023EventBridge} permite programar la ejecución de tareas AWS (Lambda, ECS, Step Functions...) mediante expresiones \textit{cron} o frecuencias periódicas. En ISEU+, se utiliza para disparar el pipeline de datos mensualmente, sincronizado con los calendarios de publicación del INE y el SEPE.
+
+\section{Fuentes de datos oficiales}
+
+\subsection{Instituto Nacional de Estadística (INE)}
+
+El Instituto Nacional de Estadística es el organismo oficial de estadística de España, responsable de la planificación, dirección y coordinación de las actividades estadísticas de la Administración General del Estado \parencite{INE2023Institucional}. Para ISEU+, las operaciones estadísticas del INE más relevantes son:
+
+\textbf{El Atlas de distribución de renta de los hogares}: publicado anualmente con datos de renta bruta, renta disponible, renta mediana y desigualdad (índice de Gini y relación P80/P20) desagregados hasta nivel de sección censal para todos los municipios de más de 1.000 habitantes. La metodología combina datos de declaraciones del IRPF, prestaciones de la Seguridad Social y contrastes con la Encuesta de Condiciones de Vida para cubrir la población no declarante.
+
+\textbf{El Padrón Municipal de Habitantes}: proporciona datos de población a nivel de municipio y sección censal, con actualización anual. Es la fuente de referencia para la variable \texttt{Poblacion total} en ISEU+.
+
+La API del INE \parencite{INE2022API} permite el acceso programático a más de 3.000 operaciones estadísticas mediante peticiones HTTP que devuelven datos en formato JSON-stat \parencite{JSONstat2023}. JSON-stat es un formato de intercambio de datos estadísticos multidimensionales que organiza los valores en un array lineal junto con los metadatos que describen las dimensiones (territorios, períodos, variables). El conector del INE en ISEU+ implementa la decodificación de este formato para extraer las series temporales de interés.
+
+\subsection{Servicio Público de Empleo Estatal (SEPE)}
+
+El SEPE es el organismo autónomo del Ministerio de Trabajo y Economía Social responsable de gestionar las prestaciones por desempleo y los programas de empleo en España \parencite{SEPE2023Institucional}. Publica mensualmente estadísticas de:
+
+\begin{itemize}
+  \item \textbf{Paro registrado}: número de personas inscritas en las oficinas de empleo como demandantes de empleo no ocupadas, desagregado por municipio, sector de actividad, edad y sexo.
+  \item \textbf{Contratos registrados}: número de contratos de trabajo comunicados al sistema de registro de contratos, desagregado por municipio, tipo de contrato y sector.
+  \item \textbf{Demandantes de empleo}: número total de personas inscritas en las oficinas de empleo, incluyendo tanto parados como trabajadores que buscan empleo adicional.
+\end{itemize}
+
+Los datos del SEPE se publican en archivos de texto con separador de campo en la sede electrónica del organismo, con un retraso habitual de 15 a 30 días respecto al mes de referencia. El conector del SEPE en ISEU+ descarga estos archivos, los decodifica con la codificación correcta (ISO-8859-1) y extrae las series temporales para las siete ciudades del sistema.
+
+\subsection{Open Data BCN}
+
+Open Data BCN \parencite{OpenDataBCN2023} es el portal de datos abiertos del Ayuntamiento de Barcelona, uno de los portales de datos municipales más completos de España. Ofrece más de 500 conjuntos de datos en categorías que incluyen economía, demografía, transporte, medio ambiente, turismo y servicios urbanos.
+
+Para ISEU+, Open Data BCN es la fuente de los indicadores de movilidad, accidentes de tráfico y usuarios de bicicleta pública, con desagregación hasta nivel de barrio y frecuencia anual. Los datos se acceden mediante la API CKAN (Comprehensive Knowledge Archive Network), que devuelve los recursos en formato CSV o JSON. Open Data BCN es la única fuente del sistema con cobertura a nivel de barrio; el resto de fuentes (INE y SEPE) solo tienen cobertura hasta nivel de municipio o ciudad para las variables integradas.
+
+\section{Modelos de lenguaje de gran tamaño e interfaces conversacionales}
+
+\subsection{Los modelos de lenguaje de gran tamaño (LLM)}
+
+Los modelos de lenguaje de gran tamaño son sistemas de inteligencia artificial entrenados sobre corpus masivos de texto para predecir la distribución de probabilidad de las palabras en una secuencia \parencite{Brown2020GPT3}. Su capacidad para generar texto coherente y contextualmente relevante los ha convertido en la base de aplicaciones conversacionales, sistemas de ayuda a la codificación, motores de traducción y, más recientemente, interfaces de acceso a datos estructurados.
+
+La arquitectura \textit{Transformer} \parencite{Vaswani2017Attention}, presentada en 2017, es la base de todos los LLM modernos de relevancia. Sus mecanismos de atención permiten al modelo relacionar palabras distantes en el contexto de entrada, capturando dependencias a larga distancia que las arquitecturas recurrentes anteriores no podían modelar eficientemente.
+
+\subsection{Gemini 2.5 Flash}
+
+Gemini 2.5 Flash es el modelo de lenguaje de Google utilizado en ISEU+ \parencite{Google2024Gemini}. Pertenece a la familia Gemini, diseñada para ser eficiente en latencia y coste sin sacrificar capacidad de razonamiento. Sus características más relevantes para el sistema son:
+
+\begin{itemize}
+  \item Ventana de contexto de hasta 1 millón de tokens, lo que permite incluir el esquema completo de la base de datos, el historial de la conversación y los resultados de las consultas en un único \textit{prompt}.
+  \item Capacidad de generación de código SQL correcto para diferentes dialectos, incluido Trino/Athena.
+  \item Soporte de esquemas JSON estructurados (\textit{responseJsonSchema}) para forzar que las respuestas del planificador SQL sigan un formato estrictamente validable.
+  \item API de \textit{streaming} mediante Server-Sent Events, que permite mostrar la respuesta al usuario a medida que se genera, reduciendo la percepción de latencia.
+\end{itemize}
+
+\subsection{NL2SQL: traducción de lenguaje natural a SQL}
+
+La tarea de NL2SQL consiste en generar automáticamente una consulta SQL válida a partir de una pregunta formulada en lenguaje natural \parencite{Guo2019Towards}. Es una de las aplicaciones más investigadas de los LLM aplicados a datos estructurados, con benchmarks como Spider \parencite{Yu2018Spider} y BIRD \parencite{Li2023BIRD} que miden la precisión de los sistemas sobre esquemas de base de datos de creciente complejidad.
+
+La principal dificultad del NL2SQL es la ambigüedad del lenguaje natural frente a la precisión requerida por SQL. Preguntas como ``¿cuánto gana de media la gente en Barcelona?'' pueden interpretarse como promedio de renta bruta, renta disponible o renta por hogar, y la elección incorrecta devuelve un resultado numéricamente diferente. Los sistemas más avanzados abordan esta ambigüedad mediante: (1) la inclusión de descripciones semánticas de las columnas en el \textit{prompt} del planificador; (2) la generación de planes de consulta intermedios que el LLM justifica antes de generar el SQL; y (3) la validación automática de la consulta antes de ejecutarla.
+
+ISEU+ implementa las tres estrategias: el \texttt{SCHEMA\_DESCRIPTION} incluye las equivalencias entre nombres de variable en inglés (en la tabla \texttt{indicators}) y en español (en la tabla \texttt{indicadores}); el planificador genera un objeto JSON con campos \texttt{needs\_data}, \texttt{sql} y \texttt{reason} antes de ejecutar la consulta; y el handler Lambda valida la consulta contra un conjunto de restricciones antes de enviarla a Athena.
+
+\subsection{Prompting estructurado y generación controlada}
+
+Una de las técnicas más efectivas para mejorar la calidad del NL2SQL con LLM es el \textit{prompting estructurado}: en lugar de pedir directamente ``genera el SQL para esta pregunta'', el sistema descompone la tarea en subproblemas más pequeños y más fácilmente verificables \parencite{Wei2022ChainOfThought}.
+
+En ISEU+, el planificador SQL recibe en su \textit{prompt}: la pregunta del usuario, la fecha actual del sistema, el historial reciente de la conversación, la descripción completa del esquema (tablas, columnas, valores posibles de la columna \texttt{variable}) y un conjunto de reglas explícitas sobre cuándo usar cada tabla, qué nombres exactos de variable emplear y qué patrones SQL son obligatorios en cada caso (por ejemplo, el uso de \texttt{GROUP BY city} para preguntas comparativas).
+
+La respuesta del planificador se fuerza a seguir un esquema JSON validado (\texttt{responseJson\-Schema}), lo que garantiza que el campo \texttt{needs\_data} sea siempre un booleano y el campo \texttt{sql} sea siempre una cadena, independientemente de la redacción de la pregunta.
+
+\section{Plataformas de despliegue web: Vercel}
+
+Vercel \parencite{Vercel2023Platform} es una plataforma de despliegue continuo especializada en aplicaciones web estáticas y funciones \textit{serverless}. Su modelo de trabajo está centrado en la integración con repositorios de código (GitHub, GitLab, Bitbucket): cada \textit{push} a la rama principal desencadena automáticamente la compilación, el despliegue y la asignación de una URL permanente a la nueva versión.
+
+Las funciones \textit{serverless} de Vercel (\textit{Serverless Functions}) permiten ejecutar código Python, Node.js o Go en el servidor sin gestionar infraestructura. Cada función se despliega como un proceso aislado que se invoca en respuesta a peticiones HTTP, con un tiempo de arranque típico inferior a 500 ms y un tiempo de ejecución máximo de 60 segundos en el plan gratuito (plan Hobby).
+
+Para ISEU+, Vercel sirve el contenido estático (HTML, CSS, JavaScript) directamente desde su CDN global, con latencia inferior a 50 ms para usuarios en Europa, y ejecuta las funciones Python del API (\texttt{api/chat.py}, \texttt{api/dashboard.py}, \texttt{api/health.py}) como \textit{serverless functions} en la región de Europa Occidental.
+
+\section{Iniciativas relacionadas y posición de ISEU+}
+
+\subsection{Comparación con plataformas de análisis urbano existentes}
+
+La Tabla~\ref{tab:comparativa_plataformas} resume las principales características de las iniciativas de análisis urbano comparativo existentes frente a ISEU+.
+
+\footnotesize
+\begin{longtable}{>{\raggedright\arraybackslash}p{0.19\textwidth} >{\raggedright\arraybackslash}p{0.13\textwidth} >{\raggedright\arraybackslash}p{0.12\textwidth} >{\raggedright\arraybackslash}p{0.12\textwidth} >{\raggedright\arraybackslash}p{0.12\textwidth} >{\raggedright\arraybackslash}p{0.11\textwidth}}
+\toprule
+\textbf{Plataforma} & \textbf{Cobertura} & \textbf{Variables} & \textbf{Geo.} & \textbf{Frecuencia} & \textbf{NL} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Plataforma} & \textbf{Cobertura} & \textbf{Variables} & \textbf{Geo.} & \textbf{Frecuencia} & \textbf{NL} \\
+\midrule
+\endhead
+Eurostat Urban Audit & Europea (900+ ciudades) & 180+ & Ciudad & Bienal & No \\
+INE Atlas de Renta & España (sección censal) & 10 (renta) & Sección censal & Anual & No \\
+Open Data BCN & Barcelona & 500+ & Barrio & Variable & No \\
+City Health Dashboard & EE.UU. (500 ciudades) & 40 & Ciudad & Anual & No \\
+\textbf{ISEU+} & 7 ciudades ES & 22 & Ciudad y barrio & Mensual* & \textbf{Sí} \\
+\bottomrule
+\caption{\textbf{Comparativa de plataformas de análisis urbano.}\\
+\textit{*La actualización mensual es la frecuencia objetivo del pipeline automatizado. La cobertura de barrio está disponible solo para Barcelona.}}
+\label{tab:comparativa_plataformas}
+\end{longtable}
+\normalsize
+
+\subsection{Posicionamiento académico de ISEU+}
+
+ISEU+ se posiciona en la intersección de tres áreas de conocimiento: la ingeniería de datos (diseño del pipeline y la arquitectura en la nube), la economía urbana (selección y construcción de indicadores comparativos) y la inteligencia artificial aplicada (NL2SQL con LLM). Esta interdisciplinariedad es al mismo tiempo su fortaleza —combina capacidades de áreas distintas— y su limitación académica: el rigor metodológico en cada área individual es menor del que podría alcanzarse en un proyecto especializado.
+
+La principal contribución académica del proyecto no radica en el desarrollo de nuevas técnicas, sino en la demostración de que la integración de servicios en la nube maduros (S3, Athena, Lambda) con LLM de propósito general (Gemini 2.5 Flash) permite construir sistemas de análisis de datos comparativos con cobertura real, disponibilidad pública y coste operativo mínimo, sin necesidad de infraestructura dedicada ni equipos especializados en mantenimiento.
