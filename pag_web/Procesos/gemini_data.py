@@ -22,38 +22,53 @@ Tienes acceso a tres tablas en Amazon Athena (dialecto Trino). Elige la más
 apropiada según la pregunta:
 
 ━━━ TABLA: indicators (Gold — ciudad, 4 358 filas) ━━━
-Usa esta cuando la pregunta compare ciudades o pida un resumen general.
+Usa esta para COMPARAR CIUDADES o pedir resúmenes a nivel ciudad.
 Columnas: city varchar, district varchar, variable varchar, value double,
 "date" varchar, source varchar, quality_score bigint, category varchar,
 unit varchar, year bigint, month bigint
 Ciudades: Barcelona, Bilbao, Madrid, Malaga, Sevilla, Valencia, Zaragoza
-Variables: population_total · income · income_median · income_per_household ·
-income_per_person · gini_inequality · inequality_p80p20 · contracts_registered ·
-job_seekers · unemployed_registered · traffic_accidents · mobility_resources_records
+Variables (nombre en BD → significado en español):
+  population_total      → población total
+  income                → renta disponible media
+  income_median         → renta mediana
+  income_per_household  → renta por hogar
+  income_per_person     → renta por persona / cápita
+  gini_inequality       → desigualdad Gini
+  inequality_p80p20     → desigualdad P80/P20
+  contracts_registered  → contratos registrados
+  job_seekers           → demandantes de empleo
+  unemployed_registered → paro registrado
+  traffic_accidents     → accidentes de tráfico
+  mobility_resources_records → registros de movilidad / bicicletas
 district tiene valores como "Eixample", "Gràcia" para Barcelona (puede ser vacío).
 
 ━━━ TABLA: indicadores (Silver — barrio/sección censal, 93 944 filas) ━━━
-Usa esta cuando la pregunta pida detalle sub-ciudad (barrio, sección censal,
-código postal) o cuando indicators no tenga la variable pedida.
+Usa esta para DETALLE SUB-CIUDAD (barrio, sección censal, zona) o cuando
+indicators no tenga la variable pedida.
 Columnas: source varchar, dataset varchar, variable varchar, metric varchar,
-geo varchar (área geográfica: nombre de barrio, sección censal, ciudad…),
-period varchar (ej. "2023-01-01"), value double, unit varchar, quality varchar,
-notes varchar
-Variables disponibles (22): las mismas de indicators más detalle de renta bruta,
-mediana, renta disponible, media por unidad de consumo, desigualdad, etc.
+geo varchar (nombre de barrio, sección censal o ciudad), period varchar
+(ej. "2023-01-01"), value double, unit varchar, quality varchar, notes varchar
+Variables disponibles (nombre en español tal cual en la BD):
+  Población total · Renta · Renta bruta · Renta bruta media por hogar ·
+  Renta bruta media por persona · Renta disponible · Renta media ·
+  Renta media por unidad de consumo · Renta mediana · Renta mediana por
+  unidad de consumo · Renta neta media por hogar · Renta neta media por
+  persona · Renta por hogar · Renta por persona · Desigualdad Gini ·
+  Desigualdad P80/P20 · Contratos registrados · Demandantes de empleo ·
+  Paro registrado · Accidentes de trafico · Registros de movilidad ·
+  Usuarios bicicleta publica
 
 ━━━ TABLA: observations (contexto enriquecido, 105 774 filas) ━━━
-Usa esta cuando necesites datos con jerarquía ciudad→distrito→barrio o cuando
-quieras el texto de notas contextuales para la respuesta.
+Usa esta cuando necesites jerarquía ciudad→distrito→barrio o notas contextuales.
 Columnas: city varchar, district varchar, neighborhood varchar, geo varchar,
 period varchar, variable varchar, metric varchar, value double, unit varchar,
 category varchar, granularity varchar (city|district|neighborhood), notes varchar,
 source varchar, quality varchar
 
 Regla de elección:
-- Comparar ciudades → indicators
-- Detalle de barrio / sección censal → indicadores
-- Análisis con notas / jerarquía completa → observations
+- Comparar ciudades → indicators  (variables en inglés, usa los nombres exactos)
+- Detalle de barrio o zona → indicadores  (variables en español, usa los nombres exactos)
+- Jerarquía o notas contextuales → observations
 """.strip()
 
 SQL_RESPONSE_SCHEMA = {
@@ -108,9 +123,20 @@ Historial reciente:
 
 {SCHEMA_DESCRIPTION}
 
-Decide si la pregunta necesita consultar los datos ISEU. Si no necesita datos,
-devuelve needs_data=false y sql vacío. Si necesita datos, genera UNA consulta
-SELECT de Athena usando la tabla más adecuada del esquema anterior.
+Decide si la pregunta necesita consultar los datos ISEU.
+
+SIEMPRE needs_data=true si la pregunta:
+- Pide valores numéricos (renta, paro, contratos, población, desigualdad, movilidad…)
+- Compara ciudades, distritos, barrios o periodos
+- Pide rankings, evolución temporal, promedios o totales
+- Menciona cualquier variable del esquema aunque sea de forma aproximada
+- Pregunta por fuentes disponibles, qué datos hay o qué tablas existen
+
+needs_data=false SOLO para saludos, preguntas sobre la identidad del asistente
+o preguntas completamente ajenas a datos urbanos.
+
+Si necesita datos, genera UNA consulta SELECT de Athena usando la tabla más
+adecuada del esquema anterior.
 
 Reglas obligatorias:
 - Solo SELECT; nunca CTE, JOIN, DDL, DML, comentarios ni punto y coma.
@@ -315,13 +341,20 @@ forma explícita.
 _ANSWER_SYSTEM = (
     "Eres ISEU+, el asistente del Índice de Salud Económica Urbana, un proyecto de "
     "investigación académica sobre ciudades españolas. Tu función es responder sobre "
-    "indicadores urbanos: empleo, renta, demografía, movilidad y actividad económica "
-    "de Barcelona, Bilbao, Madrid, Málaga, Sevilla, Valencia y Zaragoza. "
-    "Cuando te pregunten quién te creó, quién te hizo o cuál es tu naturaleza, "
-    "responde que eres ISEU+, desarrollado como parte de un Trabajo de Fin de Máster "
-    "de análisis de datos urbanos. No menciones Google, Gemini ni ningún proveedor de IA. "
-    "Responde siempre en español. Sé claro, conciso y trazable: cita fuente, territorio "
-    "y periodo cuando uses datos. Nunca inventes indicadores que no existan en la base de datos."
+    "indicadores urbanos de Barcelona, Bilbao, Madrid, Málaga, Sevilla, Valencia y Zaragoza.\n\n"
+    "Fuentes de datos disponibles:\n"
+    "- INE (Instituto Nacional de Estadística): población total y renta (bruta, disponible, "
+    "mediana, por hogar/persona, desigualdad Gini y P80/P20) a nivel de sección censal.\n"
+    "- SEPE (Servicio Público de Empleo Estatal): paro registrado, contratos registrados "
+    "y demandantes de empleo por ciudad.\n"
+    "- Municipal Open Data (Open Data BCN): accidentes de tráfico, registros de movilidad "
+    "y usuarios de bicicleta pública.\n"
+    "Cobertura temporal: principalmente 2015-2023, según fuente y variable.\n"
+    "Total: ~93 944 registros de indicadores en 22 variables.\n\n"
+    "Cuando te pregunten quién te creó, responde que eres ISEU+, desarrollado como TFM "
+    "de análisis de datos urbanos. No menciones Google, Gemini ni ningún proveedor de IA.\n"
+    "Responde siempre en español. Cita fuente, territorio y periodo cuando uses datos. "
+    "Nunca inventes indicadores que no existan en la base de datos."
 )
 
 
