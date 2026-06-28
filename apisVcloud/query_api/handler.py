@@ -220,35 +220,34 @@ def build_dashboard() -> dict[str, Any]:
         """,
         "sources": f"""
             SELECT source, count(*) rows, count(DISTINCT variable) variables
-            FROM {indicators} GROUP BY source ORDER BY rows DESC
+            FROM {indicadores} GROUP BY source ORDER BY rows DESC
         """,
         "variables": f"""
-            SELECT variable, source, count(*) rows, max(CAST(date AS varchar)) latest_period
-            FROM {indicators} GROUP BY variable, source ORDER BY variable, source LIMIT 80
+            SELECT variable, source, count(*) rows, max(period) latest_period
+            FROM {indicadores} GROUP BY variable, source ORDER BY variable, source LIMIT 80
         """,
         "latest": f"""
-            SELECT source, variable, variable metric,
-                   concat(city, CASE WHEN district IS NULL OR trim(CAST(district AS varchar)) = '' THEN '' ELSE concat(' - ', CAST(district AS varchar)) END) geo,
-                   CAST(date AS varchar) period, value, unit,
-                   CASE WHEN quality_score >= 8 THEN 'Alta' WHEN quality_score >= 5 THEN 'Media' ELSE 'Baja' END quality
-            FROM {indicators} ORDER BY date DESC LIMIT 12
+            SELECT source, variable, metric, geo, period, value, unit,
+                   CASE lower(coalesce(quality,'')) WHEN 'alta' THEN 'Alta' WHEN 'media' THEN 'Media' ELSE 'Baja' END quality
+            FROM {indicadores} ORDER BY period DESC LIMIT 12
         """,
         "quality": f"""
-            SELECT CASE WHEN quality_score >= 8 THEN 'Alta' WHEN quality_score >= 5 THEN 'Media' ELSE 'Baja' END quality,
+            SELECT CASE lower(coalesce(quality,'')) WHEN 'alta' THEN 'Alta' WHEN 'media' THEN 'Media' ELSE 'Baja' END quality,
                    count(*) rows
-            FROM {indicators} GROUP BY 1 ORDER BY rows DESC
+            FROM {indicadores} GROUP BY 1 ORDER BY rows DESC
         """,
         "top_variables": f"""
-            SELECT variable, count(*) rows FROM {indicators}
+            SELECT variable, count(*) rows FROM {indicadores}
             GROUP BY variable ORDER BY rows DESC LIMIT 10
         """,
         "periods": f"""
-            SELECT substr(CAST(date AS varchar), 1, 4) period_group, count(*) rows
-            FROM {indicators} GROUP BY 1 ORDER BY period_group DESC LIMIT 8
+            SELECT substr(period, 1, 4) period_group, count(*) rows
+            FROM {indicadores} WHERE period IS NOT NULL AND trim(period) <> ''
+            GROUP BY 1 ORDER BY period_group DESC LIMIT 8
         """,
         "source_variables": f"""
             SELECT source, count(DISTINCT variable) variables
-            FROM {indicators} GROUP BY source ORDER BY variables DESC, source
+            FROM {indicadores} GROUP BY source ORDER BY variables DESC, source
         """,
         "cities": f"""
             SELECT {geo_case} city, count(*) rows,
@@ -259,12 +258,11 @@ def build_dashboard() -> dict[str, Any]:
             GROUP BY 1 ORDER BY rows DESC, city
         """,
         "catalog": f"""
-            SELECT variable, min(category) description,
+            SELECT variable, min(coalesce(dataset, 'Sin categoría')) description,
                    array_join(array_agg(DISTINCT source), ', ') sources,
-                   min(CAST(date AS varchar)) first_period,
-                   max(CAST(date AS varchar)) latest_period,
-                   count(*) rows, count(DISTINCT city) city_count
-            FROM {indicators} GROUP BY variable ORDER BY variable
+                   min(period) first_period, max(period) latest_period,
+                   count(*) rows, count(DISTINCT geo) city_count
+            FROM {indicadores} GROUP BY variable ORDER BY variable
         """,
     }
 
@@ -329,10 +327,10 @@ def build_dashboard() -> dict[str, Any]:
 
 def build_catalog() -> dict[str, Any]:
     tables = table_names()
-    indicators = quoted_table(str(tables["indicators"]))
+    indicadores = quoted_table(str(tables.get("indicadores") or tables["indicators"]))
     queries = {
-        "sources": f"SELECT source, count(*) rows, count(DISTINCT variable) variables FROM {indicators} GROUP BY source ORDER BY rows DESC",
-        "variables": f"SELECT variable, source, count(*) rows, max(CAST(date AS varchar)) latest_period FROM {indicators} GROUP BY variable, source ORDER BY variable, source",
+        "sources": f"SELECT source, count(*) rows, count(DISTINCT variable) variables FROM {indicadores} GROUP BY source ORDER BY rows DESC",
+        "variables": f"SELECT variable, source, count(*) rows, max(period) latest_period FROM {indicadores} GROUP BY variable, source ORDER BY variable, source",
     }
     result = run_named_queries(queries)
     available_tables = {alias: name for alias, name in tables.items() if name}
