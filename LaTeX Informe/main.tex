@@ -37,7 +37,7 @@
 % entrega. Cuando el interruptor esta activo, cada epigrafe comienza en una
 % pagina nueva, facilitando la lectura, la evaluacion y la paginacion por bloque.
 \newif\ifiseupagebyheading
-\iseupagebyheadingtrue
+\iseupagebyheadingfalse
 \pretocmd{\section}{\ifiseupagebyheading\clearpage\fi}{}{}
 \pretocmd{\subsection}{\ifiseupagebyheading\clearpage\fi}{}{}
 

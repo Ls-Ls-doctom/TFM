@@ -1,4 +1,0 @@
-left_series,right_series,correlation,abs_correlation,overlap_periods,interpretation,warning
-Open Data BCN | bcn_licencias_agregado | Licencias comerciales,Open Data BCN | bcn_licencias_sector_agregado | Densidad empresarial,0.963,0.963,22,positiva muy fuerte,Correlacion temporal exploratoria; no implica causalidad.
-INE | tasa_empleo_cataluna | Tasa de empleo,INE | tasa_paro_cataluna | Tasa de paro,-0.9543,0.9543,20,negativa muy fuerte,Correlacion temporal exploratoria; no implica causalidad.
-MITMA/MIVAU | precio_m2_vivienda | Precio vivienda m2,MITMA/MIVAU | precio_m2_vivienda_municipios | Precio vivienda m2,0.7617,0.7617,84,positiva fuerte,Correlacion temporal exploratoria; no implica causalidad.
