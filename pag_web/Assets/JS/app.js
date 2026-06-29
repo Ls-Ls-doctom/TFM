@@ -90,6 +90,12 @@ const percentFormatter = new Intl.NumberFormat("es-ES", {
 });
 const chartPalette = ["#4f7c59", "#b56b45", "#d6a94a", "#6f8f72", "#8b6f4e", "#c26f5b", "#6f7f8d", "#9a8c63"];
 
+const chartInstances = new Map();
+function destroyChart(container) {
+  const inst = chartInstances.get(container);
+  if (inst) { inst.destroy(); chartInstances.delete(container); }
+}
+
 const taskLabels = {
   pensando: "Pensando",
   datos: "Recuperando datos",
@@ -1235,6 +1241,7 @@ function renderAnalyticalVisuals() {
 
 function renderSeriesLineChart(container, rows, options = {}) {
   if (!container) return;
+  destroyChart(container);
   const cleanRows = rows
     .map((row) => ({ ...row, value: Number(row.value), period: String(row.period || ""), series: String(row.series || "Serie") }))
     .filter((row) => row.period && Number.isFinite(row.value));
@@ -1242,44 +1249,71 @@ function renderSeriesLineChart(container, rows, options = {}) {
     container.innerHTML = `<div class="viz-empty">${escapeHtml(options.empty || "No hay datos para los filtros seleccionados.")}</div>`;
     return;
   }
-
-  const width = 760;
-  const height = 300;
-  const margin = { top: 18, right: 18, bottom: 42, left: 66 };
   const periods = [...new Set(cleanRows.map((row) => row.period))].sort();
   const seriesNames = [...new Set(cleanRows.map((row) => row.series))].sort((a, b) => a.localeCompare(b, "es"));
-  const values = cleanRows.map((row) => row.value);
-  const rawMin = Math.min(...values);
-  const rawMax = Math.max(...values);
-  const spread = Math.max(1, rawMax - rawMin);
-  const minY = options.zeroBaseline ? 0 : Math.max(0, rawMin - spread * 0.1);
-  const maxY = rawMax + spread * 0.08 || 1;
-  const plotWidth = width - margin.left - margin.right;
-  const plotHeight = height - margin.top - margin.bottom;
-  const x = (period) => margin.left + (periods.indexOf(period) / Math.max(1, periods.length - 1)) * plotWidth;
-  const y = (value) => margin.top + (1 - (value - minY) / Math.max(1, maxY - minY)) * plotHeight;
-
-  const grid = Array.from({ length: 5 }, (_, index) => {
-    const ratio = index / 4;
-    const value = maxY - ratio * (maxY - minY);
-    const position = margin.top + ratio * plotHeight;
-    return `<line class="chart-grid-line" x1="${margin.left}" x2="${width - margin.right}" y1="${position}" y2="${position}"></line><text class="chart-axis-label" x="${margin.left - 8}" y="${position + 3}" text-anchor="end">${escapeHtml(compactNumber(value))}</text>`;
-  }).join("");
-
-  const labelIndexes = [...new Set([0, Math.floor((periods.length - 1) * 0.25), Math.floor((periods.length - 1) * 0.5), Math.floor((periods.length - 1) * 0.75), periods.length - 1])];
-  const xLabels = labelIndexes.map((index) => `<text class="chart-axis-label" x="${x(periods[index])}" y="${height - 14}" text-anchor="middle">${escapeHtml(shortPeriod(periods[index]))}</text>`).join("");
-
-  const lines = seriesNames.map((name, index) => {
-    const points = cleanRows.filter((row) => row.series === name).sort((a, b) => a.period.localeCompare(b.period));
+  const chartDatasets = seriesNames.map((name, index) => {
     const color = chartPalette[index % chartPalette.length];
-    const path = points.map((point, pointIndex) => `${pointIndex ? "L" : "M"}${x(point.period).toFixed(2)},${y(point.value).toFixed(2)}`).join(" ");
-    const step = Math.max(1, Math.ceil(points.length / 24));
-    const dots = points.filter((_, pointIndex) => pointIndex % step === 0 || pointIndex === points.length - 1).map((point) => `<circle class="chart-point" cx="${x(point.period)}" cy="${y(point.value)}" r="3" fill="${color}"><title>${escapeHtml(`${name} · ${formatDataPeriod(point.period)} · ${formatNumber(point.value)} ${options.unit || point.unit || ""}`)}</title></circle>`).join("");
-    return `<path class="chart-line" d="${path}" stroke="${color}"></path>${dots}`;
-  }).join("");
-
-  const legend = seriesNames.map((name, index) => `<span><i style="background:${chartPalette[index % chartPalette.length]}"></i>${escapeHtml(name)}</span>`).join("");
-  container.innerHTML = `<svg class="chart-svg" viewBox="0 0 ${width} ${height}" role="img" aria-label="Gráfico de evolución temporal">${grid}${xLabels}${lines}</svg><div class="chart-legend">${legend}</div>${options.caption ? `<p class="chart-caption">${escapeHtml(options.caption)}</p>` : ""}`;
+    const byPeriod = new Map(cleanRows.filter((r) => r.series === name).map((r) => [r.period, r.value]));
+    return {
+      label: name,
+      data: periods.map((p) => byPeriod.has(p) ? byPeriod.get(p) : null),
+      borderColor: color,
+      backgroundColor: color + "28",
+      borderWidth: 2.5,
+      pointRadius: periods.length > 60 ? 0 : 3,
+      pointHoverRadius: 6,
+      tension: 0.3,
+      spanGaps: true,
+    };
+  });
+  container.innerHTML = `<div class="chart-canvas-wrap"><canvas></canvas></div>${options.caption ? `<p class="chart-caption">${escapeHtml(options.caption)}</p>` : ""}`;
+  const canvas = container.querySelector("canvas");
+  const unit = options.unit || "";
+  const chart = new Chart(canvas, {
+    type: "line",
+    data: { labels: periods.map(shortPeriod), datasets: chartDatasets },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { mode: "index", intersect: false },
+      plugins: {
+        legend: {
+          display: seriesNames.length > 1,
+          position: "bottom",
+          labels: { boxWidth: 12, font: { size: 12 }, padding: 14, color: "#3e4843" },
+          onClick: (e, legendItem, legend) => {
+            const index = legendItem.datasetIndex;
+            const meta = legend.chart.getDatasetMeta(index);
+            meta.hidden = !meta.hidden;
+            legend.chart.update();
+          },
+        },
+        tooltip: {
+          backgroundColor: "rgba(255,255,255,0.97)",
+          borderColor: "rgba(62,72,67,0.18)",
+          borderWidth: 1,
+          titleColor: "#3e4843",
+          bodyColor: "#3e4843",
+          padding: 10,
+          callbacks: {
+            label: (ctx) => ctx.parsed.y === null ? null : ` ${ctx.dataset.label}: ${formatNumber(ctx.parsed.y)}${unit ? " " + unit : ""}`,
+          },
+        },
+      },
+      scales: {
+        x: {
+          grid: { color: "rgba(62,72,67,0.07)" },
+          ticks: { maxTicksLimit: 7, font: { size: 11 }, color: "#6a7a72" },
+        },
+        y: {
+          min: options.zeroBaseline ? 0 : undefined,
+          grid: { color: "rgba(62,72,67,0.07)" },
+          ticks: { font: { size: 11 }, color: "#6a7a72", callback: (v) => compactNumber(v) },
+        },
+      },
+    },
+  });
+  chartInstances.set(container, chart);
 }
 
 function compactNumber(value) {

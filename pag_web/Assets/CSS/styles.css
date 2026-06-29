@@ -2350,6 +2350,18 @@ select:focus,
   text-align: center;
 }
 
+.chart-canvas-wrap {
+  position: relative;
+  flex: 1;
+  min-height: 250px;
+}
+
+.chart-canvas-wrap canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+}
+
 .chart-svg {
   width: 100%;
   height: auto;
