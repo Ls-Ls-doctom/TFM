@@ -1528,13 +1528,16 @@ a.icon-button {
 }
 
 /* ── Catalog standalone page ─────────────────────────────────────── */
-.catalog-page-shell {
+.catalog-scroll-area {
   overflow-y: auto;
   min-height: 0;
-  padding: 28px 32px 64px;
-  max-width: 1200px;
   overscroll-behavior: contain;
   scroll-behavior: smooth;
+}
+
+.catalog-page-shell {
+  padding: 28px 32px 64px;
+  max-width: 1200px;
 }
 
 .catalog-page-hero {
