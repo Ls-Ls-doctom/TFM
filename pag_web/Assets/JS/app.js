@@ -61,6 +61,8 @@ const LOCAL_HOSTNAMES = new Set(["127.0.0.1", "localhost", "::1", "[::1]"]);
 const isLocalPreview = window.location.protocol === "file:"
   || LOCAL_HOSTNAMES.has(window.location.hostname);
 const API_BASE_URL = isLocalPreview ? LOCAL_API_BASE_URL : window.location.origin;
+const DASHBOARD_CACHE_KEY = "iseu-dashboard-v3";
+const DASHBOARD_CACHE_TTL_MS = 5 * 60 * 1000;
 
 let activeTopic = "general";
 let activeView = "general";
@@ -333,13 +335,23 @@ function normalizeText(value) {
 }
 
 async function loadDashboard() {
+  if (!isLocalPreview) {
+    try {
+      const cached = JSON.parse(localStorage.getItem(DASHBOARD_CACHE_KEY) || "null");
+      if (cached?.payload) {
+        renderDashboard(cached.payload);
+        if (Date.now() - Number(cached.savedAt || 0) < DASHBOARD_CACHE_TTL_MS) return;
+      }
+    } catch (_error) {
+      localStorage.removeItem(DASHBOARD_CACHE_KEY);
+    }
+  }
   try {
     if (pipelineStatus) {
       pipelineStatus.textContent = "Actualizando resumen de datos.";
     }
     const response = await fetch(`${API_BASE_URL}/api/dashboard`, {
-      headers: { "Accept": "application/json" },
-      cache: "no-store"
+      headers: { "Accept": "application/json" }
     });
     const contentType = response.headers.get("content-type") || "";
     if (!contentType.includes("application/json")) {
@@ -350,6 +362,13 @@ async function loadDashboard() {
       throw new Error(payload.error || "No se pudo cargar el dashboard.");
     }
     renderDashboard(payload);
+    if (!isLocalPreview) {
+      try {
+        localStorage.setItem(DASHBOARD_CACHE_KEY, JSON.stringify({ savedAt: Date.now(), payload }));
+      } catch (_error) {
+        // The dashboard remains usable if storage is unavailable or full.
+      }
+    }
   } catch (error) {
     const message = error instanceof TypeError
       ? `No se puede conectar con la API de datos en ${LOCAL_API_BASE_URL}. Inicia el servicio local.`
@@ -394,6 +413,16 @@ function renderDashboard(payload) {
   renderCityCoverage(payload.cities || [], Number(kpis.variableCount) || 0);
   populateAnalyticsFilters(payload.analytics || {});
   renderAnalyticalVisuals();
+}
+
+function setChatBusy(busy) {
+  form?.classList.toggle("is-busy", busy);
+  form?.setAttribute("aria-busy", String(busy));
+  if (input) input.disabled = busy;
+  const sendButton = form?.querySelector(".send-button");
+  if (sendButton) sendButton.disabled = busy;
+  promptButtons.forEach((button) => { button.disabled = busy; });
+  if (newChatButton) newChatButton.disabled = busy;
 }
 
 function getFilteredLatestRows() {
@@ -2174,7 +2203,7 @@ async function sendMessage(text) {
   addMessage(lastAssistantText, "assistant");
   input.value = "";
   isSending = true;
-  input.disabled = true;
+  setChatBusy(true);
   autoResize();
   dataTabs.forEach((tab) => {
     tab.classList.toggle("is-active", tab.dataset.view === "general");
@@ -2210,11 +2239,12 @@ async function sendMessage(text) {
       <div class="model-error" role="alert">
         <strong>No se pudo completar la consulta</strong>
         <p>${escapeHtml(errorMessage)}</p>
+        <button class="chat-retry" type="button">Reintentar la última pregunta</button>
       </div>
     `;
   } finally {
     isSending = false;
-    input.disabled = false;
+    setChatBusy(false);
     if (lastAssistantBody) {
       lastAssistantBody.innerHTML = getAssistantViewContent(activeView);
       messages.scrollIntoView({ block: "end", behavior: "smooth" });
@@ -2306,6 +2336,11 @@ function setSidebarOpen(open) {
 
 menuButtons.forEach((button) => {
   button.addEventListener("click", () => setSidebarOpen(!document.body.classList.contains("sidebar-open")));
+});
+
+messages?.addEventListener("click", (event) => {
+  const retryButton = event.target.closest(".chat-retry");
+  if (retryButton && lastUserQuestion && !isSending) sendMessage(lastUserQuestion);
 });
 sidebarBackdrop?.addEventListener("click", () => setSidebarOpen(false));
 sidebarLinks.forEach((link) => link.addEventListener("click", () => setSidebarOpen(false)));
