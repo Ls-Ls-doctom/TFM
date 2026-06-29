@@ -42,7 +42,7 @@
           <span class="material-symbols-outlined">library_books</span>
           Catálogo
         </a>
-        <a class="screen-tab" href="#metodologia">
+        <a class="screen-tab" href="about.html">
           <span class="material-symbols-outlined">info</span>
           Acerca del proyecto
         </a>
@@ -211,9 +211,13 @@
               <p>Exploración de accidentes y registros de movilidad para los municipios que publican información reutilizable.</p>
             </div>
           </div>
+          <div class="coverage-alert" id="mobilityCoverageNote" role="note">
+            <span class="material-symbols-outlined">info</span>
+            <p>Comprobando la cobertura conjunta de accidentes y movilidad…</p>
+          </div>
           <div class="analytics-layout analytics-layout--two-even">
             <article class="dashboard-panel chart-panel">
-              <div class="panel-heading"><h3>Accidentes de tráfico por mes y ciudad</h3><span>heatmap</span></div>
+              <div class="panel-heading"><h3>Accidentes por mes según la cobertura disponible</h3><span>heatmap</span></div>
               <div id="accidentHeatmap" class="data-viz"></div>
             </article>
             <article class="dashboard-panel chart-panel">
@@ -265,32 +269,6 @@
           </div>
         </section>
 
-        <section class="dashboard-section project-about" id="metodologia" aria-labelledby="aboutTitle">
-          <div class="section-heading">
-            <div>
-              <p class="section-kicker">Contexto académico</p>
-              <h2 id="aboutTitle">Acerca del proyecto</h2>
-            </div>
-          </div>
-          <div class="about-grid">
-            <article>
-              <span class="material-symbols-outlined">school</span>
-              <h3>Trabajo Fin de Máster</h3>
-              <p>ISEU+ es una plataforma académica creada para facilitar el acceso ciudadano a datos socioeconómicos urbanos que se publican de forma dispersa.</p>
-            </article>
-            <article>
-              <span class="material-symbols-outlined">hub</span>
-              <h3>Qué significa el «+»</h3>
-              <p>Representa la integración de múltiples fuentes, territorios y formas de consulta en una única experiencia. La plataforma no calcula un índice sintético.</p>
-            </article>
-            <article>
-              <span class="material-symbols-outlined">database</span>
-              <h3>Cómo se obtienen los datos</h3>
-              <p>Los datos proceden de INE, SEPE y portales municipales; se extraen, limpian y normalizan mediante un pipeline en la nube antes de consultarse en esta web.</p>
-            </article>
-          </div>
-          <p class="academic-note">Los resultados deben interpretarse atendiendo a la fuente, el periodo y la cobertura indicada en cada visualización. La tecnología es el medio para hacer los datos comprensibles, no el resultado final del proyecto.</p>
-        </section>
       </section>
     </main>
   </div>

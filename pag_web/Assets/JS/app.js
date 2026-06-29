@@ -52,6 +52,7 @@ const incomeGiniScatter = document.querySelector("#incomeGiniScatter");
 const inequalityTrend = document.querySelector("#inequalityTrend");
 const accidentHeatmap = document.querySelector("#accidentHeatmap");
 const accidentMobilityScatter = document.querySelector("#accidentMobilityScatter");
+const mobilityCoverageNote = document.querySelector("#mobilityCoverageNote");
 const menuButtons = document.querySelectorAll(".menu-button");
 const sidebarBackdrop = document.querySelector(".sidebar-backdrop");
 const sidebarLinks = document.querySelectorAll(".sidebar a");
@@ -1172,6 +1173,7 @@ function renderAnalyticalVisuals() {
   renderIncomeMap(incomeMap, incomeRows);
   renderIncomeGiniScatter(incomeGiniScatter, incomeRows);
   renderInequalityTrend(inequalityTrend, incomeRows);
+  renderMobilityCoverage(dashboardPayload?.analytics || {});
   renderAccidentHeatmap(accidentHeatmap, dashboardPayload?.analytics?.accidentHeatmap || []);
   renderAccidentMobilityScatter(accidentMobilityScatter, mobilityRows);
 
@@ -1365,7 +1367,8 @@ function renderInequalityTrend(container, rows) {
 function renderScatterPlot(container, rows, options) {
   if (!container) return;
   const clean = rows.filter((row) => Number.isFinite(Number(row[options.xKey])) && Number.isFinite(Number(row[options.yKey])));
-  if (!clean.length) {
+  const minimumPoints = Number(options.minimumPoints) || 1;
+  if (clean.length < minimumPoints) {
     container.innerHTML = `<div class="viz-empty">${escapeHtml(options.empty)}</div>`;
     return;
   }
@@ -1414,6 +1417,21 @@ function renderAccidentHeatmap(container, allRows) {
   container.innerHTML = `${html}</div></div><p class="chart-caption">${analyticsFilters.year === "all" ? "Suma por mes de todos los años disponibles." : `Accidentes registrados durante ${analyticsFilters.year}.`} Solo se muestran ciudades con cobertura mensual.</p>`;
 }
 
+function renderMobilityCoverage(analytics) {
+  if (!mobilityCoverageNote) return;
+  const series = analytics.series || [];
+  const accidentCities = [...new Set((analytics.accidentHeatmap || []).map((row) => row.city).filter(Boolean))].sort();
+  const mobilityCities = [...new Set(series.filter((row) => row.variable === "mobility_resources_records").map((row) => row.city).filter(Boolean))].sort();
+  const overlap = accidentCities.filter((city) => mobilityCities.includes(city));
+  const list = (values) => values.length ? values.join(", ") : "ninguna ciudad";
+  const enough = overlap.length >= 2;
+  mobilityCoverageNote.innerHTML = `
+    <span class="material-symbols-outlined">${enough ? "check_circle" : "warning"}</span>
+    <p><strong>Cobertura actual:</strong> accidentes mensuales en ${escapeHtml(list(accidentCities))}; registros de movilidad en ${escapeHtml(list(mobilityCities))}. ${enough
+      ? `Hay ${overlap.length} ciudades comparables.`
+      : `Solo coincide ${escapeHtml(list(overlap))}. Se necesitan al menos dos ciudades —preferiblemente las siete— con el mismo periodo y unidades homogéneas para analizar la relación.`}</p>`;
+}
+
 function renderAccidentMobilityScatter(container, rows) {
   if (!container) return;
   const latestAccidents = latestRowsByCity(rows, ["traffic_accidents"]);
@@ -1426,7 +1444,8 @@ function renderAccidentMobilityScatter(container, rows) {
   renderScatterPlot(container, pairs, {
     xKey: "mobility", yKey: "accidents", labelKey: "city",
     xLabel: "Registros de movilidad", yLabel: "Accidentes",
-    empty: "No hay ciudades con datos simultáneos de accidentes y movilidad. La cobertura actual no permite esta comparación."
+    minimumPoints: 2,
+    empty: "Solo existe una ciudad con datos simultáneos de accidentes y movilidad. Un único punto no permite calcular ni interpretar una relación; el gráfico se habilitará cuando haya más ciudades comparables."
   });
   if (pairs.length) container.insertAdjacentHTML("beforeend", `<p class="chart-caption">Exploración descriptiva: los registros de movilidad son una aproximación a la exposición y no equivalen al número de desplazamientos.</p>`);
 }

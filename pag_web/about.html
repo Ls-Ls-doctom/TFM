@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Conoce el proyecto académico ISEU+, sus autores y su supervisor.">
+  <title>Acerca del proyecto | ISEU+</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Manrope:wght@600;700;800&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,300..700,0..1,0&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="Assets/CSS/styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" id="appSidebar" aria-label="Navegación principal">
+      <div class="brand-row">
+        <div class="brand-mark brand-mark--text" aria-hidden="true">I+</div>
+        <div>
+          <p class="brand-name">ISEU+</p>
+          <p class="brand-subtitle">Datos urbanos abiertos</p>
+        </div>
+      </div>
+
+      <nav class="primary-nav" aria-label="Pantallas principales">
+        <a class="screen-tab" href="dashboard.html">
+          <span class="material-symbols-outlined">space_dashboard</span>
+          Dashboard
+        </a>
+        <a class="screen-tab" href="chatbot.html">
+          <span class="material-symbols-outlined">forum</span>
+          Consultar los datos
+        </a>
+        <a class="screen-tab is-active" href="about.html" aria-current="page">
+          <span class="material-symbols-outlined">info</span>
+          Acerca del proyecto
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <p>Trabajo Fin de Máster orientado a facilitar el acceso ciudadano a datos socioeconómicos urbanos.</p>
+      </div>
+    </aside>
+    <button class="sidebar-backdrop" type="button" aria-label="Cerrar menú" tabindex="-1"></button>
+
+    <main class="main-layout">
+      <header class="topbar">
+        <button class="icon-button menu-button" type="button" aria-label="Abrir menú" aria-controls="appSidebar" aria-expanded="false">
+          <span class="material-symbols-outlined">menu</span>
+        </button>
+        <strong class="topbar-title">Acerca del proyecto</strong>
+        <span class="topbar-spacer" aria-hidden="true"></span>
+        <div class="topbar-actions">
+          <a class="icon-button" href="dashboard.html" aria-label="Ir al dashboard">
+            <span class="material-symbols-outlined">space_dashboard</span>
+          </a>
+        </div>
+      </header>
+
+      <section class="dashboard-screen screen is-active about-screen" aria-labelledby="aboutTitle">
+        <section class="dashboard-header project-hero about-hero">
+          <div>
+            <p class="eyebrow">Trabajo Fin de Máster</p>
+            <h1 id="aboutTitle">Acerca de ISEU+</h1>
+            <p class="welcome-copy">Una plataforma académica de agregación, visualización y consulta conversacional de datos socioeconómicos urbanos abiertos.</p>
+            <div class="hero-badges">
+              <span>Datos abiertos</span>
+              <span>Ingeniería de datos</span>
+              <span>Consulta con LLM</span>
+            </div>
+          </div>
+        </section>
+
+        <section class="dashboard-section about-page-section" aria-labelledby="teamTitle">
+          <div class="section-heading">
+            <div>
+              <p class="section-kicker">Equipo</p>
+              <h2 id="teamTitle">Creadores y supervisión académica</h2>
+              <p>El proyecto ha sido desarrollado conjuntamente por dos estudiantes bajo supervisión docente.</p>
+            </div>
+          </div>
+          <div class="team-grid">
+            <article class="person-card">
+              <div class="person-avatar" aria-hidden="true">LM</div>
+              <p class="person-role">Estudiante · Coautor</p>
+              <h3>Lucas Morales Bahamondes</h3>
+              <p>Desarrollo conjunto del TFM y de la plataforma de datos urbanos ISEU+.</p>
+            </article>
+            <article class="person-card">
+              <div class="person-avatar" aria-hidden="true">IF</div>
+              <p class="person-role">Estudiante · Coautor</p>
+              <h3>Ismael Ángel Fernández Paredes</h3>
+              <p>Desarrollo conjunto del TFM y de la plataforma de datos urbanos ISEU+.</p>
+            </article>
+            <article class="person-card person-card--supervisor">
+              <div class="person-avatar" aria-hidden="true">VA</div>
+              <p class="person-role">Profesor · Supervisor</p>
+              <h3>Víctor Aguado</h3>
+              <p>Supervisión académica y orientación metodológica del Trabajo Fin de Máster.</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="dashboard-section about-page-section" aria-labelledby="projectTitle">
+          <div class="section-heading">
+            <div>
+              <p class="section-kicker">Propósito y alcance</p>
+              <h2 id="projectTitle">Qué construye el proyecto</h2>
+            </div>
+          </div>
+          <div class="about-grid">
+            <article>
+              <span class="material-symbols-outlined">public</span>
+              <h3>Acceso unificado</h3>
+              <p>Reúne indicadores que originalmente se publican por separado en INE, SEPE y portales municipales de datos abiertos.</p>
+            </article>
+            <article>
+              <span class="material-symbols-outlined">account_tree</span>
+              <h3>Pipeline de datos</h3>
+              <p>Extrae, limpia, normaliza y publica los datos mediante una arquitectura en la nube con trazabilidad por fuente y periodo.</p>
+            </article>
+            <article>
+              <span class="material-symbols-outlined">query_stats</span>
+              <h3>Dos formas de consulta</h3>
+              <p>Permite explorar visualizaciones comparativas o formular preguntas en lenguaje natural sobre los indicadores disponibles.</p>
+            </article>
+          </div>
+          <div class="project-definition" role="note">
+            <h3>Por qué se llama ISEU+</h3>
+            <p>El «+» representa la integración de fuentes, territorios y formas de consulta. En su estado actual, ISEU+ es una plataforma de datos urbanos y no calcula un índice sintético de salud económica.</p>
+          </div>
+        </section>
+
+        <section class="dashboard-section about-page-section" aria-labelledby="limitsTitle">
+          <div class="section-heading">
+            <div>
+              <p class="section-kicker">Transparencia</p>
+              <h2 id="limitsTitle">Cómo interpretar los resultados</h2>
+            </div>
+          </div>
+          <p class="academic-note">La cobertura no es idéntica para todas las ciudades. Cada resultado debe interpretarse atendiendo al indicador, la fuente, el territorio y el periodo mostrados. La plataforma no completa ni estima los valores que los organismos públicos no ofrecen.</p>
+        </section>
+      </section>
+    </main>
+  </div>
+
+  <script src="Assets/JS/app.js"></script>
+</body>
+</html>
