@@ -22,29 +22,25 @@
       </div>
 
       <nav class="primary-nav section-nav" aria-label="Secciones del dashboard">
-        <a class="screen-tab is-active" href="#resumen">
-          <span class="material-symbols-outlined">space_dashboard</span>
-          Resumen
-        </a>
-        <a class="screen-tab" href="#empleo">
+        <a class="screen-tab is-active" href="#" data-tab="empleo">
           <span class="material-symbols-outlined">work</span>
           Mercado laboral
         </a>
-        <a class="screen-tab" href="#renta">
+        <a class="screen-tab" href="#" data-tab="renta">
           <span class="material-symbols-outlined">monitoring</span>
           Renta y desigualdad
         </a>
-        <a class="screen-tab" href="#precios">
+        <a class="screen-tab" href="#" data-tab="precios">
           <span class="material-symbols-outlined">price_change</span>
           Precios y turismo
         </a>
-        <a class="screen-tab" href="#movilidad">
+        <a class="screen-tab" href="#" data-tab="movilidad">
           <span class="material-symbols-outlined">commute</span>
           Movilidad
         </a>
-        <a class="screen-tab" href="#catalogo">
+        <a class="screen-tab" href="#" data-tab="catalogo">
           <span class="material-symbols-outlined">library_books</span>
-          Catálogo
+          Catálogo de datos
         </a>
         <a class="screen-tab" href="about.html">
           <span class="material-symbols-outlined">info</span>
@@ -146,7 +142,7 @@
           <p class="filter-status" id="filterStatus" aria-live="polite">Mostrando toda la cobertura disponible.</p>
         </section>
 
-        <section class="dashboard-section" id="empleo" aria-labelledby="employmentTitle">
+        <section class="dashboard-section tab-pane is-active" id="empleo" aria-labelledby="employmentTitle">
           <div class="section-heading">
             <div>
               <p class="section-kicker">Comparación entre siete ciudades · Fuente: SEPE</p>
@@ -174,7 +170,7 @@
           </div>
         </section>
 
-        <section class="dashboard-section" id="renta" aria-labelledby="incomeTitle">
+        <section class="dashboard-section tab-pane" id="renta" aria-labelledby="incomeTitle">
           <div class="section-heading">
             <div>
               <p class="section-kicker">Cobertura municipal parcial · Fuente: Open Data municipal</p>
@@ -194,7 +190,7 @@
           </div>
         </section>
 
-        <section class="dashboard-section" id="precios" aria-labelledby="pricesTitle">
+        <section class="dashboard-section tab-pane" id="precios" aria-labelledby="pricesTitle">
           <div class="section-heading">
             <div>
               <p class="section-kicker">Proxy provincial · Fuente: INE IPC e Indicadores Urbanos</p>
@@ -218,7 +214,7 @@
           </div>
         </section>
 
-        <section class="dashboard-section" id="movilidad" aria-labelledby="mobilityTitle">
+        <section class="dashboard-section tab-pane" id="movilidad" aria-labelledby="mobilityTitle">
           <div class="section-heading">
             <div>
               <p class="section-kicker">Cobertura local · Fuente: Open Data municipal</p>
@@ -238,7 +234,7 @@
           </div>
         </section>
 
-        <section class="dashboard-section" id="catalogo" aria-labelledby="catalogTitle">
+        <section class="dashboard-section tab-pane" id="catalogo" aria-labelledby="catalogTitle">
           <div class="section-heading section-heading--actions">
             <div>
               <p class="section-kicker">Qué puede consultarse</p>
@@ -252,14 +248,12 @@
           </div>
           <div class="catalog-summary"><span id="indicatorCatalogCount">Cargando indicadores…</span></div>
           <div id="indicatorCatalogGrid" class="indicator-catalog-grid"></div>
-        </section>
 
-        <section class="dashboard-section" id="datos" aria-labelledby="dataInfoTitle">
-          <div class="section-heading">
+          <div class="section-heading" style="margin-top:2rem">
             <div>
               <p class="section-kicker">Transparencia sobre los datos</p>
               <h2 id="dataInfoTitle">Cobertura por ciudad</h2>
-              <p>La cobertura no es igual en todas las ciudades: cada fuente publica indicadores distintos según su normativa y recursos. Esta sección muestra cuántos indicadores distintos están disponibles en cada municipio.</p>
+              <p>La cobertura no es igual en todas las ciudades: cada fuente publica indicadores distintos según su normativa y recursos.</p>
             </div>
           </div>
           <div class="analytics-layout analytics-layout--two-even">

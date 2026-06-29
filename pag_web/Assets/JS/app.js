@@ -2359,16 +2359,26 @@ catalogSearch?.addEventListener("input", () => {
   renderIndicatorCatalog(dashboardPayload?.indicatorCatalog || []);
 });
 
-if ("IntersectionObserver" in window && document.querySelector(".section-nav")) {
-  const navigationLinks = [...document.querySelectorAll('.section-nav a[href^="#"]')];
-  const sections = navigationLinks.map((link) => document.querySelector(link.getAttribute("href"))).filter(Boolean);
-  const sectionObserver = new IntersectionObserver((entries) => {
-    const visible = entries.filter((entry) => entry.isIntersecting).sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
-    if (!visible) return;
-    navigationLinks.forEach((link) => link.classList.toggle("is-active", link.getAttribute("href") === `#${visible.target.id}`));
-  }, { root: dashboardScreen, rootMargin: "-15% 0px -70%", threshold: [0.01, 0.25] });
-  sections.forEach((section) => sectionObserver.observe(section));
+function switchDashboardTab(tabId) {
+  document.querySelectorAll(".tab-pane").forEach((p) => p.classList.remove("is-active"));
+  document.querySelectorAll(".section-nav [data-tab]").forEach((a) => a.classList.remove("is-active"));
+  const panel = document.getElementById(tabId);
+  if (panel) panel.classList.add("is-active");
+  const link = document.querySelector(`.section-nav [data-tab="${tabId}"]`);
+  if (link) link.classList.add("is-active");
+  const filterPanel = document.querySelector(".filter-panel");
+  if (filterPanel) filterPanel.style.display = tabId === "catalogo" ? "none" : "";
+  const main = document.querySelector(".main-layout");
+  if (main) main.scrollTop = 0;
 }
+
+document.querySelectorAll(".section-nav [data-tab]").forEach((link) => {
+  link.addEventListener("click", (e) => {
+    e.preventDefault();
+    switchDashboardTab(link.dataset.tab);
+    setSidebarOpen(false);
+  });
+});
 
 renderLastUpdateTime();
 if (sourceChart || latestRows || cityUpdateGrid || indicatorCatalogGrid || unemploymentTrend) {
