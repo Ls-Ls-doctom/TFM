@@ -2307,13 +2307,6 @@ select:focus,
   grid-template-columns: 1fr;
 }
 
-.tab-pane {
-  display: none;
-}
-
-.tab-pane.is-active {
-  display: block;
-}
 
 .analytics-layout--two-even {
   grid-template-columns: repeat(2, minmax(0, 1fr));

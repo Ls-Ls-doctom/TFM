@@ -2359,26 +2359,24 @@ catalogSearch?.addEventListener("input", () => {
   renderIndicatorCatalog(dashboardPayload?.indicatorCatalog || []);
 });
 
-function switchDashboardTab(tabId) {
-  document.querySelectorAll(".tab-pane").forEach((p) => p.classList.remove("is-active"));
-  document.querySelectorAll(".section-nav [data-tab]").forEach((a) => a.classList.remove("is-active"));
-  const panel = document.getElementById(tabId);
-  if (panel) panel.classList.add("is-active");
-  const link = document.querySelector(`.section-nav [data-tab="${tabId}"]`);
-  if (link) link.classList.add("is-active");
-  const filterPanel = document.querySelector(".filter-panel");
-  if (filterPanel) filterPanel.style.display = tabId === "catalogo" ? "none" : "";
-  const main = document.querySelector(".main-layout");
-  if (main) main.scrollTop = 0;
-}
-
-document.querySelectorAll(".section-nav [data-tab]").forEach((link) => {
-  link.addEventListener("click", (e) => {
-    e.preventDefault();
-    switchDashboardTab(link.dataset.tab);
-    setSidebarOpen(false);
+const sectionNavLinks = document.querySelectorAll(".section-nav a[href^='#']");
+if (sectionNavLinks.length) {
+  const sectionObserver = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        const id = entry.target.id;
+        sectionNavLinks.forEach((a) => a.classList.toggle("is-active", a.getAttribute("href") === `#${id}`));
+      });
+    },
+    { rootMargin: "-40% 0px -50% 0px" }
+  );
+  sectionNavLinks.forEach((link) => {
+    const target = document.querySelector(link.getAttribute("href"));
+    if (target) sectionObserver.observe(target);
+    link.addEventListener("click", () => setSidebarOpen(false));
   });
-});
+}
 
 renderLastUpdateTime();
 if (sourceChart || latestRows || cityUpdateGrid || indicatorCatalogGrid || unemploymentTrend) {
