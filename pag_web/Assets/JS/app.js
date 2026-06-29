@@ -1470,20 +1470,22 @@ function renderMobilityCoverage(analytics) {
 
 function renderAccidentMobilityScatter(container, rows) {
   if (!container) return;
-  const latestAccidents = latestRowsByCity(rows, ["traffic_accidents"]);
-  const latestMobility = latestRowsByCity(rows, ["mobility_resources_records"]);
-  const mobilityByCity = new Map(latestMobility.map((row) => [row.city, row]));
-  const pairs = latestAccidents.map((accident) => {
-    const mobility = mobilityByCity.get(accident.city);
-    return mobility ? { city: accident.city, period: accident.period, accidents: Number(accident.value), mobility: Number(mobility.value) } : null;
-  }).filter(Boolean);
-  renderScatterPlot(container, pairs, {
-    xKey: "mobility", yKey: "accidents", labelKey: "city",
-    xLabel: "Registros de movilidad", yLabel: "Accidentes",
-    minimumPoints: 2,
-    empty: "Solo existe una ciudad con datos simultáneos de accidentes y movilidad. Un único punto no permite calcular ni interpretar una relación; el gráfico se habilitará cuando haya más ciudades comparables."
+  const accRows = rows.filter((row) => row.variable === "traffic_accidents");
+  const byKey = new Map();
+  accRows.forEach((row) => {
+    const year = String(row.period || "").slice(0, 4);
+    if (!year || year === "null") return;
+    const key = `${row.city}|${year}`;
+    const prev = byKey.get(key);
+    byKey.set(key, { ...row, period: `${year}-01-01`, value: (prev ? Number(prev.value) : 0) + Number(row.value) });
   });
-  if (pairs.length) container.insertAdjacentHTML("beforeend", `<p class="chart-caption">Exploración descriptiva: los registros de movilidad son una aproximación a la exposición y no equivalen al número de desplazamientos.</p>`);
+  const trendRows = [...byKey.values()].map((row) => ({ ...row, series: row.city }));
+  renderSeriesLineChart(container, trendRows, {
+    empty: "No hay datos anuales de accidentes para los filtros seleccionados.",
+    unit: "accidentes",
+    zeroBaseline: true,
+    caption: "Total anual de accidentes de tráfico. Solo ciudades con datos de Open Data municipal."
+  });
 }
 
 function getDataset() {
