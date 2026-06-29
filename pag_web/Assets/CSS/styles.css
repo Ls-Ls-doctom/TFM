@@ -2076,6 +2076,10 @@ select:focus,
   grid-template-columns: minmax(0, 1.55fr) minmax(290px, 0.75fr);
 }
 
+.analytics-layout--stack {
+  grid-template-columns: 1fr;
+}
+
 .analytics-layout--two-even {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
