@@ -1634,18 +1634,32 @@ function readEventPayload(eventText) {
 }
 
 async function streamLocalModel(text, topic, onDelta, onMeta, onStatus) {
-  const response = await fetch(`${API_BASE_URL}/api/chat`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      message: text,
-      context: getLocalContext(topic),
-      history: getConversationHistory(),
-      stream: true
-    })
-  });
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 30000);
+
+  let response;
+  try {
+    response = await fetch(`${API_BASE_URL}/api/chat`, {
+      signal: controller.signal,
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        message: text,
+        context: getLocalContext(topic),
+        history: getConversationHistory(),
+        stream: true
+      })
+    });
+  } catch (err) {
+    clearTimeout(timeoutId);
+    if (err.name === "AbortError") {
+      throw new Error("La consulta tardó demasiado. Intenta con una pregunta más concreta, por ejemplo: «¿Cuánto paro registrado tuvo Madrid en 2023?»");
+    }
+    throw err;
+  }
+  clearTimeout(timeoutId);
 
   if (!response.ok) {
     return askLocalModel(text, topic);

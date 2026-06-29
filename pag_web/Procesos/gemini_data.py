@@ -81,8 +81,10 @@ SQL_RESPONSE_SCHEMA = {
     "type": "object",
     "properties": {
         "needs_data": {"type": "boolean"},
+        "ambiguous": {"type": "boolean"},
         "sql": {"type": "string"},
         "reason": {"type": "string"},
+        "suggestions": {"type": "array", "items": {"type": "string"}},
     },
     "required": ["needs_data", "sql", "reason"],
 }
@@ -140,6 +142,16 @@ SIEMPRE needs_data=true si la pregunta:
 
 needs_data=false SOLO para saludos, preguntas sobre la identidad del asistente
 o preguntas completamente ajenas a datos urbanos.
+
+DETECCIÓN DE AMBIGÜEDAD:
+Si la pregunta es demasiado vaga o genérica para generar un SQL útil
+(ej: "explica X", "cuéntame sobre Y", "dame datos de Z", "qué sabes de X")
+pon ambiguous=true y needs_data=false.
+En ese caso, rellena suggestions con 3 preguntas concretas que el usuario
+SÍ puede hacer con las variables y ciudades disponibles en el esquema.
+Ejemplo de suggestions: ["¿Cuánto paro registrado tuvo Barcelona en 2023?",
+"¿Cómo evolucionó la renta media en Madrid entre 2018 y 2022?",
+"¿Qué ciudad tuvo más contratos registrados en 2022?"]
 
 Si necesita datos, genera UNA consulta SELECT de Athena usando la tabla más
 adecuada del esquema anterior.
@@ -386,6 +398,21 @@ def answer_with_gemini_stream(payload: dict[str, Any]):
     yield "status", {"label": "Pensando", "detail": "Analizando la consulta."}
     plan = generate_sql_plan(question, history)
     query_result: dict[str, Any] | None = None
+
+    if plan.get("ambiguous"):
+        suggestions = plan.get("suggestions") or []
+        lines = ["No entiendo bien qué datos quieres ver con esa consulta. Prueba con algo más concreto, por ejemplo:\n"]
+        for s in suggestions[:3]:
+            lines.append(f"• {s}")
+        msg = "\n".join(lines)
+        yield "delta", {"text": msg}
+        yield "meta", {
+            "provider": "google", "model": GEMINI_MODEL,
+            "usesData": False, "rows": 0, "queryRows": [],
+            "reason": plan.get("reason", "Consulta ambigua."),
+        }
+        yield "done", {"finishReason": "ambiguous"}
+        return
 
     if plan.get("needs_data"):
         sql = str(plan.get("sql") or "").strip()
