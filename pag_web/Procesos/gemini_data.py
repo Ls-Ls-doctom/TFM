@@ -162,6 +162,12 @@ Reglas obligatorias:
 - Nombra la tabla como indicators, indicadores u observations (sin base de datos).
 - Usa comillas dobles para la columna "date" en la tabla indicators.
   En indicadores y observations la columna temporal se llama period (sin comillas).
+- No existe ninguna columna llamada year, month, fecha ni año.
+  Para filtrar un año en indicators usa siempre un rango sobre "date", por ejemplo:
+  "date" >= '2025-01-01' AND "date" < '2026-01-01'.
+  Para filtrar un año en indicadores u observations usa:
+  period >= '2025-01-01' AND period < '2026-01-01'.
+- No uses funciones year(), month() ni extract() para filtrar periodos; compara las fechas como texto ISO.
 - Para comparaciones entre ciudades usa indicators; incluye siempre city, variable, value, unit, source.
 - Para detalle de barrio usa indicadores; incluye geo, variable, value, unit, period.
 - Para notas y jerarquía usa observations; incluye city, district, neighborhood, variable, value, period, notes.

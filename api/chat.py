@@ -71,8 +71,17 @@ class handler(BaseHTTPRequestHandler):
                 try:
                     for event_name, event_data in answer_with_gemini_stream(payload):
                         self._send_event(event_name, event_data)
+                except Exception as error:  # noqa: BLE001
+                    self._send_event(
+                        "error",
+                        {
+                            "error": "No se pudo completar la consulta.",
+                            "detail": str(error)[:800],
+                        },
+                    )
                 finally:
                     self.close_connection = True
+                return
             else:
                 answer, trace = answer_with_gemini(payload)
                 self._json({"answer": answer, "provider": "google-gemini", "trace": trace})
