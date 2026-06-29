@@ -489,6 +489,9 @@ def normalize_mobility_columns(df: pd.DataFrame) -> pd.DataFrame:
         )
     if "descripcio_tipus_accident" in df.columns and "tipo_accidente" not in df.columns:
         df = df.rename(columns={"descripcio_tipus_accident": "tipo_accidente"})
+    # Ensure tipo_gravedad exists so monthly observations can be built from any city
+    if "fecha" in df.columns and "tipo_gravedad" not in df.columns:
+        df["tipo_gravedad"] = "Sin clasificar"
     return df
 
 

@@ -1,11 +1,11 @@
 {
-  "loaded_at": "2026-06-29T23:24:43",
+  "loaded_at": "2026-06-29T23:39:41",
   "database": "data_lake\\gold\\iseu_indicadores.sqlite",
   "web_database": "D:\\Proyectos\\TFM\\pag_web\\Procesos\\Datasets\\iseu_datos.sqlite",
   "source_file": "data_lake\\gold\\indicators.csv",
   "rows_loaded": 10466,
-  "indicadores_rows_loaded": 126124,
-  "semantic_observations_rows_loaded": 137954,
+  "indicadores_rows_loaded": 136807,
+  "semantic_observations_rows_loaded": 148637,
   "catalog_rows": 90,
   "silver_detail_tables": [
     {
