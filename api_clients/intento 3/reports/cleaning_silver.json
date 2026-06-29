@@ -1,15 +1,19 @@
 {
-  "generated_at": "2026-06-24T14:47:22",
+  "generated_at": "2026-06-29T23:15:17",
   "silver_dir": "data_lake\\silver",
-  "tables_total": 7,
+  "tables_total": 11,
   "rows_by_table": {
     "ine/poblacion_municipal.csv": 35,
     "ine/poblacion_pais_nacimiento_total.csv": 0,
+    "ine/indicadores_urbanos.csv": 3907,
+    "ine/ipc_provincial_anual.csv": 1645,
+    "ine/ipva_municipal.csv": 162,
+    "ine/dirce_locales_provinciales.csv": 378,
     "sepe/paro_registrado.csv": 1281,
     "sepe/contratos_registrados.csv": 1242,
     "sepe/demandantes_empleo.csv": 1372,
     "mitma/relaciones_distrito_mitma.csv": 10494,
-    "municipios/municipal_prioritario.csv": 167725
+    "municipios/municipal_prioritario.csv": 387079
   },
   "resources": [
     {
@@ -23,6 +27,66 @@
       "status": "OK",
       "rows": 0,
       "note": "INE poblacion por pais nacimiento filtrada"
+    },
+    {
+      "file": "data_lake\\bronze\\apis\\ine\\indicadores_urbanos_demografia\\indicadores_urbanos_demografia_csv_semicolon.csv",
+      "status": "OK",
+      "rows": 1246,
+      "note": "INE indicadores_urbanos_demografia filtrado a ciudades objetivo"
+    },
+    {
+      "file": "data_lake\\bronze\\apis\\ine\\indicadores_urbanos_social\\indicadores_urbanos_social_csv_semicolon.csv",
+      "status": "OK",
+      "rows": 1267,
+      "note": "INE indicadores_urbanos_social filtrado a ciudades objetivo"
+    },
+    {
+      "file": "data_lake\\bronze\\apis\\ine\\indicadores_urbanos_economia\\indicadores_urbanos_economia_csv_semicolon.csv",
+      "status": "OK",
+      "rows": 722,
+      "note": "INE indicadores_urbanos_economia filtrado a ciudades objetivo"
+    },
+    {
+      "file": "data_lake\\bronze\\apis\\ine\\indicadores_urbanos_educacion\\indicadores_urbanos_educacion_csv_semicolon.csv",
+      "status": "OK",
+      "rows": 259,
+      "note": "INE indicadores_urbanos_educacion filtrado a ciudades objetivo"
+    },
+    {
+      "file": "data_lake\\bronze\\apis\\ine\\indicadores_urbanos_suelo\\indicadores_urbanos_suelo_csv_semicolon.csv",
+      "status": "OK",
+      "rows": 147,
+      "note": "INE indicadores_urbanos_suelo filtrado a ciudades objetivo"
+    },
+    {
+      "file": "data_lake\\bronze\\apis\\ine\\indicadores_urbanos_movilidad\\indicadores_urbanos_movilidad_csv_semicolon.csv",
+      "status": "OK",
+      "rows": 56,
+      "note": "INE indicadores_urbanos_movilidad filtrado a ciudades objetivo"
+    },
+    {
+      "file": "data_lake\\bronze\\apis\\ine\\indicadores_urbanos_turismo\\indicadores_urbanos_turismo_csv_semicolon.csv",
+      "status": "OK",
+      "rows": 210,
+      "note": "INE indicadores_urbanos_turismo filtrado a ciudades objetivo"
+    },
+    {
+      "file": "data_lake\\bronze\\apis\\ine\\ipc_provincial_anual\\ipc_provincial_anual_csv_semicolon.csv",
+      "status": "OK",
+      "rows": 1645,
+      "note": "IPC anual provincial filtrado y etiquetado como proxy"
+    },
+    {
+      "file": "data_lake\\bronze\\apis\\ine\\ipva_municipal\\ipva_municipal_csv_semicolon.csv",
+      "status": "OK",
+      "rows": 162,
+      "note": "IPVA municipal filtrado a ciudades objetivo"
+    },
+    {
+      "file": "data_lake\\bronze\\apis\\ine\\dirce_locales_provinciales\\dirce_locales_provinciales_csv_semicolon.csv",
+      "status": "OK",
+      "rows": 378,
+      "note": "DIRCE provincial filtrado y etiquetado como proxy"
     },
     {
       "file": "data_lake\\bronze\\apis\\sepe\\paro_registrado\\resources\\2010_2010.csv",
@@ -329,6 +393,30 @@
       "status": "OK",
       "rows": 10494,
       "note": "MITMA relacion distrito normalizada"
+    },
+    {
+      "file": "data_lake\\bronze\\municipios\\barcelona\\accidents_trafic_barcelona_2022.csv",
+      "status": "OK",
+      "rows": 8098,
+      "note": "Municipal prioritario Barcelona"
+    },
+    {
+      "file": "data_lake\\bronze\\municipios\\barcelona\\accidents_trafic_barcelona_2023.csv",
+      "status": "OK",
+      "rows": 7823,
+      "note": "Municipal prioritario Barcelona"
+    },
+    {
+      "file": "data_lake\\bronze\\municipios\\barcelona\\accidents_trafic_barcelona_2024.csv",
+      "status": "OK",
+      "rows": 7537,
+      "note": "Municipal prioritario Barcelona"
+    },
+    {
+      "file": "data_lake\\bronze\\municipios\\barcelona\\accidents_trafic_barcelona_2025.csv",
+      "status": "OK",
+      "rows": 7741,
+      "note": "Municipal prioritario Barcelona"
     },
     {
       "file": "data_lake\\bronze\\municipios\\barcelona\\resources\\atles-renda-bruta-per-llar\\2015_atles_renda_bruta_llar.csv",
@@ -815,6 +903,30 @@
       "status": "OK",
       "rows": 1068,
       "note": "Municipal prioritario Barcelona"
+    },
+    {
+      "file": "data_lake\\bronze\\municipios\\madrid\\accidentes_trafico_madrid_2022.csv",
+      "status": "OK",
+      "rows": 45065,
+      "note": "Municipal prioritario Madrid"
+    },
+    {
+      "file": "data_lake\\bronze\\municipios\\madrid\\accidentes_trafico_madrid_2023.csv",
+      "status": "OK",
+      "rows": 46801,
+      "note": "Municipal prioritario Madrid"
+    },
+    {
+      "file": "data_lake\\bronze\\municipios\\madrid\\accidentes_trafico_madrid_2024.csv",
+      "status": "OK",
+      "rows": 47287,
+      "note": "Municipal prioritario Madrid"
+    },
+    {
+      "file": "data_lake\\bronze\\municipios\\madrid\\accidentes_trafico_madrid_2025.csv",
+      "status": "OK",
+      "rows": 49002,
+      "note": "Municipal prioritario Madrid"
     },
     {
       "file": "data_lake\\bronze\\municipios\\madrid\\resources\\300494-0-estudio-covid-poblacion\\300494-0-estudio-covid-poblacion-csv.csv",

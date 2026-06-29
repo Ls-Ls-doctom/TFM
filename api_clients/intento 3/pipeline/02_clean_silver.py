@@ -40,6 +40,7 @@ PRIORITY_MUNICIPAL_KEYWORDS = [
     "bizi",
     "bicic",
     "sostenibilidad",
+    "acciden",
 ]
 
 
@@ -441,7 +442,10 @@ def clean_municipal_priority(report: list[dict[str, Any]]) -> dict[str, pd.DataF
             continue
         df["city"] = city
         df["source_file"] = relative(path)
-        df["dataset_family"] = classify_municipal(path)
+        family = classify_municipal(path)
+        df["dataset_family"] = family
+        if family == "mobility":
+            df = normalize_mobility_columns(df)
         rows.append(df)
         report.append(item(path, "OK", len(df), f"Municipal prioritario {city}"))
     if rows:
@@ -455,11 +459,37 @@ def classify_municipal(path: Path) -> str:
         return "income"
     if any(token in text for token in ("poblacion", "demografic", "demograf")):
         return "demography"
-    if any(token in text for token in ("trafic", "transit", "bizi", "bicic")):
+    if any(token in text for token in ("trafic", "transit", "bizi", "bicic", "acciden")):
         return "mobility"
     if "sostenibilidad" in text:
         return "environment"
     return "other"
+
+
+def normalize_mobility_columns(df: pd.DataFrame) -> pd.DataFrame:
+    """Normalize accident column names across city formats so the pipeline sees a
+    consistent schema: fecha, tipo_gravedad, tipo_accidente."""
+    df = df.copy()
+    # Madrid format: semicolons, fecha=DD/MM/YYYY, severity=lesividad
+    if "lesividad" in df.columns and "tipo_gravedad" not in df.columns:
+        df = df.rename(columns={"lesividad": "tipo_gravedad"})
+    if "fecha" in df.columns:
+        parsed = pd.to_datetime(df["fecha"], dayfirst=True, errors="coerce")
+        valid = parsed.notna()
+        if valid.any():
+            df.loc[valid, "fecha"] = parsed[valid].dt.strftime("%Y-%m-%d")
+    # Barcelona format: year=nk_any, month=mes_any, day=dia_mes; severity absent
+    if "nk_any" in df.columns and "fecha" not in df.columns:
+        df["fecha"] = (
+            df["nk_any"].astype(str).str.zfill(4)
+            + "-"
+            + df["mes_any"].astype(str).str.zfill(2)
+            + "-"
+            + df["dia_mes"].astype(str).str.zfill(2)
+        )
+    if "descripcio_tipus_accident" in df.columns and "tipo_accidente" not in df.columns:
+        df = df.rename(columns={"descripcio_tipus_accident": "tipo_accidente"})
+    return df
 
 
 def item(path: Path, status: str, rows: int, note: str) -> dict[str, Any]:

@@ -1,13 +1,37 @@
 {
-  "loaded_at": "2026-06-28T22:07:56",
+  "loaded_at": "2026-06-29T23:24:43",
   "database": "data_lake\\gold\\iseu_indicadores.sqlite",
   "web_database": "D:\\Proyectos\\TFM\\pag_web\\Procesos\\Datasets\\iseu_datos.sqlite",
   "source_file": "data_lake\\gold\\indicators.csv",
-  "rows_loaded": 4358,
-  "indicadores_rows_loaded": 93944,
-  "semantic_observations_rows_loaded": 105774,
-  "catalog_rows": 12,
+  "rows_loaded": 10466,
+  "indicadores_rows_loaded": 126124,
+  "semantic_observations_rows_loaded": 137954,
+  "catalog_rows": 90,
   "silver_detail_tables": [
+    {
+      "table_name": "silver_ine_dirce_locales_provinciales",
+      "source_file": "data_lake\\silver\\ine\\dirce_locales_provinciales.csv",
+      "rows_loaded": 378,
+      "columns_loaded": 11
+    },
+    {
+      "table_name": "silver_ine_indicadores_urbanos",
+      "source_file": "data_lake\\silver\\ine\\indicadores_urbanos.csv",
+      "rows_loaded": 3907,
+      "columns_loaded": 12
+    },
+    {
+      "table_name": "silver_ine_ipc_provincial_anual",
+      "source_file": "data_lake\\silver\\ine\\ipc_provincial_anual.csv",
+      "rows_loaded": 1645,
+      "columns_loaded": 11
+    },
+    {
+      "table_name": "silver_ine_ipva_municipal",
+      "source_file": "data_lake\\silver\\ine\\ipva_municipal.csv",
+      "rows_loaded": 162,
+      "columns_loaded": 11
+    },
     {
       "table_name": "silver_ine_poblacion_municipal",
       "source_file": "data_lake\\silver\\ine\\poblacion_municipal.csv",
@@ -29,8 +53,8 @@
     {
       "table_name": "silver_municipios_municipal_prioritario",
       "source_file": "data_lake\\silver\\municipios\\municipal_prioritario.csv",
-      "rows_loaded": 167725,
-      "columns_loaded": 244
+      "rows_loaded": 387079,
+      "columns_loaded": 276
     },
     {
       "table_name": "silver_sepe_contratos_registrados",
@@ -51,35 +75,35 @@
       "columns_loaded": 8
     }
   ],
-  "silver_detail_rows_loaded": 182149,
+  "silver_detail_rows_loaded": 407595,
   "rows_by_city": [
     {
       "city": "Barcelona",
-      "rows": 957
+      "rows": 1857
     },
     {
       "city": "Valencia",
-      "rows": 591
-    },
-    {
-      "city": "Zaragoza",
-      "rows": 564
-    },
-    {
-      "city": "Malaga",
-      "rows": 562
-    },
-    {
-      "city": "Sevilla",
-      "rows": 562
-    },
-    {
-      "city": "Bilbao",
-      "rows": 561
+      "rows": 1483
     },
     {
       "city": "Madrid",
-      "rows": 561
+      "rows": 1461
+    },
+    {
+      "city": "Zaragoza",
+      "rows": 1456
+    },
+    {
+      "city": "Malaga",
+      "rows": 1454
+    },
+    {
+      "city": "Sevilla",
+      "rows": 1454
+    },
+    {
+      "city": "Bilbao",
+      "rows": 1301
     }
   ],
   "rows_by_variable": [
@@ -96,11 +120,127 @@
       "rows": 1242
     },
     {
+      "variable": "business_local_units",
+      "rows": 189
+    },
+    {
+      "variable": "business_local_units_no_employees",
+      "rows": 189
+    },
+    {
+      "variable": "cpi_food_index",
+      "rows": 168
+    },
+    {
+      "variable": "cpi_general_index",
+      "rows": 168
+    },
+    {
+      "variable": "cpi_hospitality_index",
+      "rows": 168
+    },
+    {
+      "variable": "cpi_housing_energy_index",
+      "rows": 168
+    },
+    {
+      "variable": "cpi_transport_index",
+      "rows": 168
+    },
+    {
+      "variable": "cpi_food_change_pct",
+      "rows": 161
+    },
+    {
+      "variable": "cpi_general_change_pct",
+      "rows": 161
+    },
+    {
+      "variable": "cpi_hospitality_change_pct",
+      "rows": 161
+    },
+    {
+      "variable": "cpi_housing_energy_change_pct",
+      "rows": 161
+    },
+    {
+      "variable": "cpi_transport_change_pct",
+      "rows": 161
+    },
+    {
+      "variable": "activity_rate",
+      "rows": 105
+    },
+    {
+      "variable": "employment_rate_20_64",
+      "rows": 105
+    },
+    {
+      "variable": "foreign_born_pct",
+      "rows": 105
+    },
+    {
+      "variable": "foreign_population_pct",
+      "rows": 105
+    },
+    {
+      "variable": "household_size",
+      "rows": 105
+    },
+    {
+      "variable": "households_total",
+      "rows": 105
+    },
+    {
       "variable": "income",
       "rows": 105
     },
     {
       "variable": "income_median",
+      "rows": 105
+    },
+    {
+      "variable": "median_age",
+      "rows": 105
+    },
+    {
+      "variable": "national_population_pct",
+      "rows": 105
+    },
+    {
+      "variable": "native_born_pct",
+      "rows": 105
+    },
+    {
+      "variable": "population_0_14_pct",
+      "rows": 105
+    },
+    {
+      "variable": "population_15_64_pct",
+      "rows": 105
+    },
+    {
+      "variable": "population_65_plus_pct",
+      "rows": 105
+    },
+    {
+      "variable": "population_resident",
+      "rows": 105
+    },
+    {
+      "variable": "single_person_households_pct",
+      "rows": 105
+    },
+    {
+      "variable": "tourism_beds",
+      "rows": 105
+    },
+    {
+      "variable": "tourism_overnight_stays",
+      "rows": 105
+    },
+    {
+      "variable": "unemployment_rate",
       "rows": 105
     },
     {
@@ -112,8 +252,212 @@
       "rows": 99
     },
     {
+      "variable": "birth_rate",
+      "rows": 98
+    },
+    {
+      "variable": "industry_employment_share",
+      "rows": 98
+    },
+    {
+      "variable": "services_employment_share",
+      "rows": 98
+    },
+    {
+      "variable": "childcare_coverage_pct",
+      "rows": 91
+    },
+    {
+      "variable": "mortality_rate",
+      "rows": 91
+    },
+    {
+      "variable": "dwellings_cadastre",
+      "rows": 90
+    },
+    {
+      "variable": "net_income_household",
+      "rows": 88
+    },
+    {
+      "variable": "area_total_km2",
+      "rows": 84
+    },
+    {
+      "variable": "rent_price_index",
+      "rows": 84
+    },
+    {
+      "variable": "rent_mean_eur_m2_year",
+      "rows": 78
+    },
+    {
+      "variable": "rent_mean_monthly",
+      "rows": 78
+    },
+    {
+      "variable": "rent_median_eur_m2_year",
+      "rows": 78
+    },
+    {
+      "variable": "rent_median_monthly",
+      "rows": 78
+    },
+    {
+      "variable": "rent_price_change_pct",
+      "rows": 78
+    },
+    {
+      "variable": "rent_q1_eur_m2_year",
+      "rows": 78
+    },
+    {
+      "variable": "rent_q1_monthly",
+      "rows": 78
+    },
+    {
+      "variable": "rent_q3_eur_m2_year",
+      "rows": 78
+    },
+    {
+      "variable": "rent_q3_monthly",
+      "rows": 78
+    },
+    {
+      "variable": "net_income_per_capita",
+      "rows": 63
+    },
+    {
+      "variable": "net_income_consumption_unit",
+      "rows": 60
+    },
+    {
+      "variable": "crime_rate",
+      "rows": 56
+    },
+    {
+      "variable": "education_high_pct",
+      "rows": 56
+    },
+    {
+      "variable": "education_low_pct",
+      "rows": 56
+    },
+    {
+      "variable": "education_mid_pct",
+      "rows": 56
+    },
+    {
+      "variable": "fertility_rate",
+      "rows": 56
+    },
+    {
+      "variable": "life_expectancy",
+      "rows": 56
+    },
+    {
+      "variable": "robbery_theft_rate",
+      "rows": 56
+    },
+    {
+      "variable": "sexual_offences_rate",
+      "rows": 56
+    },
+    {
       "variable": "population_total",
       "rows": 35
+    },
+    {
+      "variable": "commute_car_pct",
+      "rows": 14
+    },
+    {
+      "variable": "commute_duration_minutes",
+      "rows": 14
+    },
+    {
+      "variable": "commute_public_transport_pct",
+      "rows": 14
+    },
+    {
+      "variable": "commute_walk_pct",
+      "rows": 14
+    },
+    {
+      "variable": "dwellings_census",
+      "rows": 14
+    },
+    {
+      "variable": "vacant_dwellings_pct",
+      "rows": 14
+    },
+    {
+      "variable": "traffic_accidents",
+      "rows": 13
+    },
+    {
+      "variable": "mobility_resources_records",
+      "rows": 11
+    },
+    {
+      "variable": "green_space_to_residential_ratio",
+      "rows": 7
+    },
+    {
+      "variable": "house_price_mean",
+      "rows": 7
+    },
+    {
+      "variable": "house_price_mean_detached",
+      "rows": 7
+    },
+    {
+      "variable": "house_price_mean_flat",
+      "rows": 7
+    },
+    {
+      "variable": "house_price_mean_m2",
+      "rows": 7
+    },
+    {
+      "variable": "house_price_mean_m2_detached",
+      "rows": 7
+    },
+    {
+      "variable": "house_price_mean_m2_flat",
+      "rows": 7
+    },
+    {
+      "variable": "land_agricultural_pct",
+      "rows": 7
+    },
+    {
+      "variable": "land_continuous_urban_pct",
+      "rows": 7
+    },
+    {
+      "variable": "land_discontinuous_urban_pct",
+      "rows": 7
+    },
+    {
+      "variable": "land_industrial_commercial_pct",
+      "rows": 7
+    },
+    {
+      "variable": "land_natural_pct",
+      "rows": 7
+    },
+    {
+      "variable": "land_other_artificial_pct",
+      "rows": 7
+    },
+    {
+      "variable": "land_transport_infrastructure_pct",
+      "rows": 7
+    },
+    {
+      "variable": "land_urban_green_pct",
+      "rows": 7
     },
     {
       "variable": "income_per_household",
@@ -122,14 +466,6 @@
     {
       "variable": "income_per_person",
       "rows": 6
-    },
-    {
-      "variable": "traffic_accidents",
-      "rows": 5
-    },
-    {
-      "variable": "mobility_resources_records",
-      "rows": 3
     }
   ]
 }

@@ -1,16 +1,16 @@
 {
-  "started_at": "2026-06-24T14:46:46",
-  "finished_at": "2026-06-24T14:49:06",
+  "started_at": "2026-06-29T20:26:20",
+  "finished_at": "2026-06-29T20:29:50",
   "status": "OK",
   "steps": [
     {
       "name": "inventory_bronze",
       "script": "pipeline\\01_inventory_bronze.py",
       "args": [],
-      "started_at": "2026-06-24T14:46:46",
-      "finished_at": "2026-06-24T14:46:54",
+      "started_at": "2026-06-29T20:26:20",
+      "finished_at": "2026-06-29T20:26:29",
       "returncode": 0,
-      "stdout": "Inventario Bronze: D:\\Proyectos\\TFM\\api_clients\\intento 3\\reports\\inventory_bronze.csv\nArchivos: 536\nFilas CSV detectadas: 6947862\n",
+      "stdout": "Inventario Bronze: D:\\Proyectos\\TFM\\api_clients\\intento 3\\reports\\inventory_bronze.csv\nArchivos: 556\nFilas CSV detectadas: 7186749\n",
       "stderr": "",
       "status": "OK"
     },
@@ -18,10 +18,10 @@
       "name": "clean_silver",
       "script": "pipeline\\02_clean_silver.py",
       "args": [],
-      "started_at": "2026-06-24T14:46:54",
-      "finished_at": "2026-06-24T14:47:22",
+      "started_at": "2026-06-29T20:26:29",
+      "finished_at": "2026-06-29T20:27:02",
       "returncode": 0,
-      "stdout": "Silver generado en: D:\\Proyectos\\TFM\\api_clients\\intento 3\\data_lake\\silver\nine/poblacion_municipal.csv: 35 filas\nine/poblacion_pais_nacimiento_total.csv: 0 filas\nsepe/paro_registrado.csv: 1281 filas\nsepe/contratos_registrados.csv: 1242 filas\nsepe/demandantes_empleo.csv: 1372 filas\nmitma/relaciones_distrito_mitma.csv: 10494 filas\nmunicipios/municipal_prioritario.csv: 167725 filas\n",
+      "stdout": "Silver generado en: D:\\Proyectos\\TFM\\api_clients\\intento 3\\data_lake\\silver\nine/poblacion_municipal.csv: 35 filas\nine/poblacion_pais_nacimiento_total.csv: 0 filas\nine/indicadores_urbanos.csv: 3907 filas\nine/ipc_provincial_anual.csv: 1645 filas\nine/ipva_municipal.csv: 162 filas\nine/dirce_locales_provinciales.csv: 378 filas\nsepe/paro_registrado.csv: 1281 filas\nsepe/contratos_registrados.csv: 1242 filas\nsepe/demandantes_empleo.csv: 1372 filas\nmitma/relaciones_distrito_mitma.csv: 10494 filas\nmunicipios/municipal_prioritario.csv: 167725 filas\n",
       "stderr": "",
       "status": "OK"
     },
@@ -29,10 +29,10 @@
       "name": "build_gold",
       "script": "pipeline\\03_build_gold.py",
       "args": [],
-      "started_at": "2026-06-24T14:47:22",
-      "finished_at": "2026-06-24T14:47:55",
+      "started_at": "2026-06-29T20:27:02",
+      "finished_at": "2026-06-29T20:28:21",
       "returncode": 0,
-      "stdout": "Gold generado: D:\\Proyectos\\TFM\\api_clients\\intento 3\\data_lake\\gold\\indicators.csv\nIndicadores: 3975\n",
+      "stdout": "Gold generado: D:\\Proyectos\\TFM\\api_clients\\intento 3\\data_lake\\gold\\indicators.csv\nIndicadores: 10450\n",
       "stderr": "",
       "status": "OK"
     },
@@ -40,10 +40,10 @@
       "name": "build_sqlite",
       "script": "pipeline\\04_build_sqlite.py",
       "args": [],
-      "started_at": "2026-06-24T14:47:55",
-      "finished_at": "2026-06-24T14:49:06",
+      "started_at": "2026-06-29T20:28:21",
+      "finished_at": "2026-06-29T20:29:50",
       "returncode": 0,
-      "stdout": "SQLite Gold creado: D:\\Proyectos\\TFM\\api_clients\\intento 3\\data_lake\\gold\\iseu_indicadores.sqlite\nFilas indicators: 3975\nFilas indicadores/chatbot: 93561\nFilas semantic_observations: 105391\nTablas Silver detalle: 7\nFilas Silver detalle: 182149\nSQLite web actualizado: D:\\Proyectos\\TFM\\pag_web\\Procesos\\Datasets\\iseu_datos.sqlite\n",
+      "stdout": "SQLite Gold creado: D:\\Proyectos\\TFM\\api_clients\\intento 3\\data_lake\\gold\\iseu_indicadores.sqlite\nFilas indicators: 10450\nFilas indicadores/chatbot: 100036\nFilas semantic_observations: 111866\nTablas Silver detalle: 11\nFilas Silver detalle: 188241\nSQLite web actualizado: D:\\Proyectos\\TFM\\pag_web\\Procesos\\Datasets\\iseu_datos.sqlite\n",
       "stderr": "",
       "status": "OK"
     }

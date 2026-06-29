@@ -28,6 +28,7 @@ ATHENA_DIR = GOLD_DIR / "athena"
 
 # Logical table name → (s3 subfolder, glue table name)
 EXPORT_TABLES: dict[str, tuple[str, str]] = {
+    "indicators":            ("indicators",   "iseu_indicators"),
     "indicadores":           ("indicadores",  "iseu_indicadores"),
     "semantic_observations": ("semantic_obs", "iseu_semantic_obs"),
 }
