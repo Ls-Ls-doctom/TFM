@@ -1636,11 +1636,19 @@ a.icon-button {
   font-size: 14px;
 }
 
-.catalog-cat-badge--employment { background: #e8f0ea; color: #2d6040; }
-.catalog-cat-badge--economy    { background: #fdf0e4; color: #8b5e2a; }
-.catalog-cat-badge--mobility   { background: #e4edf8; color: #2a4f8b; }
-.catalog-cat-badge--demography { background: #f0e8f5; color: #6b2d8b; }
-.catalog-cat-badge--other      { background: #f0efed; color: #5a5654; }
+.catalog-cat-badge--employment        { background: #e8f0ea; color: #2d6040; }
+.catalog-cat-badge--economy           { background: #fdf0e4; color: #8b5e2a; }
+.catalog-cat-badge--housing           { background: #fef5e0; color: #7a5010; }
+.catalog-cat-badge--mobility          { background: #e4edf8; color: #2a4f8b; }
+.catalog-cat-badge--demography        { background: #f0e8f5; color: #6b2d8b; }
+.catalog-cat-badge--environment       { background: #e6f5ec; color: #1e6640; }
+.catalog-cat-badge--education         { background: #e8e8f8; color: #3a3a90; }
+.catalog-cat-badge--safety            { background: #fce8e8; color: #8b2020; }
+.catalog-cat-badge--living_conditions { background: #f5f0e8; color: #6b5020; }
+.catalog-cat-badge--tourism           { background: #e0f2fa; color: #1a5c80; }
+.catalog-cat-badge--business          { background: #f8f5e0; color: #7a6600; }
+.catalog-cat-badge--cost_of_living    { background: #fde8f5; color: #80206a; }
+.catalog-cat-badge--other             { background: #f0efed; color: #5a5654; }
 
 .catalog-source-pills {
   display: flex;
