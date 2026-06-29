@@ -38,7 +38,7 @@
           <span class="material-symbols-outlined">commute</span>
           Movilidad
         </a>
-        <a class="screen-tab" href="#" data-tab="catalogo">
+        <a class="screen-tab" href="catalogo.html">
           <span class="material-symbols-outlined">library_books</span>
           Catálogo de datos
         </a>
@@ -234,45 +234,6 @@
           </div>
         </section>
 
-        <section class="dashboard-section tab-pane" id="catalogo" aria-labelledby="catalogTitle">
-          <div class="section-heading section-heading--actions">
-            <div>
-              <p class="section-kicker">Qué puede consultarse</p>
-              <h2 id="catalogTitle">Catálogo de indicadores</h2>
-              <p>Fuente, cobertura temporal, volumen y alcance territorial de cada indicador disponible.</p>
-            </div>
-            <label class="catalog-search">
-              <span class="material-symbols-outlined">search</span>
-              <input id="catalogSearch" type="search" placeholder="Buscar indicador…" autocomplete="off">
-            </label>
-          </div>
-          <div class="catalog-summary"><span id="indicatorCatalogCount">Cargando indicadores…</span></div>
-          <div id="indicatorCatalogGrid" class="indicator-catalog-grid"></div>
-
-          <div class="section-heading" style="margin-top:2rem">
-            <div>
-              <p class="section-kicker">Transparencia sobre los datos</p>
-              <h2 id="dataInfoTitle">Cobertura por ciudad</h2>
-              <p>La cobertura no es igual en todas las ciudades: cada fuente publica indicadores distintos según su normativa y recursos.</p>
-            </div>
-          </div>
-          <div class="analytics-layout analytics-layout--two-even">
-            <article class="dashboard-panel">
-              <div class="panel-heading"><h3>Número de indicadores disponibles por ciudad</h3><span>tipos distintos</span></div>
-              <div id="cityCoverageChart" class="source-chart"></div>
-              <p class="chart-explainer">Cantidad de variables únicas con al menos un valor para esa ciudad. Barcelona lidera por su portal Open Data con mayor cobertura histórica.</p>
-            </article>
-            <article class="dashboard-panel methodology-card">
-              <div class="panel-heading"><h3>Criterio de calidad del dato</h3><span>cómo se etiqueta cada registro</span></div>
-              <dl>
-                <div><dt>Alta</dt><dd>Fuente oficial, periodo y territorio identificados con claridad y formato comparable entre ciudades.</dd></div>
-                <div><dt>Media</dt><dd>Fuente oficial con cobertura territorial parcial o que requiere transformación adicional para ser comparable.</dd></div>
-                <div><dt>Baja</dt><dd>Registro incompleto o no homogéneo. Se almacena pero no se usa en los gráficos principales.</dd></div>
-              </dl>
-              <p>La etiqueta mide trazabilidad técnica, no la exactitud estadística del organismo publicador.</p>
-            </article>
-          </div>
-        </section>
 
       </section>
     </main>

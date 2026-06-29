@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Catálogo completo de indicadores disponibles en la plataforma ISEU+: fuentes, cobertura territorial y temporal de cada variable.">
+  <title>Catálogo de indicadores | ISEU+</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Manrope:wght@600;700;800&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,300..700,0..1,0&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="Assets/CSS/styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" id="appSidebar" aria-label="Navegación principal">
+      <div class="brand-row">
+        <div class="brand-mark brand-mark--text" aria-hidden="true">I+</div>
+        <div>
+          <p class="brand-name">ISEU+</p>
+          <p class="brand-subtitle">Datos urbanos abiertos</p>
+        </div>
+      </div>
+
+      <nav class="primary-nav" aria-label="Pantallas principales">
+        <a class="screen-tab" href="dashboard.html">
+          <span class="material-symbols-outlined">space_dashboard</span>
+          Dashboard
+        </a>
+        <a class="screen-tab is-active" href="catalogo.html">
+          <span class="material-symbols-outlined">library_books</span>
+          Catálogo de datos
+        </a>
+        <a class="screen-tab" href="chatbot.html">
+          <span class="material-symbols-outlined">forum</span>
+          Consultar los datos
+        </a>
+        <a class="screen-tab" href="about.html">
+          <span class="material-symbols-outlined">info</span>
+          Acerca del proyecto
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <p>Proyecto académico de TFM. Fuentes principales: INE, SEPE y portales municipales de datos abiertos.</p>
+      </div>
+    </aside>
+    <button class="sidebar-backdrop" type="button" aria-label="Cerrar menú" tabindex="-1"></button>
+
+    <main class="main-layout">
+      <header class="topbar">
+        <button class="icon-button menu-button" type="button" aria-label="Abrir menú" aria-controls="appSidebar" aria-expanded="false">
+          <span class="material-symbols-outlined">menu</span>
+        </button>
+        <strong class="topbar-title">Catálogo de indicadores</strong>
+        <span class="topbar-spacer" aria-hidden="true"></span>
+        <div class="topbar-actions">
+          <a class="icon-button" href="dashboard.html" aria-label="Ir al dashboard">
+            <span class="material-symbols-outlined">space_dashboard</span>
+          </a>
+        </div>
+      </header>
+
+      <div class="catalog-page-shell">
+
+        <div class="catalog-page-hero">
+          <p class="eyebrow">Transparencia sobre los datos</p>
+          <h1>Catálogo de indicadores</h1>
+          <p class="welcome-copy">Fuente, cobertura temporal, alcance territorial y descripción de cada variable disponible en la plataforma. Los indicadores pueden consultarse en el chatbot o explorarse en el dashboard.</p>
+        </div>
+
+        <div class="catalog-controls-bar">
+          <label class="catalog-search catalog-search--large">
+            <span class="material-symbols-outlined">search</span>
+            <input id="catalogSearch" type="search" placeholder="Buscar indicador por nombre, fuente o categoría…" autocomplete="off">
+          </label>
+          <div class="catalog-filter-chips" id="categoryChips" role="group" aria-label="Filtrar por categoría">
+            <button class="filter-chip is-active" data-cat="all">Todos</button>
+            <button class="filter-chip" data-cat="employment">Mercado laboral</button>
+            <button class="filter-chip" data-cat="economy">Economía y renta</button>
+            <button class="filter-chip" data-cat="mobility">Movilidad</button>
+            <button class="filter-chip" data-cat="demography">Demografía</button>
+          </div>
+        </div>
+
+        <p class="catalog-summary" id="catalogCount">Cargando indicadores…</p>
+
+        <div id="catalogGrid" class="catalog-detail-grid" aria-live="polite"></div>
+
+        <section class="catalog-coverage-section" aria-labelledby="coverageTitle">
+          <div class="section-heading">
+            <div>
+              <p class="section-kicker">Distribución por ciudad</p>
+              <h2 id="coverageTitle">Cobertura territorial</h2>
+              <p>Número de variables únicas disponibles por municipio. La cobertura varía según la política de datos abiertos de cada ayuntamiento.</p>
+            </div>
+          </div>
+          <div class="analytics-layout analytics-layout--two-even">
+            <article class="dashboard-panel">
+              <div class="panel-heading"><h3>Indicadores disponibles por ciudad</h3><span>variables únicas</span></div>
+              <div id="cityCoverageChart" class="source-chart"></div>
+            </article>
+            <article class="dashboard-panel methodology-card">
+              <div class="panel-heading"><h3>Criterio de calidad del dato</h3><span>cómo se etiqueta cada registro</span></div>
+              <dl>
+                <div><dt>Alta</dt><dd>Fuente oficial, periodo y territorio identificados con claridad y formato comparable entre ciudades.</dd></div>
+                <div><dt>Media</dt><dd>Fuente oficial con cobertura territorial parcial o que requiere transformación adicional para ser comparable.</dd></div>
+                <div><dt>Baja</dt><dd>Registro incompleto o no homogéneo. Se almacena pero no se usa en los gráficos principales.</dd></div>
+              </dl>
+              <p>La etiqueta mide trazabilidad técnica, no la exactitud estadística del organismo publicador.</p>
+            </article>
+          </div>
+        </section>
+
+      </div>
+    </main>
+  </div>
+
+  <script src="Assets/JS/catalogo.js"></script>
+</body>
+</html>
