@@ -19,6 +19,7 @@ const kpiIndicators = document.querySelector("#kpiIndicators");
 const kpiSources = document.querySelector("#kpiSources");
 const kpiVariables = document.querySelector("#kpiVariables");
 const kpiDetails = document.querySelector("#kpiDetails");
+const kpiCities = document.querySelector("#kpiCities");
 const databaseStatus = document.querySelector("#databaseStatus");
 const selectionDetail = document.querySelector("#selectionDetail");
 const clearSelectionButton = document.querySelector("#clearSelection");
@@ -36,6 +37,24 @@ const cityUpdateGrid = document.querySelector("#cityUpdateGrid");
 const cityUpdateCount = document.querySelector("#cityUpdateCount");
 const indicatorCatalogGrid = document.querySelector("#indicatorCatalogGrid");
 const indicatorCatalogCount = document.querySelector("#indicatorCatalogCount");
+const cityFilter = document.querySelector("#cityFilter");
+const yearFilter = document.querySelector("#yearFilter");
+const resetAnalyticsFilters = document.querySelector("#resetAnalyticsFilters");
+const filterStatus = document.querySelector("#filterStatus");
+const catalogSearch = document.querySelector("#catalogSearch");
+const cityCoverageChart = document.querySelector("#cityCoverageChart");
+const unemploymentTrend = document.querySelector("#unemploymentTrend");
+const unemploymentRanking = document.querySelector("#unemploymentRanking");
+const contractsTrend = document.querySelector("#contractsTrend");
+const employmentComparison = document.querySelector("#employmentComparison");
+const incomeMap = document.querySelector("#incomeMap");
+const incomeGiniScatter = document.querySelector("#incomeGiniScatter");
+const inequalityTrend = document.querySelector("#inequalityTrend");
+const accidentHeatmap = document.querySelector("#accidentHeatmap");
+const accidentMobilityScatter = document.querySelector("#accidentMobilityScatter");
+const menuButtons = document.querySelectorAll(".menu-button");
+const sidebarBackdrop = document.querySelector(".sidebar-backdrop");
+const sidebarLinks = document.querySelectorAll(".sidebar a");
 const LOCAL_API_BASE_URL = "http://127.0.0.1:5500";
 const LOCAL_HOSTNAMES = new Set(["127.0.0.1", "localhost", "::1", "[::1]"]);
 const isLocalPreview = window.location.protocol === "file:"
@@ -55,6 +74,8 @@ let isSending = false;
 let conversationHistory = [];
 let dashboardPayload = null;
 let activeSelection = null;
+let analyticsFilters = { city: "all", year: "all" };
+let catalogQuery = "";
 
 const numberFormatter = new Intl.NumberFormat("es-ES");
 const percentFormatter = new Intl.NumberFormat("es-ES", {
@@ -348,6 +369,7 @@ function renderDashboard(payload) {
   if (kpiSources) kpiSources.textContent = formatNumber(kpis.sourceCount);
   if (kpiVariables) kpiVariables.textContent = formatNumber(kpis.variableCount);
   if (kpiDetails) kpiDetails.textContent = formatNumber(kpis.detailRows);
+  if (kpiCities) kpiCities.textContent = formatNumber((payload.cities || []).length);
 
   if (databaseStatus) {
     databaseStatus.textContent = payload.ready ? "Cobertura por ciudad" : "Base de datos no disponible";
@@ -368,6 +390,9 @@ function renderDashboard(payload) {
   renderLatestRows(getFilteredLatestRows());
   renderCityUpdates(payload.cityUpdates || []);
   renderIndicatorCatalog(payload.indicatorCatalog || []);
+  renderCityCoverage(payload.cities || [], Number(kpis.variableCount) || 0);
+  populateAnalyticsFilters(payload.analytics || {});
+  renderAnalyticalVisuals();
 }
 
 function getFilteredLatestRows() {
@@ -1013,18 +1038,33 @@ function renderCityUpdates(updates) {
 
 function renderIndicatorCatalog(indicators) {
   if (!indicatorCatalogGrid) return;
+  const normalizedQuery = normalizeText(catalogQuery);
+  const visibleIndicators = indicators.filter((item) => {
+    if (!normalizedQuery) return true;
+    return normalizeText(`${item.variable || ""} ${item.description || ""} ${item.sources || item.source_names || ""}`).includes(normalizedQuery);
+  });
   if (indicatorCatalogCount) {
-    indicatorCatalogCount.textContent = `${formatNumber(indicators.length)} indicadores`;
+    indicatorCatalogCount.textContent = normalizedQuery
+      ? `${formatNumber(visibleIndicators.length)} de ${formatNumber(indicators.length)} indicadores`
+      : `${formatNumber(indicators.length)} indicadores disponibles`;
   }
-  if (!indicators.length) {
-    indicatorCatalogGrid.innerHTML = `<p class="trace-empty">No hay indicadores catalogados.</p>`;
+  if (!visibleIndicators.length) {
+    indicatorCatalogGrid.innerHTML = `<p class="trace-empty">No hay indicadores que coincidan con la búsqueda.</p>`;
     return;
   }
-  indicatorCatalogGrid.innerHTML = indicators.map((item) => {
+  const categoryLabels = {
+    economy: "Economía y renta",
+    employment: "Mercado laboral",
+    mobility: "Movilidad",
+    demography: "Demografía"
+  };
+  indicatorCatalogGrid.innerHTML = visibleIndicators.map((item) => {
     const firstPeriod = formatDataPeriod(item.first_period);
     const latestPeriod = formatDataPeriod(item.latest_period);
     const coverage = firstPeriod === latestPeriod ? latestPeriod : `${firstPeriod} - ${latestPeriod}`;
-    const sources = String(item.sources || "Fuente n/d").replaceAll(",", " · ");
+    const sources = String(item.sources || item.source_names || "Fuente no disponible").replaceAll(",", " · ");
+    const description = categoryLabels[item.description] || item.description || "Indicador disponible para consulta territorial.";
+    const cityCount = Math.min(7, Math.max(0, Number(item.city_count) || 0));
     return `
       <article class="indicator-catalog-card">
         <div class="catalog-card-heading">
@@ -1034,16 +1074,361 @@ function renderIndicatorCatalog(indicators) {
           </div>
           <strong>${formatNumber(item.rows)} registros</strong>
         </div>
-        <p class="catalog-description">${escapeHtml(String(item.description || "Indicador disponible para consulta y comparacion territorial."))}</p>
+        <p class="catalog-description">${escapeHtml(String(description))}</p>
         <dl class="catalog-facts">
           <div><dt>Fuentes</dt><dd>${escapeHtml(sources)}</dd></div>
           <div><dt>Cobertura temporal</dt><dd>${escapeHtml(coverage)}</dd></div>
-          <div><dt>Ciudades principales</dt><dd>${formatNumber(item.city_count)} de 7</dd></div>
-          <div><dt>Ultima recepcion</dt><dd>${escapeHtml(formatReceivedAt(item.received_at))}</dd></div>
+          <div><dt>Cobertura territorial</dt><dd>${formatNumber(cityCount)} de 7 ciudades</dd></div>
+          ${item.unit ? `<div><dt>Unidad</dt><dd>${escapeHtml(String(item.unit))}</dd></div>` : ""}
         </dl>
       </article>
     `;
   }).join("");
+}
+
+function renderCityCoverage(cities, totalVariables) {
+  if (!cityCoverageChart) return;
+  if (!cities.length || !totalVariables) {
+    cityCoverageChart.innerHTML = `<div class="viz-empty">No hay información de cobertura disponible.</div>`;
+    return;
+  }
+  cityCoverageChart.innerHTML = [...cities]
+    .sort((a, b) => Number(b.variables || 0) - Number(a.variables || 0))
+    .map((item) => {
+      const variables = Number(item.variables) || 0;
+      const percentage = Math.min(100, (variables / totalVariables) * 100);
+      return `
+        <div class="source-row">
+          <div class="source-meta">
+            <span>${escapeHtml(String(item.city || "Ciudad"))}</span>
+            <strong>${formatNumber(variables)} de ${formatNumber(totalVariables)} indicadores · ${formatNumber(item.sources)} fuentes</strong>
+          </div>
+          <div class="bar-track" role="img" aria-label="${percentage.toFixed(1)} por ciento de cobertura">
+            <span class="bar-fill" style="width:${percentage.toFixed(2)}%"></span>
+          </div>
+        </div>`;
+    }).join("");
+}
+
+function analyticsRows() {
+  return dashboardPayload?.analytics?.series || [];
+}
+
+function populateAnalyticsFilters(analytics) {
+  const rows = [...(analytics.series || []), ...(analytics.accidentHeatmap || [])];
+  const cities = [...new Set(rows.map((row) => String(row.city || "").trim()).filter(Boolean))]
+    .sort((a, b) => a.localeCompare(b, "es"));
+  const years = [...new Set(rows.map((row) => String(row.period || row.month || "").slice(0, 4)).filter((value) => /^\d{4}$/.test(value)))]
+    .sort((a, b) => Number(b) - Number(a));
+
+  if (cityFilter) {
+    const selected = cities.includes(analyticsFilters.city) ? analyticsFilters.city : "all";
+    cityFilter.innerHTML = `<option value="all">Todas las ciudades</option>${cities.map((city) => `<option value="${escapeHtml(city)}">${escapeHtml(city)}</option>`).join("")}`;
+    cityFilter.value = selected;
+    analyticsFilters.city = selected;
+  }
+  if (yearFilter) {
+    const selected = years.includes(analyticsFilters.year) ? analyticsFilters.year : "all";
+    yearFilter.innerHTML = `<option value="all">Todos los años</option>${years.map((year) => `<option value="${year}">${year}</option>`).join("")}`;
+    yearFilter.value = selected;
+    analyticsFilters.year = selected;
+  }
+}
+
+function rowMatchesAnalyticsFilters(row) {
+  const cityMatches = analyticsFilters.city === "all"
+    || normalizeText(row.city) === normalizeText(analyticsFilters.city);
+  const period = String(row.period || row.month || "");
+  const yearMatches = analyticsFilters.year === "all" || period.slice(0, 4) === analyticsFilters.year;
+  return cityMatches && yearMatches;
+}
+
+function filterAnalyticsRows(rows) {
+  return rows.filter(rowMatchesAnalyticsFilters);
+}
+
+function renderAnalyticalVisuals() {
+  const rows = filterAnalyticsRows(analyticsRows());
+  const employmentRows = rows.filter((row) => ["unemployed_registered", "contracts_registered", "job_seekers"].includes(row.variable));
+  const incomeRows = rows.filter((row) => ["income", "income_median", "income_per_person", "gini_inequality", "inequality_p80p20"].includes(row.variable));
+  const mobilityRows = rows.filter((row) => ["traffic_accidents", "mobility_resources_records"].includes(row.variable));
+
+  renderSeriesLineChart(unemploymentTrend, employmentRows
+    .filter((row) => row.variable === "unemployed_registered")
+    .map((row) => ({ ...row, series: row.city })), {
+      empty: "No hay datos mensuales de paro para los filtros seleccionados.",
+      unit: "personas",
+      zeroBaseline: true
+    });
+  renderEmploymentRanking(unemploymentRanking, employmentRows.filter((row) => row.variable === "unemployed_registered"));
+  renderSeriesLineChart(contractsTrend, employmentRows
+    .filter((row) => row.variable === "contracts_registered")
+    .map((row) => ({ ...row, series: row.city })), {
+      empty: "No hay datos mensuales de contratos para los filtros seleccionados.",
+      unit: "contratos",
+      zeroBaseline: true
+    });
+  renderEmploymentComparison(employmentComparison, employmentRows);
+  renderIncomeMap(incomeMap, incomeRows);
+  renderIncomeGiniScatter(incomeGiniScatter, incomeRows);
+  renderInequalityTrend(inequalityTrend, incomeRows);
+  renderAccidentHeatmap(accidentHeatmap, dashboardPayload?.analytics?.accidentHeatmap || []);
+  renderAccidentMobilityScatter(accidentMobilityScatter, mobilityRows);
+
+  if (filterStatus) {
+    const cityText = analyticsFilters.city === "all" ? "todas las ciudades" : analyticsFilters.city;
+    const yearText = analyticsFilters.year === "all" ? "todos los años disponibles" : `el año ${analyticsFilters.year}`;
+    filterStatus.textContent = `Mostrando ${cityText} y ${yearText}. La ausencia de un punto significa que la fuente no ofrece ese dato.`;
+  }
+}
+
+function renderSeriesLineChart(container, rows, options = {}) {
+  if (!container) return;
+  const cleanRows = rows
+    .map((row) => ({ ...row, value: Number(row.value), period: String(row.period || ""), series: String(row.series || "Serie") }))
+    .filter((row) => row.period && Number.isFinite(row.value));
+  if (!cleanRows.length) {
+    container.innerHTML = `<div class="viz-empty">${escapeHtml(options.empty || "No hay datos para los filtros seleccionados.")}</div>`;
+    return;
+  }
+
+  const width = 760;
+  const height = 300;
+  const margin = { top: 18, right: 18, bottom: 42, left: 66 };
+  const periods = [...new Set(cleanRows.map((row) => row.period))].sort();
+  const seriesNames = [...new Set(cleanRows.map((row) => row.series))].sort((a, b) => a.localeCompare(b, "es"));
+  const values = cleanRows.map((row) => row.value);
+  const rawMin = Math.min(...values);
+  const rawMax = Math.max(...values);
+  const spread = Math.max(1, rawMax - rawMin);
+  const minY = options.zeroBaseline ? 0 : Math.max(0, rawMin - spread * 0.1);
+  const maxY = rawMax + spread * 0.08 || 1;
+  const plotWidth = width - margin.left - margin.right;
+  const plotHeight = height - margin.top - margin.bottom;
+  const x = (period) => margin.left + (periods.indexOf(period) / Math.max(1, periods.length - 1)) * plotWidth;
+  const y = (value) => margin.top + (1 - (value - minY) / Math.max(1, maxY - minY)) * plotHeight;
+
+  const grid = Array.from({ length: 5 }, (_, index) => {
+    const ratio = index / 4;
+    const value = maxY - ratio * (maxY - minY);
+    const position = margin.top + ratio * plotHeight;
+    return `<line class="chart-grid-line" x1="${margin.left}" x2="${width - margin.right}" y1="${position}" y2="${position}"></line><text class="chart-axis-label" x="${margin.left - 8}" y="${position + 3}" text-anchor="end">${escapeHtml(compactNumber(value))}</text>`;
+  }).join("");
+
+  const labelIndexes = [...new Set([0, Math.floor((periods.length - 1) * 0.25), Math.floor((periods.length - 1) * 0.5), Math.floor((periods.length - 1) * 0.75), periods.length - 1])];
+  const xLabels = labelIndexes.map((index) => `<text class="chart-axis-label" x="${x(periods[index])}" y="${height - 14}" text-anchor="middle">${escapeHtml(shortPeriod(periods[index]))}</text>`).join("");
+
+  const lines = seriesNames.map((name, index) => {
+    const points = cleanRows.filter((row) => row.series === name).sort((a, b) => a.period.localeCompare(b.period));
+    const color = chartPalette[index % chartPalette.length];
+    const path = points.map((point, pointIndex) => `${pointIndex ? "L" : "M"}${x(point.period).toFixed(2)},${y(point.value).toFixed(2)}`).join(" ");
+    const step = Math.max(1, Math.ceil(points.length / 24));
+    const dots = points.filter((_, pointIndex) => pointIndex % step === 0 || pointIndex === points.length - 1).map((point) => `<circle class="chart-point" cx="${x(point.period)}" cy="${y(point.value)}" r="3" fill="${color}"><title>${escapeHtml(`${name} · ${formatDataPeriod(point.period)} · ${formatNumber(point.value)} ${options.unit || point.unit || ""}`)}</title></circle>`).join("");
+    return `<path class="chart-line" d="${path}" stroke="${color}"></path>${dots}`;
+  }).join("");
+
+  const legend = seriesNames.map((name, index) => `<span><i style="background:${chartPalette[index % chartPalette.length]}"></i>${escapeHtml(name)}</span>`).join("");
+  container.innerHTML = `<svg class="chart-svg" viewBox="0 0 ${width} ${height}" role="img" aria-label="Gráfico de evolución temporal">${grid}${xLabels}${lines}</svg><div class="chart-legend">${legend}</div>${options.caption ? `<p class="chart-caption">${escapeHtml(options.caption)}</p>` : ""}`;
+}
+
+function compactNumber(value) {
+  const number = Number(value) || 0;
+  if (Math.abs(number) >= 1000000) return `${(number / 1000000).toLocaleString("es-ES", { maximumFractionDigits: 1 })} M`;
+  if (Math.abs(number) >= 1000) return `${(number / 1000).toLocaleString("es-ES", { maximumFractionDigits: 1 })} mil`;
+  return number.toLocaleString("es-ES", { maximumFractionDigits: 1 });
+}
+
+function shortPeriod(period) {
+  const match = String(period || "").match(/^(\d{4})-(\d{2})/);
+  return match ? `${match[2]}/${match[1].slice(2)}` : String(period || "");
+}
+
+function renderEmploymentRanking(container, rows) {
+  if (!container) return;
+  const latestByCity = new Map();
+  rows.forEach((row) => {
+    const current = latestByCity.get(row.city);
+    if (!current || String(row.period) > String(current.period)) latestByCity.set(row.city, row);
+  });
+  const ranking = [...latestByCity.values()].sort((a, b) => Number(b.value) - Number(a.value));
+  if (!ranking.length) {
+    container.innerHTML = `<div class="viz-empty">No hay datos de paro para elaborar el ranking.</div>`;
+    return;
+  }
+  const max = Math.max(...ranking.map((row) => Number(row.value) || 0), 1);
+  container.innerHTML = `<div class="ranking-list">${ranking.map((row) => `
+    <div class="ranking-item">
+      <div class="ranking-label"><strong>${escapeHtml(String(row.city))}</strong><span>${formatNumber(row.value)} personas · ${escapeHtml(shortPeriod(row.period))}</span></div>
+      <div class="ranking-track"><div class="ranking-fill" style="width:${((Number(row.value) || 0) / max * 100).toFixed(2)}%"></div></div>
+    </div>`).join("")}</div>`;
+}
+
+function renderEmploymentComparison(container, rows) {
+  if (!container) return;
+  const labels = { contracts_registered: "Contratos", job_seekers: "Demandantes" };
+  const grouped = new Map();
+  rows.filter((row) => labels[row.variable]).forEach((row) => {
+    const key = `${row.variable}|${row.period}`;
+    const current = grouped.get(key) || { variable: row.variable, period: row.period, value: 0 };
+    current.value += Number(row.value) || 0;
+    grouped.set(key, current);
+  });
+  renderSeriesLineChart(container, [...grouped.values()].map((row) => ({ ...row, series: labels[row.variable] })), {
+    empty: "No hay contratos y demandantes comparables para los filtros seleccionados.",
+    unit: "registros",
+    zeroBaseline: true,
+    caption: analyticsFilters.city === "all" ? "Suma de las ciudades disponibles en cada periodo." : `Valores registrados en ${analyticsFilters.city}.`
+  });
+}
+
+function latestRowsByCity(rows, preferredVariables) {
+  const selected = [];
+  const cityNames = [...new Set(rows.map((row) => row.city))];
+  cityNames.forEach((city) => {
+    for (const variable of preferredVariables) {
+      const candidates = rows.filter((row) => row.city === city && row.variable === variable).sort((a, b) => String(b.period).localeCompare(String(a.period)));
+      if (candidates.length) {
+        selected.push(candidates[0]);
+        break;
+      }
+    }
+  });
+  return selected;
+}
+
+function renderIncomeMap(container, rows) {
+  if (!container) return;
+  const latest = latestRowsByCity(rows, ["income", "income_per_person", "income_median"]);
+  if (!latest.length) {
+    container.innerHTML = `<div class="viz-empty">No hay renta municipal comparable para los filtros seleccionados.</div>`;
+    return;
+  }
+  const positions = {
+    Bilbao: [35, 18], Zaragoza: [58, 38], Barcelona: [78, 42], Madrid: [43, 52],
+    Valencia: [69, 66], Sevilla: [32, 80], Malaga: [46, 88], Málaga: [46, 88]
+  };
+  const values = latest.map((row) => Number(row.value) || 0);
+  const min = Math.min(...values);
+  const max = Math.max(...values);
+  container.innerHTML = `<div class="city-map" role="img" aria-label="Mapa esquemático de renta disponible">${latest.map((row) => {
+    const [left, top] = positions[row.city] || [50, 50];
+    const ratio = (Number(row.value) - min) / Math.max(1, max - min);
+    const size = 54 + ratio * 26;
+    return `<div class="map-city" style="left:${left}%;top:${top}%;width:${size}px;height:${size}px" title="${escapeHtml(`${row.city}: ${formatNumber(row.value)} ${row.unit || "€"}, ${formatDataPeriod(row.period)}`)}"><div><strong>${escapeHtml(String(row.city))}</strong><span>${escapeHtml(compactNumber(row.value))} €</span></div></div>`;
+  }).join("")}</div><p class="chart-caption">Mapa esquemático: el tamaño representa el último valor disponible. Solo aparecen ciudades con datos publicados.</p>`;
+}
+
+function joinIncomeAndGini(rows) {
+  const byKey = new Map();
+  rows.forEach((row) => {
+    const key = `${row.city}|${row.period}`;
+    const current = byKey.get(key) || { city: row.city, period: row.period };
+    if (["income", "income_per_person", "income_median"].includes(row.variable) && current.income == null) current.income = Number(row.value);
+    if (row.variable === "gini_inequality") current.gini = Number(row.value);
+    byKey.set(key, current);
+  });
+  return [...byKey.values()].filter((row) => Number.isFinite(row.income) && Number.isFinite(row.gini));
+}
+
+function renderIncomeGiniScatter(container, rows) {
+  renderScatterPlot(container, joinIncomeAndGini(rows), {
+    xKey: "income", yKey: "gini", labelKey: "city",
+    xLabel: "Renta", yLabel: "Gini",
+    empty: "No existen observaciones de renta y Gini para el mismo territorio y periodo."
+  });
+}
+
+function renderInequalityTrend(container, rows) {
+  const labels = { gini_inequality: "Gini", inequality_p80p20: "P80/P20" };
+  const selected = rows.filter((row) => labels[row.variable]);
+  const grouped = new Map();
+  selected.forEach((row) => {
+    const key = `${row.city}|${row.variable}`;
+    const list = grouped.get(key) || [];
+    list.push(row);
+    grouped.set(key, list);
+  });
+  const indexed = [];
+  grouped.forEach((list) => {
+    list.sort((a, b) => String(a.period).localeCompare(String(b.period)));
+    const base = Number(list[0]?.value) || 1;
+    list.forEach((row) => indexed.push({ ...row, value: (Number(row.value) / base) * 100, series: `${labels[row.variable]} · ${row.city}` }));
+  });
+  renderSeriesLineChart(container, indexed, {
+    empty: "No hay series de desigualdad para los filtros seleccionados.",
+    unit: "índice",
+    zeroBaseline: false,
+    caption: "Series expresadas como índice base 100 en el primer año disponible para comparar su evolución sin mezclar escalas distintas."
+  });
+}
+
+function renderScatterPlot(container, rows, options) {
+  if (!container) return;
+  const clean = rows.filter((row) => Number.isFinite(Number(row[options.xKey])) && Number.isFinite(Number(row[options.yKey])));
+  if (!clean.length) {
+    container.innerHTML = `<div class="viz-empty">${escapeHtml(options.empty)}</div>`;
+    return;
+  }
+  const width = 520, height = 310;
+  const margin = { top: 18, right: 18, bottom: 48, left: 62 };
+  const xs = clean.map((row) => Number(row[options.xKey]));
+  const ys = clean.map((row) => Number(row[options.yKey]));
+  const minX = Math.min(...xs), maxX = Math.max(...xs), minY = Math.min(...ys), maxY = Math.max(...ys);
+  const x = (value) => margin.left + ((value - minX) / Math.max(1, maxX - minX)) * (width - margin.left - margin.right);
+  const y = (value) => margin.top + (1 - (value - minY) / Math.max(1, maxY - minY)) * (height - margin.top - margin.bottom);
+  const grid = Array.from({ length: 5 }, (_, index) => {
+    const ratio = index / 4;
+    const gx = margin.left + ratio * (width - margin.left - margin.right);
+    const gy = margin.top + ratio * (height - margin.top - margin.bottom);
+    return `<line class="chart-grid-line" x1="${gx}" x2="${gx}" y1="${margin.top}" y2="${height - margin.bottom}"></line><line class="chart-grid-line" x1="${margin.left}" x2="${width - margin.right}" y1="${gy}" y2="${gy}"></line>`;
+  }).join("");
+  const points = clean.map((row, index) => `<circle class="chart-point" cx="${x(Number(row[options.xKey]))}" cy="${y(Number(row[options.yKey]))}" r="${options.radiusKey ? Math.max(5, Math.min(15, Number(row[options.radiusKey]) || 7)) : 7}" fill="${chartPalette[index % chartPalette.length]}"><title>${escapeHtml(`${row[options.labelKey]} · ${row.period || ""} · ${options.xLabel}: ${formatNumber(row[options.xKey])} · ${options.yLabel}: ${formatNumber(row[options.yKey])}`)}</title></circle>`).join("");
+  container.innerHTML = `<svg class="chart-svg" viewBox="0 0 ${width} ${height}" role="img" aria-label="Gráfico de dispersión">${grid}${points}<text class="chart-axis-label" x="${width / 2}" y="${height - 10}" text-anchor="middle">${escapeHtml(options.xLabel)}</text><text class="chart-axis-label" x="16" y="${height / 2}" text-anchor="middle" transform="rotate(-90 16 ${height / 2})">${escapeHtml(options.yLabel)}</text></svg><div class="chart-legend">${[...new Set(clean.map((row) => row[options.labelKey]))].map((label, index) => `<span><i style="background:${chartPalette[index % chartPalette.length]}"></i>${escapeHtml(String(label))}</span>`).join("")}</div>`;
+}
+
+function renderAccidentHeatmap(container, allRows) {
+  if (!container) return;
+  const rows = filterAnalyticsRows(allRows).filter((row) => Number.isFinite(Number(row.value)));
+  if (!rows.length) {
+    container.innerHTML = `<div class="viz-empty">No hay accidentes con detalle mensual para los filtros seleccionados.</div>`;
+    return;
+  }
+  const aggregated = new Map();
+  rows.forEach((row) => {
+    const month = String(row.period || row.month || "").slice(5, 7);
+    const key = `${row.city}|${month}`;
+    aggregated.set(key, (aggregated.get(key) || 0) + Number(row.value));
+  });
+  const cities = [...new Set(rows.map((row) => row.city))].sort((a, b) => String(a).localeCompare(String(b), "es"));
+  const max = Math.max(...aggregated.values(), 1);
+  const months = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
+  let html = `<div class="heatmap-wrap"><div class="heatmap-grid"><span></span>${months.map((month) => `<span class="heatmap-month">${month}</span>`).join("")}`;
+  cities.forEach((city) => {
+    html += `<strong class="heatmap-label">${escapeHtml(String(city))}</strong>`;
+    months.forEach((_, index) => {
+      const value = aggregated.get(`${city}|${String(index + 1).padStart(2, "0")}`) || 0;
+      const opacity = 0.12 + (value / max) * 0.88;
+      html += `<span class="heatmap-cell" style="background:rgba(181,107,69,${opacity.toFixed(2)})" title="${escapeHtml(`${city} · ${months[index]} · ${formatNumber(value)} accidentes`)}">${value ? compactNumber(value) : "–"}</span>`;
+    });
+  });
+  container.innerHTML = `${html}</div></div><p class="chart-caption">${analyticsFilters.year === "all" ? "Suma por mes de todos los años disponibles." : `Accidentes registrados durante ${analyticsFilters.year}.`} Solo se muestran ciudades con cobertura mensual.</p>`;
+}
+
+function renderAccidentMobilityScatter(container, rows) {
+  if (!container) return;
+  const latestAccidents = latestRowsByCity(rows, ["traffic_accidents"]);
+  const latestMobility = latestRowsByCity(rows, ["mobility_resources_records"]);
+  const mobilityByCity = new Map(latestMobility.map((row) => [row.city, row]));
+  const pairs = latestAccidents.map((accident) => {
+    const mobility = mobilityByCity.get(accident.city);
+    return mobility ? { city: accident.city, period: accident.period, accidents: Number(accident.value), mobility: Number(mobility.value) } : null;
+  }).filter(Boolean);
+  renderScatterPlot(container, pairs, {
+    xKey: "mobility", yKey: "accidents", labelKey: "city",
+    xLabel: "Registros de movilidad", yLabel: "Accidentes",
+    empty: "No hay ciudades con datos simultáneos de accidentes y movilidad. La cobertura actual no permite esta comparación."
+  });
+  if (pairs.length) container.insertAdjacentHTML("beforeend", `<p class="chart-caption">Exploración descriptiva: los registros de movilidad son una aproximación a la exposición y no equivalen al número de desplazamientos.</p>`);
 }
 
 function getDataset() {
@@ -1635,7 +2020,7 @@ function readEventPayload(eventText) {
 
 async function streamLocalModel(text, topic, onDelta, onMeta, onStatus) {
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 30000);
+  const timeoutId = setTimeout(() => controller.abort(), 28000);
 
   let response;
   try {
@@ -1659,10 +2044,10 @@ async function streamLocalModel(text, topic, onDelta, onMeta, onStatus) {
     }
     throw err;
   }
-  clearTimeout(timeoutId);
-
   if (!response.ok) {
-    return askLocalModel(text, topic);
+    clearTimeout(timeoutId);
+    const payload = await response.json().catch(() => ({}));
+    throw new Error(payload.error || `La consulta no se pudo completar (HTTP ${response.status}).`);
   }
 
   // Fall back to JSON parsing if the server returned non-SSE content
@@ -1672,11 +2057,13 @@ async function streamLocalModel(text, topic, onDelta, onMeta, onStatus) {
     if (data.trace) {
       renderTraceLog(data.trace);
     }
+    clearTimeout(timeoutId);
     return data.answer || "";
   }
 
   if (!response.body) {
-    return askLocalModel(text, topic);
+    clearTimeout(timeoutId);
+    throw new Error("El servicio no devolvió una respuesta legible.");
   }
 
   const reader = response.body.getReader();
@@ -1715,15 +2102,18 @@ async function streamLocalModel(text, topic, onDelta, onMeta, onStatus) {
           ...(lastTrace || {}),
           finishReason: payload.finishReason || "unknown"
         });
+        clearTimeout(timeoutId);
         return fullText;
       }
 
       if (eventName === "error") {
+        clearTimeout(timeoutId);
         throw new Error(payload.detail ? `${payload.error} Detalle: ${payload.detail}` : payload.error);
       }
     }
   }
 
+  clearTimeout(timeoutId);
   return fullText;
 }
 
@@ -1794,10 +2184,12 @@ async function sendMessage(text) {
     rememberTurn("assistant", answer);
   } catch (error) {
     lastLocalData = null;
-    const errorMessage = error?.message || "No se pudo obtener una respuesta del proveedor configurado.";
+    const errorMessage = error?.name === "AbortError"
+      ? "La consulta superó los 28 segundos y se canceló. Prueba con una ciudad, un indicador y un periodo concretos."
+      : (error?.message || "No se pudo obtener una respuesta. Inténtalo de nuevo en unos segundos.");
     lastAssistantText = `
       <div class="model-error" role="alert">
-        <strong>El modelo fallo</strong>
+        <strong>No se pudo completar la consulta</strong>
         <p>${escapeHtml(errorMessage)}</p>
       </div>
     `;
@@ -1887,8 +2279,56 @@ openChatbotButton?.addEventListener("click", () => {
 refreshDashboardButton?.addEventListener("click", loadDashboard);
 clearSelectionButton?.addEventListener("click", clearDashboardSelection);
 
+function setSidebarOpen(open) {
+  document.body.classList.toggle("sidebar-open", open);
+  menuButtons.forEach((button) => button.setAttribute("aria-expanded", String(open)));
+  if (sidebarBackdrop) sidebarBackdrop.tabIndex = open ? 0 : -1;
+}
+
+menuButtons.forEach((button) => {
+  button.addEventListener("click", () => setSidebarOpen(!document.body.classList.contains("sidebar-open")));
+});
+sidebarBackdrop?.addEventListener("click", () => setSidebarOpen(false));
+sidebarLinks.forEach((link) => link.addEventListener("click", () => setSidebarOpen(false)));
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape" && document.body.classList.contains("sidebar-open")) {
+    setSidebarOpen(false);
+    menuButtons[0]?.focus();
+  }
+});
+
+cityFilter?.addEventListener("change", () => {
+  analyticsFilters.city = cityFilter.value;
+  renderAnalyticalVisuals();
+});
+yearFilter?.addEventListener("change", () => {
+  analyticsFilters.year = yearFilter.value;
+  renderAnalyticalVisuals();
+});
+resetAnalyticsFilters?.addEventListener("click", () => {
+  analyticsFilters = { city: "all", year: "all" };
+  if (cityFilter) cityFilter.value = "all";
+  if (yearFilter) yearFilter.value = "all";
+  renderAnalyticalVisuals();
+});
+catalogSearch?.addEventListener("input", () => {
+  catalogQuery = catalogSearch.value;
+  renderIndicatorCatalog(dashboardPayload?.indicatorCatalog || []);
+});
+
+if ("IntersectionObserver" in window && document.querySelector(".section-nav")) {
+  const navigationLinks = [...document.querySelectorAll('.section-nav a[href^="#"]')];
+  const sections = navigationLinks.map((link) => document.querySelector(link.getAttribute("href"))).filter(Boolean);
+  const sectionObserver = new IntersectionObserver((entries) => {
+    const visible = entries.filter((entry) => entry.isIntersecting).sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+    if (!visible) return;
+    navigationLinks.forEach((link) => link.classList.toggle("is-active", link.getAttribute("href") === `#${visible.target.id}`));
+  }, { root: dashboardScreen, rootMargin: "-15% 0px -70%", threshold: [0.01, 0.25] });
+  sections.forEach((section) => sectionObserver.observe(section));
+}
+
 renderLastUpdateTime();
-if (sourceChart || latestRows || cityUpdateGrid || indicatorCatalogGrid) {
+if (sourceChart || latestRows || cityUpdateGrid || indicatorCatalogGrid || unemploymentTrend) {
   loadDashboard();
 }
 autoResize();

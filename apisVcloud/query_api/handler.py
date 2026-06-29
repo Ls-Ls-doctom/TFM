@@ -211,6 +211,18 @@ def build_dashboard() -> dict[str, Any]:
           ELSE city
         END
     """
+    silver_city_case = """
+        CASE
+          WHEN lower(geo) LIKE '%barcelona%' THEN 'Barcelona'
+          WHEN lower(geo) LIKE '%madrid%' THEN 'Madrid'
+          WHEN lower(geo) LIKE '%valencia%' THEN 'Valencia'
+          WHEN lower(geo) LIKE '%sevilla%' THEN 'Sevilla'
+          WHEN lower(geo) LIKE '%bilbao%' THEN 'Bilbao'
+          WHEN lower(geo) LIKE '%malaga%' OR lower(geo) LIKE '%málaga%' THEN 'Malaga'
+          WHEN lower(geo) LIKE '%zaragoza%' THEN 'Zaragoza'
+          ELSE NULL
+        END
+    """
     queries = {
         "metrics": f"""
             SELECT count(*) indicator_rows,
@@ -251,7 +263,7 @@ def build_dashboard() -> dict[str, Any]:
         """,
         "cities": f"""
             SELECT {geo_case} city, count(*) rows,
-                   count(DISTINCT variable) variables, count(DISTINCT source) sources,
+                   count(DISTINCT variable) variables, count(DISTINCT source) source_count,
                    max(CAST(date AS varchar)) latest_period,
                    array_join(array_agg(DISTINCT source), ', ') source_list
             FROM {indicators} WHERE city IS NOT NULL AND trim(city) <> ''
@@ -259,10 +271,35 @@ def build_dashboard() -> dict[str, Any]:
         """,
         "catalog": f"""
             SELECT variable, min(coalesce(dataset, 'Sin categoría')) description,
-                   array_join(array_agg(DISTINCT source), ', ') sources,
+                   array_join(array_agg(DISTINCT source), ', ') source_names,
                    min(period) first_period, max(period) latest_period,
-                   count(*) rows, count(DISTINCT geo) city_count
+                   min(unit) unit, count(*) rows,
+                   count(DISTINCT {silver_city_case}) city_count
             FROM {indicadores} GROUP BY variable ORDER BY variable
+        """,
+        "analytics_series": f"""
+            SELECT {geo_case} city, variable, CAST(date AS varchar) period,
+                   value, unit, source
+            FROM {indicators}
+            WHERE (district IS NULL OR trim(CAST(district AS varchar)) = '')
+              AND variable IN (
+                'unemployed_registered', 'contracts_registered', 'job_seekers',
+                'income', 'income_median', 'income_per_person',
+                'gini_inequality', 'inequality_p80p20',
+                'traffic_accidents', 'mobility_resources_records'
+              )
+            ORDER BY period, city, variable
+        """,
+        "accident_heatmap": f"""
+            SELECT {silver_city_case} city, substr(period, 1, 7) period,
+                   sum(value) value
+            FROM {indicadores}
+            WHERE variable = 'Accidentes de trafico'
+              AND unit = 'accidents'
+              AND period IS NOT NULL AND length(period) >= 7
+            GROUP BY 1, 2
+            HAVING {silver_city_case} IS NOT NULL
+            ORDER BY period, city
         """,
     }
 
@@ -287,6 +324,13 @@ def build_dashboard() -> dict[str, Any]:
         )
     )
     cities = result.get("cities", [])
+    catalog = [
+        {
+            **{key: value for key, value in row.items() if key != "source_names"},
+            "sources": row.get("source_names"),
+        }
+        for row in result.get("catalog", [])
+    ]
     updated_at = gold_last_modified()
     city_updates = [
         {
@@ -294,7 +338,7 @@ def build_dashboard() -> dict[str, Any]:
             "received_at": updated_at,
             "latest_period": row.get("latest_period"),
             "rows": row.get("rows"),
-            "source_count": row.get("sources"),
+            "source_count": row.get("source_count"),
             "sources": row.get("source_list"),
         }
         for row in cities
@@ -310,9 +354,15 @@ def build_dashboard() -> dict[str, Any]:
             "detailRows": detail_count or metrics.get("indicator_rows", 0),
         },
         "sources": result.get("sources", []),
-        "cities": [{key: value for key, value in row.items() if key not in {"latest_period", "source_list"}} for row in cities],
+        "cities": [
+            {
+                **{key: value for key, value in row.items() if key not in {"latest_period", "source_list", "source_count"}},
+                "sources": row.get("source_count"),
+            }
+            for row in cities
+        ],
         "cityUpdates": city_updates,
-        "indicatorCatalog": result.get("catalog", []),
+        "indicatorCatalog": catalog,
         "variables": result.get("variables", []),
         "latestRows": result.get("latest", []),
         "charts": {
@@ -320,6 +370,10 @@ def build_dashboard() -> dict[str, Any]:
             "topVariables": result.get("top_variables", []),
             "periods": result.get("periods", []),
             "sourceVariables": result.get("source_variables", []),
+        },
+        "analytics": {
+            "series": result.get("analytics_series", []),
+            "accidentHeatmap": result.get("accident_heatmap", []),
         },
         "pipeline": {"apis": {}, "dataLoad": {"backend": "athena"}},
     }

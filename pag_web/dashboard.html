@@ -1,9 +1,10 @@
 <!DOCTYPE html>
-<html lang="es" class="dark">
+<html lang="es">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ISEU+ Dashboard</title>
+  <meta name="description" content="Plataforma académica para explorar y consultar datos socioeconómicos urbanos procedentes de fuentes públicas.">
+  <title>Dashboard | ISEU+</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Manrope:wght@600;700;800&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,300..700,0..1,0&display=swap" rel="stylesheet">
@@ -11,213 +12,284 @@
 </head>
 <body>
   <div class="app-shell">
-    <aside class="sidebar" aria-label="Panel ISEU">
+    <aside class="sidebar" id="appSidebar" aria-label="Navegación principal">
       <div class="brand-row">
-        <div class="brand-mark" aria-hidden="true">
-          <img src="https://images.unsplash.com/photo-1518005020951-eccb494ad742?auto=format&fit=crop&w=120&q=70" alt="">
-        </div>
+        <div class="brand-mark brand-mark--text" aria-hidden="true">I+</div>
         <div>
           <p class="brand-name">ISEU+</p>
-          <p class="brand-subtitle">Panel urbano</p>
+          <p class="brand-subtitle">Datos urbanos abiertos</p>
         </div>
       </div>
 
-      <nav class="primary-nav" aria-label="Pantallas principales">
-        <a class="screen-tab is-active" href="dashboard.html">
+      <nav class="primary-nav section-nav" aria-label="Secciones del dashboard">
+        <a class="screen-tab is-active" href="#resumen">
           <span class="material-symbols-outlined">space_dashboard</span>
-          Dashboard
+          Resumen
+        </a>
+        <a class="screen-tab" href="#empleo">
+          <span class="material-symbols-outlined">work</span>
+          Mercado laboral
+        </a>
+        <a class="screen-tab" href="#renta">
+          <span class="material-symbols-outlined">monitoring</span>
+          Renta y desigualdad
+        </a>
+        <a class="screen-tab" href="#movilidad">
+          <span class="material-symbols-outlined">commute</span>
+          Movilidad
+        </a>
+        <a class="screen-tab" href="#catalogo">
+          <span class="material-symbols-outlined">library_books</span>
+          Catálogo
+        </a>
+        <a class="screen-tab" href="#metodologia">
+          <span class="material-symbols-outlined">info</span>
+          Acerca del proyecto
         </a>
         <a class="screen-tab" href="chatbot.html">
           <span class="material-symbols-outlined">forum</span>
-          Chatbot
+          Consultar los datos
         </a>
       </nav>
 
-      <div class="update-card" aria-label="Actualizacion de datos">
+      <div class="update-card" aria-label="Última actualización de los datos">
         <div class="update-card__title">
-          <span class="material-symbols-outlined">sync</span>
-          Datos recopilados
+          <span class="material-symbols-outlined">calendar_today</span>
+          Última actualización
         </div>
-        <time id="lastUpdateTime" datetime="">Cargando datos...</time>
-        <p id="pipelineStatus">Revisando fuentes disponibles.</p>
+        <time id="lastUpdateTime" datetime="">Cargando…</time>
+        <p>Fecha de incorporación de los datos a la plataforma.</p>
       </div>
 
       <div class="sidebar-footer">
-        <div class="source-status">
-          <span class="pulse-dot"></span>
-          Datos activos
-        </div>
-        <p>INE, REE, MITMA/MIVAU, SEPE, Idescat y Open Data BCN.</p>
+        <p>Proyecto académico de TFM. Fuentes principales: INE, SEPE y portales municipales de datos abiertos.</p>
       </div>
     </aside>
+    <button class="sidebar-backdrop" type="button" aria-label="Cerrar menú" tabindex="-1"></button>
 
     <main class="main-layout">
       <header class="topbar">
-        <button class="icon-button menu-button" type="button" aria-label="Abrir menu">
+        <button class="icon-button menu-button" type="button" aria-label="Abrir menú" aria-controls="appSidebar" aria-expanded="false">
           <span class="material-symbols-outlined">menu</span>
         </button>
+        <strong class="topbar-title">Dashboard</strong>
         <span class="topbar-spacer" aria-hidden="true"></span>
         <div class="topbar-actions">
-          <a class="icon-button" href="chatbot.html" aria-label="Ir al chatbot">
+          <a class="icon-button" href="chatbot.html" aria-label="Consultar los datos">
             <span class="material-symbols-outlined">forum</span>
           </a>
         </div>
       </header>
 
-      <section class="dashboard-screen screen is-active" id="dashboardScreen" aria-label="Dashboard de datos">
-        <div class="dashboard-header">
+      <section class="dashboard-screen screen is-active" id="dashboardScreen" aria-label="Dashboard de datos urbanos">
+        <section class="dashboard-header project-hero" id="resumen">
           <div>
-            <p class="eyebrow">Índice de Salud Económica Urbana</p>
-            <h1>Dashboard de visualización de datos</h1>
-            <p class="welcome-copy">Resumen automático de fuentes recopiladas, calidad de carga y variables listas para consultar.</p>
+            <p class="eyebrow">Plataforma de datos socioeconómicos urbanos</p>
+            <h1>Dashboard</h1>
+            <p class="welcome-copy">Explora en un único lugar indicadores públicos de empleo, renta, desigualdad, población y movilidad. La plataforma reúne datos que originalmente se publican de forma separada por organismos estatales y portales municipales.</p>
+            <div class="hero-badges" aria-label="Características del proyecto">
+              <span>Trabajo Fin de Máster</span>
+              <span>7 ciudades</span>
+              <span>Datos públicos</span>
+            </div>
           </div>
           <a class="primary-action" href="chatbot.html">
             <span class="material-symbols-outlined">forum</span>
-            Preguntar al chatbot
+            Consultar en lenguaje natural
           </a>
-        </div>
+        </section>
 
-        <div class="kpi-grid" aria-label="Resumen de datos">
+        <div class="kpi-grid public-kpis" aria-label="Alcance de los datos">
           <article class="kpi-card">
-            <span>Indicadores</span>
+            <span>Registros de indicadores</span>
             <strong id="kpiIndicators">--</strong>
+            <small>Observaciones disponibles, no KPI distintos.</small>
           </article>
           <article class="kpi-card">
-            <span>Fuentes activas</span>
-            <strong id="kpiSources">--</strong>
-          </article>
-          <article class="kpi-card">
-            <span>Variables</span>
+            <span>Indicadores disponibles</span>
             <strong id="kpiVariables">--</strong>
+            <small>Variables económicas, laborales y urbanas.</small>
           </article>
           <article class="kpi-card">
-            <span>Filas detalle</span>
-            <strong id="kpiDetails">--</strong>
+            <span>Ciudades analizadas</span>
+            <strong id="kpiCities">--</strong>
+            <small>La cobertura varía según el indicador.</small>
+          </article>
+          <article class="kpi-card">
+            <span>Fuentes principales</span>
+            <strong id="kpiSources">--</strong>
+            <small>INE, SEPE y Open Data municipal.</small>
           </article>
         </div>
 
-        <section class="dashboard-panel selection-panel" aria-label="Detalle seleccionado">
-          <div class="panel-heading">
-            <h2>Detalle interactivo</h2>
-            <button class="clear-selection" type="button" id="clearSelection">Limpiar selección</button>
+        <section class="dashboard-panel filter-panel" aria-label="Filtros del dashboard">
+          <div class="panel-heading filter-heading">
+            <div>
+              <p class="section-kicker">Exploración interactiva</p>
+              <h2>Filtrar visualizaciones</h2>
+            </div>
+            <button class="clear-selection" type="button" id="resetAnalyticsFilters">Restablecer</button>
           </div>
-          <div id="selectionDetail" class="selection-detail">
-            <p>Selecciona una fuente, barra, punto o variable para ver una lectura rápida y filtrar la tabla.</p>
+          <div class="filter-grid">
+            <label>
+              Ciudad
+              <select id="cityFilter">
+                <option value="all">Todas las ciudades</option>
+              </select>
+            </label>
+            <label>
+              Año
+              <select id="yearFilter">
+                <option value="all">Todos los años</option>
+              </select>
+            </label>
+          </div>
+          <p class="filter-status" id="filterStatus" aria-live="polite">Mostrando toda la cobertura disponible.</p>
+        </section>
+
+        <section class="dashboard-section" id="empleo" aria-labelledby="employmentTitle">
+          <div class="section-heading">
+            <div>
+              <p class="section-kicker">Comparación entre siete ciudades · Fuente: SEPE</p>
+              <h2 id="employmentTitle">Mercado laboral</h2>
+              <p>Series mensuales comparables de paro, contratos y demandantes de empleo. Los valores son totales registrados, no tasas sobre población.</p>
+            </div>
+          </div>
+          <div class="analytics-layout analytics-layout--two">
+            <article class="dashboard-panel chart-panel chart-panel--wide">
+              <div class="panel-heading"><h3>Evolución mensual del paro registrado</h3><span>personas</span></div>
+              <div id="unemploymentTrend" class="data-viz" aria-live="polite"></div>
+            </article>
+            <article class="dashboard-panel chart-panel">
+              <div class="panel-heading"><h3>Paro por ciudad en el último periodo</h3><span>ranking</span></div>
+              <div id="unemploymentRanking" class="data-viz"></div>
+            </article>
+            <article class="dashboard-panel chart-panel chart-panel--wide">
+              <div class="panel-heading"><h3>Evolución mensual de contratos registrados</h3><span>contratos</span></div>
+              <div id="contractsTrend" class="data-viz"></div>
+            </article>
+            <article class="dashboard-panel chart-panel">
+              <div class="panel-heading"><h3>Contratos frente a demandantes de empleo</h3><span>comparación</span></div>
+              <div id="employmentComparison" class="data-viz"></div>
+            </article>
           </div>
         </section>
 
-        <div class="dashboard-grid">
-          <section class="dashboard-panel source-panel" aria-label="Datos por ciudad">
-            <div class="panel-heading">
-              <h2>Ciudades analizadas</h2>
-            <span id="databaseStatus">Datos territoriales</span>
+        <section class="dashboard-section" id="renta" aria-labelledby="incomeTitle">
+          <div class="section-heading">
+            <div>
+              <p class="section-kicker">Cobertura municipal parcial · Fuente: Open Data municipal</p>
+              <h2 id="incomeTitle">Renta y desigualdad</h2>
+              <p>Esta dimensión no permite comparar las siete ciudades: únicamente se muestran los territorios y años con datos homogéneos disponibles.</p>
             </div>
-            <div id="sourcePie" class="source-pie-wrap" aria-label="Porcentaje de datos por ciudad"></div>
-            <div id="sourceChart" class="source-chart"></div>
-          </section>
-
-          <section class="dashboard-panel" aria-label="Ultimos indicadores cargados">
-            <div class="panel-heading">
-              <h2>Últimos indicadores</h2>
-              <span>fuente, periodo, calidad</span>
-            </div>
-            <div class="data-table-wrap dashboard-table">
-              <table class="data-table">
-                <thead>
-                  <tr>
-                    <th>Variable</th>
-                    <th>Territorio</th>
-                    <th>Valor</th>
-                    <th>Fuente</th>
-                  </tr>
-                </thead>
-                <tbody id="latestRows">
-                  <tr><td colspan="4">Cargando datos...</td></tr>
-                </tbody>
-              </table>
-            </div>
-          </section>
-        </div>
-
-        <div class="visual-grid" aria-label="Graficos resumen">
-          <section class="dashboard-panel compact-panel" aria-label="Calidad de datos">
-            <div class="panel-heading">
-              <h2>Calidad de datos</h2>
-              <span>distribución</span>
-            </div>
-            <div id="qualityChart" class="compact-chart"></div>
-          </section>
-
-          <section class="dashboard-panel compact-panel" aria-label="Variables con mas registros">
-            <div class="panel-heading">
-              <h2>Variables principales</h2>
-              <span>top registros</span>
-            </div>
-            <div id="topVariablesChart" class="compact-chart"></div>
-          </section>
-
-          <section class="dashboard-panel compact-panel" aria-label="Actualidad temporal">
-            <div class="panel-heading">
-              <h2>Actualidad temporal</h2>
-              <span>por año</span>
-            </div>
-            <div id="periodChart" class="compact-chart"></div>
-          </section>
-
-          <section class="dashboard-panel compact-panel" aria-label="Cobertura por fuente">
-            <div class="panel-heading">
-              <h2>Cobertura por fuente</h2>
-              <span>variables</span>
-            </div>
-            <div id="coverageChart" class="compact-chart"></div>
-          </section>
-        </div>
-
-        <div class="analytics-grid" aria-label="Gráficos analíticos ampliados">
-          <section class="dashboard-panel analytics-panel" aria-label="Barras por año">
-            <div class="panel-heading">
-              <h2>Registros por año</h2>
-              <span>barras</span>
-            </div>
-            <div id="yearBarsChart" class="vertical-bars"></div>
-            <p class="chart-explainer">Este gráfico ayuda a ver si la base se concentra en años recientes o si hay series históricas largas.</p>
-          </section>
-
-          <section class="dashboard-panel analytics-panel" aria-label="Dispersión de variables">
-            <div class="panel-heading">
-              <h2>Volumen vs actualidad</h2>
-              <span>dispersión</span>
-            </div>
-            <div id="variableScatterChart" class="scatter-plot"></div>
-            <p class="chart-explainer">Cada punto es una variable: cuanto más arriba, más registros; cuanto más a la derecha, más actual es su último período.</p>
-          </section>
-
-          <section class="dashboard-panel analytics-panel" aria-label="Comparativa por fuente">
-            <div class="panel-heading">
-              <h2>Registros y cobertura</h2>
-              <span>comparativa</span>
-            </div>
-            <div id="sourceCompareChart" class="comparison-bars"></div>
-            <p class="chart-explainer">Compara volumen de registros con cantidad de variables aportadas para detectar fuentes profundas frente a fuentes más diversas.</p>
-          </section>
-        </div>
-
-        <section class="dashboard-panel" aria-label="Última actualización por ciudad">
-          <div class="panel-heading">
-            <h2>Última actualización por ciudad</h2>
-            <span id="cityUpdateCount">Recepciones registradas</span>
           </div>
-          <p class="update-section-copy">Momento en que el sistema recibió datos por última vez. El período indica la fecha de referencia del dato, que puede ser anterior.</p>
-          <div id="cityUpdateGrid" class="city-update-grid"></div>
+          <div class="coverage-alert" role="note">
+            <span class="material-symbols-outlined">info</span>
+            <p><strong>Precaución al comparar.</strong> La cobertura territorial de renta y desigualdad es inferior a la del mercado laboral. Los gráficos no imputan valores ausentes.</p>
+          </div>
+          <div class="analytics-layout analytics-layout--three">
+            <article class="dashboard-panel chart-panel">
+              <div class="panel-heading"><h3>Renta disponible por ciudad</h3><span>último dato</span></div>
+              <div id="incomeMap" class="data-viz map-viz"></div>
+            </article>
+            <article class="dashboard-panel chart-panel">
+              <div class="panel-heading"><h3>Renta frente a desigualdad Gini</h3><span>dispersión</span></div>
+              <div id="incomeGiniScatter" class="data-viz"></div>
+            </article>
+            <article class="dashboard-panel chart-panel">
+              <div class="panel-heading"><h3>Evolución de la desigualdad</h3><span>Gini y P80/P20</span></div>
+              <div id="inequalityTrend" class="data-viz"></div>
+            </article>
+          </div>
         </section>
 
-        <section class="dashboard-panel" aria-label="Catalogo de indicadores">
-          <div class="panel-heading">
-            <h2>Catalogo de indicadores</h2>
-            <span id="indicatorCatalogCount">Indicadores disponibles</span>
+        <section class="dashboard-section" id="movilidad" aria-labelledby="mobilityTitle">
+          <div class="section-heading">
+            <div>
+              <p class="section-kicker">Cobertura local · Fuente: Open Data municipal</p>
+              <h2 id="mobilityTitle">Movilidad y siniestralidad</h2>
+              <p>Exploración de accidentes y registros de movilidad para los municipios que publican información reutilizable.</p>
+            </div>
           </div>
-          <p class="update-section-copy">Que datos se pueden consultar, de donde proceden, que periodo cubren y cuando se recibieron por ultima vez.</p>
+          <div class="analytics-layout analytics-layout--two-even">
+            <article class="dashboard-panel chart-panel">
+              <div class="panel-heading"><h3>Accidentes de tráfico por mes y ciudad</h3><span>heatmap</span></div>
+              <div id="accidentHeatmap" class="data-viz"></div>
+            </article>
+            <article class="dashboard-panel chart-panel">
+              <div class="panel-heading"><h3>Accidentes frente a registros de movilidad</h3><span>exposición</span></div>
+              <div id="accidentMobilityScatter" class="data-viz"></div>
+            </article>
+          </div>
+        </section>
+
+        <section class="dashboard-section" id="catalogo" aria-labelledby="catalogTitle">
+          <div class="section-heading section-heading--actions">
+            <div>
+              <p class="section-kicker">Qué puede consultarse</p>
+              <h2 id="catalogTitle">Catálogo de indicadores</h2>
+              <p>Fuente, cobertura temporal, volumen y alcance territorial de cada indicador disponible.</p>
+            </div>
+            <label class="catalog-search">
+              <span class="material-symbols-outlined">search</span>
+              <input id="catalogSearch" type="search" placeholder="Buscar indicador…" autocomplete="off">
+            </label>
+          </div>
+          <div class="catalog-summary"><span id="indicatorCatalogCount">Cargando indicadores…</span></div>
           <div id="indicatorCatalogGrid" class="indicator-catalog-grid"></div>
+        </section>
+
+        <section class="dashboard-section" id="datos" aria-labelledby="dataInfoTitle">
+          <div class="section-heading">
+            <div>
+              <p class="section-kicker">Información sobre los datos</p>
+              <h2 id="dataInfoTitle">Cobertura y calidad</h2>
+              <p>Este bloque describe la base que alimenta los análisis; no sustituye a los indicadores mostrados anteriormente.</p>
+            </div>
+          </div>
+          <div class="analytics-layout analytics-layout--two-even">
+            <article class="dashboard-panel">
+              <div class="panel-heading"><h3>Cobertura de indicadores por ciudad</h3><span>sobre el total disponible</span></div>
+              <div id="cityCoverageChart" class="source-chart"></div>
+              <p class="chart-explainer">Cada barra indica cuántos indicadores distintos están disponibles para la ciudad. No representa el porcentaje de registros almacenados.</p>
+            </article>
+            <article class="dashboard-panel methodology-card">
+              <div class="panel-heading"><h3>Cómo se clasifica la calidad</h3><span>metodología</span></div>
+              <dl>
+                <div><dt>Alta</dt><dd>Fuente oficial, periodo y territorio identificados y formato comparable.</dd></div>
+                <div><dt>Media</dt><dd>Fuente oficial con cobertura parcial o transformación adicional.</dd></div>
+                <div><dt>Baja</dt><dd>Registro incompleto o no comparable. No se utiliza en los gráficos principales.</dd></div>
+              </dl>
+              <p>La etiqueta evalúa trazabilidad y completitud técnica; no certifica la exactitud estadística del organismo publicador.</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="dashboard-section project-about" id="metodologia" aria-labelledby="aboutTitle">
+          <div class="section-heading">
+            <div>
+              <p class="section-kicker">Contexto académico</p>
+              <h2 id="aboutTitle">Acerca del proyecto</h2>
+            </div>
+          </div>
+          <div class="about-grid">
+            <article>
+              <span class="material-symbols-outlined">school</span>
+              <h3>Trabajo Fin de Máster</h3>
+              <p>ISEU+ es una plataforma académica creada para facilitar el acceso ciudadano a datos socioeconómicos urbanos que se publican de forma dispersa.</p>
+            </article>
+            <article>
+              <span class="material-symbols-outlined">hub</span>
+              <h3>Qué significa el «+»</h3>
+              <p>Representa la integración de múltiples fuentes, territorios y formas de consulta en una única experiencia. La plataforma no calcula un índice sintético.</p>
+            </article>
+            <article>
+              <span class="material-symbols-outlined">database</span>
+              <h3>Cómo se obtienen los datos</h3>
+              <p>Los datos proceden de INE, SEPE y portales municipales; se extraen, limpian y normalizan mediante un pipeline en la nube antes de consultarse en esta web.</p>
+            </article>
+          </div>
+          <p class="academic-note">Los resultados deben interpretarse atendiendo a la fuente, el periodo y la cobertura indicada en cada visualización. La tecnología es el medio para hacer los datos comprensibles, no el resultado final del proyecto.</p>
         </section>
       </section>
     </main>

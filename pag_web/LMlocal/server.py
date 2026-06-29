@@ -596,6 +596,8 @@ def build_dashboard_payload() -> dict:
     city_rows = []
     city_update_rows = []
     catalog_rows = []
+    analytics_rows = []
+    accident_heatmap_rows = []
     detail_rows = int(sqlite_report.get("detail_rows_loaded") or 0)
 
     if DB_PATH.exists():
@@ -741,6 +743,7 @@ def build_dashboard_payload() -> dict:
                             metric,
                             source,
                             period,
+                            unit,
                             extracted_at,
                             CASE
                                 WHEN LOWER(geo) LIKE '%barcelona%' THEN 'Barcelona'
@@ -763,10 +766,55 @@ def build_dashboard_payload() -> dict:
                         MAX(period) AS latest_period,
                         MAX(extracted_at) AS received_at,
                         COUNT(*) AS rows,
-                        COUNT(DISTINCT city) AS city_count
+                        COUNT(DISTINCT city) AS city_count,
+                        MIN(unit) AS unit
                     FROM enriched
                     GROUP BY variable
                     ORDER BY variable
+                    """
+                ).fetchall()
+            ]
+            analytics_rows = [
+                dict(row)
+                for row in conn.execute(
+                    """
+                    SELECT city, variable, date AS period, value, unit, source
+                    FROM indicators
+                    WHERE COALESCE(TRIM(district), '') = ''
+                      AND variable IN (
+                        'unemployed_registered', 'contracts_registered', 'job_seekers',
+                        'income', 'income_median', 'income_per_person',
+                        'gini_inequality', 'inequality_p80p20',
+                        'traffic_accidents', 'mobility_resources_records'
+                      )
+                    ORDER BY period, city, variable
+                    """
+                ).fetchall()
+            ]
+            accident_heatmap_rows = [
+                dict(row)
+                for row in conn.execute(
+                    """
+                    SELECT
+                        CASE
+                            WHEN LOWER(geo) LIKE '%barcelona%' THEN 'Barcelona'
+                            WHEN LOWER(geo) LIKE '%madrid%' THEN 'Madrid'
+                            WHEN LOWER(geo) LIKE '%valencia%' THEN 'Valencia'
+                            WHEN LOWER(geo) LIKE '%sevilla%' THEN 'Sevilla'
+                            WHEN LOWER(geo) LIKE '%bilbao%' THEN 'Bilbao'
+                            WHEN LOWER(geo) LIKE '%malaga%' OR LOWER(geo) LIKE '%málaga%' THEN 'Malaga'
+                            WHEN LOWER(geo) LIKE '%zaragoza%' THEN 'Zaragoza'
+                            ELSE NULL
+                        END AS city,
+                        SUBSTR(period, 1, 7) AS period,
+                        SUM(value) AS value
+                    FROM indicadores
+                    WHERE variable = 'Accidentes de trafico'
+                      AND unit = 'accidents'
+                      AND period IS NOT NULL AND LENGTH(period) >= 7
+                    GROUP BY city, SUBSTR(period, 1, 7)
+                    HAVING city IS NOT NULL
+                    ORDER BY period, city
                     """
                 ).fetchall()
             ]
@@ -828,6 +876,10 @@ def build_dashboard_payload() -> dict:
             "topVariables": top_variable_rows,
             "periods": period_rows,
             "sourceVariables": source_variable_rows,
+        },
+        "analytics": {
+            "series": analytics_rows,
+            "accidentHeatmap": accident_heatmap_rows,
         },
         "pipeline": {
             "apis": execution_report.get("resumen", {}),

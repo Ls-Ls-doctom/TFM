@@ -68,8 +68,11 @@ class handler(BaseHTTPRequestHandler):
 
             if use_stream:
                 self._sse_headers()
-                for event_name, event_data in answer_with_gemini_stream(payload):
-                    self._send_event(event_name, event_data)
+                try:
+                    for event_name, event_data in answer_with_gemini_stream(payload):
+                        self._send_event(event_name, event_data)
+                finally:
+                    self.close_connection = True
             else:
                 answer, trace = answer_with_gemini(payload)
                 self._json({"answer": answer, "provider": "google-gemini", "trace": trace})
@@ -89,8 +92,9 @@ class handler(BaseHTTPRequestHandler):
     def _sse_headers(self):
         self.send_response(200)
         self.send_header("Content-Type", "text/event-stream; charset=utf-8")
-        self.send_header("Cache-Control", "no-cache")
-        self.send_header("Connection", "keep-alive")
+        self.send_header("Cache-Control", "no-cache, no-transform")
+        self.send_header("Connection", "close")
+        self.send_header("X-Accel-Buffering", "no")
         self.send_header("Access-Control-Allow-Origin", "*")
         self.end_headers()
 
