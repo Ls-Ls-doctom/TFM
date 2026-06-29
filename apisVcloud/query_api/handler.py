@@ -285,6 +285,7 @@ def build_dashboard() -> dict[str, Any]:
               AND variable IN (
                 'unemployed_registered', 'contracts_registered', 'job_seekers',
                 'income', 'income_median', 'income_per_person',
+                'net_income_household', 'net_income_per_capita', 'net_income_consumption_unit',
                 'gini_inequality', 'inequality_p80p20',
                 'traffic_accidents', 'mobility_resources_records'
               )

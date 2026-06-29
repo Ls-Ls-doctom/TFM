@@ -1183,7 +1183,7 @@ function filterAnalyticsRows(rows) {
 function renderAnalyticalVisuals() {
   const rows = filterAnalyticsRows(analyticsRows());
   const employmentRows = rows.filter((row) => ["unemployed_registered", "contracts_registered", "job_seekers"].includes(row.variable));
-  const incomeRows = rows.filter((row) => ["income", "income_median", "income_per_person", "gini_inequality", "inequality_p80p20"].includes(row.variable));
+  const incomeRows = rows.filter((row) => ["income", "income_median", "income_per_person", "net_income_household", "net_income_per_capita", "net_income_consumption_unit", "gini_inequality", "inequality_p80p20"].includes(row.variable));
   const mobilityRows = rows.filter((row) => ["traffic_accidents", "mobility_resources_records"].includes(row.variable));
 
   renderSeriesLineChart(unemploymentTrend, employmentRows
@@ -1350,7 +1350,7 @@ function latestRowsByCity(rows, preferredVariables) {
 
 function renderIncomeMap(container, rows) {
   if (!container) return;
-  const latest = latestRowsByCity(rows, ["income", "income_per_person", "income_median"]);
+  const latest = latestRowsByCity(rows, ["income", "income_per_person", "income_median", "net_income_household", "net_income_per_capita", "net_income_consumption_unit"]);
   if (!latest.length) {
     container.innerHTML = `<div class="viz-empty">No hay renta municipal comparable para los filtros seleccionados.</div>`;
     return;
@@ -1367,7 +1367,7 @@ function renderIncomeMap(container, rows) {
     const ratio = (Number(row.value) - min) / Math.max(1, max - min);
     const size = 54 + ratio * 26;
     return `<div class="map-city" style="left:${left}%;top:${top}%;width:${size}px;height:${size}px" title="${escapeHtml(`${row.city}: ${formatNumber(row.value)} ${row.unit || "€"}, ${formatDataPeriod(row.period)}`)}"><div><strong>${escapeHtml(String(row.city))}</strong><span>${escapeHtml(compactNumber(row.value))} €</span></div></div>`;
-  }).join("")}</div><p class="chart-caption">Mapa esquemático: el tamaño representa el último valor disponible. Solo aparecen ciudades con datos publicados.</p>`;
+  }).join("")}</div><p class="chart-caption">Tamaño proporcional al último dato disponible. Fuente: Open Data municipal (Barcelona, Valencia) e INE Indicadores Urbanos (resto de ciudades).</p>`;
 }
 
 function joinIncomeAndGini(rows) {
@@ -1375,7 +1375,7 @@ function joinIncomeAndGini(rows) {
   rows.forEach((row) => {
     const key = `${row.city}|${row.period}`;
     const current = byKey.get(key) || { city: row.city, period: row.period };
-    if (["income", "income_per_person", "income_median"].includes(row.variable) && current.income == null) current.income = Number(row.value);
+    if (["income", "income_per_person", "income_median", "net_income_household", "net_income_per_capita", "net_income_consumption_unit"].includes(row.variable) && current.income == null) current.income = Number(row.value);
     if (row.variable === "gini_inequality") current.gini = Number(row.value);
     byKey.set(key, current);
   });
