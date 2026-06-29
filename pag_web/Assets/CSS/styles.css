@@ -2315,6 +2315,51 @@ select:focus,
   font-size: 8px;
 }
 
+.income-ranking {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 4px 0 8px;
+}
+
+.ranking-row {
+  display: grid;
+  grid-template-columns: 80px 1fr 68px;
+  align-items: center;
+  gap: 10px;
+}
+
+.ranking-city {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ranking-bar-wrap {
+  background: var(--border-subtle, #e8e0d6);
+  border-radius: 3px;
+  height: 16px;
+  overflow: hidden;
+}
+
+.ranking-bar {
+  height: 100%;
+  background: var(--accent-green, #3d6b4f);
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+.ranking-value {
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-secondary);
+  text-align: right;
+  white-space: nowrap;
+}
+
 .section-heading--actions {
   align-items: flex-end;
 }

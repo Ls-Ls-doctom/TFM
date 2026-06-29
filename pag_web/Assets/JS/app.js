@@ -1202,9 +1202,8 @@ function renderAnalyticalVisuals() {
       zeroBaseline: true
     });
   renderEmploymentComparison(employmentComparison, employmentRows);
-  renderIncomeMap(incomeMap, incomeRows);
-  renderIncomeGiniScatter(incomeGiniScatter, incomeRows);
-  renderInequalityTrend(inequalityTrend, incomeRows);
+  renderIncomeRanking(incomeMap, incomeRows);
+  renderIncomeTrend(incomeGiniScatter, incomeRows);
   renderMobilityCoverage(dashboardPayload?.analytics || {});
   renderAccidentHeatmap(accidentHeatmap, dashboardPayload?.analytics?.accidentHeatmap || []);
   renderAccidentMobilityScatter(accidentMobilityScatter, mobilityRows);
@@ -1348,26 +1347,44 @@ function latestRowsByCity(rows, preferredVariables) {
   return selected;
 }
 
-function renderIncomeMap(container, rows) {
+function renderIncomeRanking(container, rows) {
   if (!container) return;
-  const latest = latestRowsByCity(rows, ["income", "income_per_person", "income_median", "net_income_household", "net_income_per_capita", "net_income_consumption_unit"]);
+  const incomeVars = ["income", "income_per_person", "income_median", "net_income_household", "net_income_per_capita", "net_income_consumption_unit"];
+  const latest = latestRowsByCity(rows, incomeVars);
   if (!latest.length) {
-    container.innerHTML = `<div class="viz-empty">No hay renta municipal comparable para los filtros seleccionados.</div>`;
+    container.innerHTML = `<div class="viz-empty">No hay datos de renta para los filtros seleccionados.</div>`;
     return;
   }
-  const positions = {
-    Bilbao: [35, 18], Zaragoza: [58, 38], Barcelona: [78, 42], Madrid: [43, 52],
-    Valencia: [69, 66], Sevilla: [32, 80], Malaga: [46, 88], Málaga: [46, 88]
-  };
-  const values = latest.map((row) => Number(row.value) || 0);
-  const min = Math.min(...values);
-  const max = Math.max(...values);
-  container.innerHTML = `<div class="city-map" role="img" aria-label="Mapa esquemático de renta disponible">${latest.map((row) => {
-    const [left, top] = positions[row.city] || [50, 50];
-    const ratio = (Number(row.value) - min) / Math.max(1, max - min);
-    const size = 54 + ratio * 26;
-    return `<div class="map-city" style="left:${left}%;top:${top}%;width:${size}px;height:${size}px" title="${escapeHtml(`${row.city}: ${formatNumber(row.value)} ${row.unit || "€"}, ${formatDataPeriod(row.period)}`)}"><div><strong>${escapeHtml(String(row.city))}</strong><span>${escapeHtml(compactNumber(row.value))} €</span></div></div>`;
-  }).join("")}</div><p class="chart-caption">Tamaño proporcional al último dato disponible. Fuente: Open Data municipal (Barcelona, Valencia) e INE Indicadores Urbanos (resto de ciudades).</p>`;
+  const sorted = [...latest].sort((a, b) => Number(b.value) - Number(a.value));
+  const max = Math.max(...sorted.map((r) => Number(r.value)));
+  const bars = sorted.map((row) => {
+    const pct = ((Number(row.value) / max) * 100).toFixed(1);
+    return `<div class="ranking-row">
+      <span class="ranking-city">${escapeHtml(String(row.city))}</span>
+      <div class="ranking-bar-wrap"><div class="ranking-bar" style="width:${pct}%"></div></div>
+      <span class="ranking-value">${escapeHtml(compactNumber(row.value))} €</span>
+    </div>`;
+  }).join("");
+  container.innerHTML = `<div class="income-ranking">${bars}</div><p class="chart-caption">Último dato disponible por ciudad. Fuente: Open Data municipal (Barcelona, Valencia) e INE Indicadores Urbanos (resto).</p>`;
+}
+
+function renderIncomeTrend(container, rows) {
+  const trendRows = rows
+    .filter((row) => row.variable === "net_income_household")
+    .map((row) => ({ ...row, series: row.city }));
+  const municipalRows = rows
+    .filter((row) => ["income", "income_median"].includes(row.variable))
+    .map((row) => ({ ...row, series: row.city }));
+  const citiesWithMunicipal = new Set(municipalRows.map((r) => r.city));
+  const combined = [
+    ...trendRows.filter((r) => !citiesWithMunicipal.has(r.city)),
+    ...municipalRows
+  ];
+  renderSeriesLineChart(container, combined, {
+    empty: "No hay datos de evolución de renta para los filtros seleccionados.",
+    unit: "€/año",
+    caption: "Renta media del hogar. Fuente: INE Indicadores Urbanos (series homogéneas 2011–2023)."
+  });
 }
 
 function joinIncomeAndGini(rows) {
@@ -1382,37 +1399,6 @@ function joinIncomeAndGini(rows) {
   return [...byKey.values()].filter((row) => Number.isFinite(row.income) && Number.isFinite(row.gini));
 }
 
-function renderIncomeGiniScatter(container, rows) {
-  renderScatterPlot(container, joinIncomeAndGini(rows), {
-    xKey: "income", yKey: "gini", labelKey: "city",
-    xLabel: "Renta", yLabel: "Gini",
-    empty: "No existen observaciones de renta y Gini para el mismo territorio y periodo."
-  });
-}
-
-function renderInequalityTrend(container, rows) {
-  const labels = { gini_inequality: "Gini", inequality_p80p20: "P80/P20" };
-  const selected = rows.filter((row) => labels[row.variable]);
-  const grouped = new Map();
-  selected.forEach((row) => {
-    const key = `${row.city}|${row.variable}`;
-    const list = grouped.get(key) || [];
-    list.push(row);
-    grouped.set(key, list);
-  });
-  const indexed = [];
-  grouped.forEach((list) => {
-    list.sort((a, b) => String(a.period).localeCompare(String(b.period)));
-    const base = Number(list[0]?.value) || 1;
-    list.forEach((row) => indexed.push({ ...row, value: (Number(row.value) / base) * 100, series: `${labels[row.variable]} · ${row.city}` }));
-  });
-  renderSeriesLineChart(container, indexed, {
-    empty: "No hay series de desigualdad para los filtros seleccionados.",
-    unit: "índice",
-    zeroBaseline: false,
-    caption: "Series expresadas como índice base 100 en el primer año disponible para comparar su evolución sin mezclar escalas distintas."
-  });
-}
 
 function renderScatterPlot(container, rows, options) {
   if (!container) return;
