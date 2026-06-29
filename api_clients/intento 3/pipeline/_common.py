@@ -7,6 +7,7 @@ import sqlite3
 import subprocess
 import sys
 import unicodedata
+from numbers import Number
 from datetime import datetime
 from pathlib import Path
 from typing import Any
@@ -154,13 +155,27 @@ def read_sepe_csv(path: Path) -> pd.DataFrame:
 def to_number(value: object) -> float | None:
     if pd.isna(value):
         return None
+    if isinstance(value, Number):
+        return float(value)
     text = str(value).strip()
-    if not text:
+    if not text or text.lower() in {"nan", "n/a", "n.d.", "nd", "..", ":"}:
         return None
     if text.startswith("<"):
         text = text[1:].strip()
-    text = text.replace(".", "").replace(",", ".")
-    text = re.sub(r"[^0-9.\-]", "", text)
+    text = re.sub(r"[^0-9.,\-]", "", text)
+    if "," in text and "." in text:
+        if text.rfind(",") > text.rfind("."):
+            text = text.replace(".", "").replace(",", ".")
+        else:
+            text = text.replace(",", "")
+    elif "," in text:
+        text = text.replace(".", "").replace(",", ".")
+    elif text.count(".") > 1:
+        text = text.replace(".", "")
+    elif text.count(".") == 1:
+        whole, decimal = text.split(".", 1)
+        if len(decimal) == 3 and 1 <= len(whole.lstrip("-")) <= 3:
+            text = whole + decimal
     if text in {"", "-", "."}:
         return None
     try:

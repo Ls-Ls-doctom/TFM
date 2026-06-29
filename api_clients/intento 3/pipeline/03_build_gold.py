@@ -17,6 +17,7 @@ def main() -> int:
     sources: list[dict[str, Any]] = []
 
     rows.extend(gold_from_ine(sources))
+    rows.extend(gold_from_ine_extended(sources))
     rows.extend(gold_from_sepe(sources))
     rows.extend(gold_from_municipal(sources))
 
@@ -64,6 +65,41 @@ def gold_from_ine(sources: list[dict[str, Any]]) -> list[dict[str, Any]]:
                 )
             )
         sources.append(source_item(path, len(df), "INE poblacion total municipal"))
+    return rows
+
+
+def gold_from_ine_extended(sources: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    rows: list[dict[str, Any]] = []
+    files = [
+        "indicadores_urbanos.csv",
+        "ipc_provincial_anual.csv",
+        "ipva_municipal.csv",
+        "dirce_locales_provinciales.csv",
+    ]
+    for filename in files:
+        path = SILVER_DIR / "ine" / filename
+        if not path.exists():
+            continue
+        df = pd.read_csv(path, low_memory=False)
+        required = {"city", "variable", "value", "date", "source", "quality_score", "category", "unit"}
+        if df.empty or not required.issubset(df.columns):
+            continue
+        for _, row in df.iterrows():
+            rows.append(
+                indicator(
+                    row["city"],
+                    "",
+                    str(row["variable"]),
+                    row["value"],
+                    row["date"],
+                    str(row["source"]),
+                    int(row["quality_score"]),
+                    str(row["category"]),
+                    str(row["unit"]),
+                )
+            )
+        scope_note = "Incluye proxies provinciales correctamente etiquetados." if "provincial" in filename else "Cobertura municipal comparable."
+        sources.append(source_item(path, len(df), f"INE ampliado {filename}. {scope_note}"))
     return rows
 
 

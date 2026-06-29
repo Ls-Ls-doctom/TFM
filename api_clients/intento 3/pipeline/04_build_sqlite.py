@@ -298,6 +298,7 @@ def observations_from_gold(indicators: pd.DataFrame) -> pd.DataFrame:
     if indicators.empty:
         return empty_observations()
     df = indicators.copy()
+    proxy = df["source"].astype(str).str.contains("proxy", case=False, na=False)
     return pd.DataFrame(
         {
             "layer": "gold",
@@ -314,10 +315,14 @@ def observations_from_gold(indicators: pd.DataFrame) -> pd.DataFrame:
             "value": df["value"],
             "unit": df["unit"],
             "category": df["category"],
-            "granularity": "city",
+            "granularity": proxy.map(lambda value: "province_proxy" if value else "city"),
             "quality": df["quality_score"].map(quality_label),
             "source_file": "data_lake/gold/indicators.csv",
-            "notes": "Indicador Gold comparable entre ciudades.",
+            "notes": proxy.map(
+                lambda value: "Proxy provincial asociado a la ciudad; no debe interpretarse como medicion municipal."
+                if value
+                else "Indicador Gold con cobertura municipal o urbana comparable."
+            ),
             "extracted_at": now(),
         }
     )
@@ -762,8 +767,42 @@ def variable_label(value: object) -> str:
         "gini_inequality": "Desigualdad Gini",
         "inequality_p80p20": "Desigualdad P80/P20",
         "traffic_accidents": "Accidentes de trafico",
+        "population_resident": "Poblacion residente",
+        "median_age": "Edad mediana",
+        "life_expectancy": "Esperanza de vida",
+        "households_total": "Numero de hogares",
+        "household_size": "Tamano medio del hogar",
+        "vacant_dwellings_pct": "Viviendas vacias",
+        "rent_mean_eur_m2_year": "Alquiler medio anual por m2",
+        "rent_mean_monthly": "Alquiler medio mensual",
+        "rent_median_monthly": "Mediana del alquiler mensual",
+        "house_price_mean": "Precio medio de la vivienda",
+        "house_price_mean_m2": "Precio medio de vivienda por m2",
+        "unemployment_rate": "Tasa de desempleo",
+        "activity_rate": "Tasa de actividad",
+        "services_employment_share": "Empleo en servicios",
+        "industry_employment_share": "Empleo en industria",
+        "net_income_household": "Renta neta media por hogar",
+        "net_income_per_capita": "Renta neta media por habitante",
+        "net_income_consumption_unit": "Renta neta por unidad de consumo",
+        "commute_car_pct": "Desplazamientos al trabajo en coche",
+        "commute_walk_pct": "Desplazamientos al trabajo a pie",
+        "commute_public_transport_pct": "Desplazamientos al trabajo en transporte publico",
+        "commute_duration_minutes": "Duracion del desplazamiento al trabajo",
+        "tourism_overnight_stays": "Pernoctaciones turisticas",
+        "tourism_beds": "Plazas turisticas",
+        "cpi_general_change_pct": "Variacion anual del IPC general",
+        "cpi_food_change_pct": "Variacion anual del IPC de alimentos",
+        "cpi_housing_energy_change_pct": "Variacion anual del IPC de vivienda y energia",
+        "cpi_transport_change_pct": "Variacion anual del IPC de transporte",
+        "cpi_hospitality_change_pct": "Variacion anual del IPC de restauracion y alojamiento",
+        "rent_price_change_pct": "Variacion anual del precio del alquiler",
+        "rent_price_index": "Indice del precio del alquiler",
+        "business_local_units": "Locales empresariales activos",
+        "business_local_units_no_employees": "Locales empresariales sin asalariados",
     }
-    return labels.get(str(value), str(value))
+    raw = str(value)
+    return labels.get(raw, raw.replace("_", " ").capitalize())
 
 
 def metric_label(value: object) -> str:
@@ -780,8 +819,27 @@ def metric_label(value: object) -> str:
         "gini_inequality": "Indice de Gini de desigualdad de renta por ciudad y ano",
         "inequality_p80p20": "Ratio P80/P20 de desigualdad de renta por ciudad y ano",
         "traffic_accidents": "Accidentes de trafico registrados por ciudad y ano",
+        "population_resident": "Poblacion residente anual de Indicadores Urbanos",
+        "rent_mean_monthly": "Gasto medio mensual de alquiler de vivienda habitual",
+        "rent_median_monthly": "Mediana mensual de alquiler de vivienda habitual",
+        "house_price_mean": "Precio medio de compraventa de vivienda",
+        "house_price_mean_m2": "Precio medio de compraventa por metro cuadrado",
+        "unemployment_rate": "Porcentaje de poblacion activa desempleada",
+        "activity_rate": "Tasa de actividad urbana",
+        "services_employment_share": "Proporcion del empleo urbano en el sector servicios",
+        "industry_employment_share": "Proporcion del empleo urbano en industria",
+        "net_income_household": "Renta neta media anual de los hogares",
+        "net_income_per_capita": "Renta neta media anual por habitante",
+        "net_income_consumption_unit": "Renta neta media anual por unidad de consumo",
+        "tourism_overnight_stays": "Numero anual de pernoctaciones turisticas",
+        "tourism_beds": "Plazas disponibles en establecimientos turisticos",
+        "cpi_general_change_pct": "Variacion de la media anual del IPC provincial general",
+        "cpi_housing_energy_change_pct": "Variacion del IPC provincial de vivienda, agua, electricidad y gas",
+        "rent_price_change_pct": "Variacion anual municipal del IPVA",
+        "business_local_units": "Unidades locales activas en la provincia asociada",
     }
-    return labels.get(str(value), str(value))
+    raw = str(value)
+    return labels.get(raw, variable_label(raw))
 
 
 if __name__ == "__main__":
