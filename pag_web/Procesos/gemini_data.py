@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import time
 import urllib.error
 import urllib.parse
@@ -223,20 +224,27 @@ def gemini_json(
     temperature: float,
     max_tokens: int,
 ) -> dict[str, Any]:
-    text = gemini_request(
-        system_instruction,
-        prompt,
-        {
-            "temperature": temperature,
-            "maxOutputTokens": max_tokens,
-            "responseMimeType": "application/json",
-            "responseJsonSchema": schema,
-        },
-    )
-    try:
-        result = json.loads(text)
-    except json.JSONDecodeError as error:
-        raise RuntimeError("Gemini no devolvió un plan JSON válido.") from error
+    generation_config = {
+        "temperature": temperature,
+        "maxOutputTokens": max_tokens,
+        "responseMimeType": "application/json",
+        "responseJsonSchema": schema,
+    }
+    result = None
+    last_error: json.JSONDecodeError | None = None
+    for _attempt in range(2):
+        text = gemini_request(system_instruction, prompt, generation_config).strip()
+        if text.startswith("```"):
+            text = re.sub(r"^```(?:json)?\s*|\s*```$", "", text, flags=re.IGNORECASE).strip()
+        start, end = text.find("{"), text.rfind("}")
+        candidate = text[start:end + 1] if start >= 0 and end > start else text
+        try:
+            result = json.loads(candidate)
+            break
+        except json.JSONDecodeError as error:
+            last_error = error
+    if result is None:
+        raise RuntimeError("Gemini no devolvió un plan JSON válido tras reintentarlo.") from last_error
     if not isinstance(result, dict):
         raise RuntimeError("Gemini devolvió un plan con formato inesperado.")
     return result
