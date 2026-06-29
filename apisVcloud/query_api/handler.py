@@ -301,6 +301,36 @@ def build_dashboard() -> dict[str, Any]:
             HAVING {silver_city_case} IS NOT NULL
             ORDER BY period, city
         """,
+        "cpi_series": f"""
+            SELECT {silver_city_case} city, substr(period, 1, 4) year,
+                   avg(value) value
+            FROM {indicadores}
+            WHERE variable = 'Cpi general index'
+              AND period IS NOT NULL AND length(period) >= 4
+            GROUP BY 1, 2
+            HAVING {silver_city_case} IS NOT NULL
+            ORDER BY year, city
+        """,
+        "rent_series": f"""
+            SELECT {silver_city_case} city, substr(period, 1, 4) year,
+                   avg(value) value
+            FROM {indicadores}
+            WHERE variable = 'Alquiler medio mensual'
+              AND period IS NOT NULL AND length(period) >= 4
+            GROUP BY 1, 2
+            HAVING {silver_city_case} IS NOT NULL
+            ORDER BY year, city
+        """,
+        "tourism_series": f"""
+            SELECT {silver_city_case} city, substr(period, 1, 4) year,
+                   avg(value) value
+            FROM {indicadores}
+            WHERE variable = 'Pernoctaciones turisticas'
+              AND period IS NOT NULL AND length(period) >= 4
+            GROUP BY 1, 2
+            HAVING {silver_city_case} IS NOT NULL
+            ORDER BY year, city
+        """,
     }
 
     # detailRows = Gold indicators + semantic_obs + any silver_* tables in Athena
@@ -374,6 +404,9 @@ def build_dashboard() -> dict[str, Any]:
         "analytics": {
             "series": result.get("analytics_series", []),
             "accidentHeatmap": result.get("accident_heatmap", []),
+            "cpiSeries": result.get("cpi_series", []),
+            "rentSeries": result.get("rent_series", []),
+            "tourismSeries": result.get("tourism_series", []),
         },
         "pipeline": {"apis": {}, "dataLoad": {"backend": "athena"}},
     }

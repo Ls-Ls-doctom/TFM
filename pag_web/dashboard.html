@@ -34,6 +34,10 @@
           <span class="material-symbols-outlined">monitoring</span>
           Renta y desigualdad
         </a>
+        <a class="screen-tab" href="#precios">
+          <span class="material-symbols-outlined">price_change</span>
+          Precios y turismo
+        </a>
         <a class="screen-tab" href="#movilidad">
           <span class="material-symbols-outlined">commute</span>
           Movilidad
@@ -194,6 +198,30 @@
             <article class="dashboard-panel chart-panel">
               <div class="panel-heading"><h3>Evolución de la desigualdad</h3><span>Gini y P80/P20</span></div>
               <div id="inequalityTrend" class="data-viz"></div>
+            </article>
+          </div>
+        </section>
+
+        <section class="dashboard-section" id="precios" aria-labelledby="pricesTitle">
+          <div class="section-heading">
+            <div>
+              <p class="section-kicker">Proxy provincial · Fuente: INE IPC e Indicadores Urbanos</p>
+              <h2 id="pricesTitle">Precios, alquiler y turismo</h2>
+              <p>Evolución del IPC general, precio del alquiler y pernoctaciones turísticas por ciudad. El IPC utiliza datos provinciales como aproximación urbana.</p>
+            </div>
+          </div>
+          <div class="analytics-layout analytics-layout--two">
+            <article class="dashboard-panel chart-panel chart-panel--wide">
+              <div class="panel-heading"><h3>IPC general por ciudad</h3><span>índice anual (base 2021)</span></div>
+              <div id="cpiTrend" class="data-viz" aria-live="polite"></div>
+            </article>
+            <article class="dashboard-panel chart-panel">
+              <div class="panel-heading"><h3>Alquiler medio mensual</h3><span>€/mes</span></div>
+              <div id="rentTrend" class="data-viz"></div>
+            </article>
+            <article class="dashboard-panel chart-panel chart-panel--wide">
+              <div class="panel-heading"><h3>Pernoctaciones turísticas</h3><span>viajeros por año</span></div>
+              <div id="tourismTrend" class="data-viz"></div>
             </article>
           </div>
         </section>

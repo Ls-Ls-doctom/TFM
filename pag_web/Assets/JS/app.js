@@ -53,6 +53,9 @@ const inequalityTrend = document.querySelector("#inequalityTrend");
 const accidentHeatmap = document.querySelector("#accidentHeatmap");
 const accidentMobilityScatter = document.querySelector("#accidentMobilityScatter");
 const mobilityCoverageNote = document.querySelector("#mobilityCoverageNote");
+const cpiTrend = document.querySelector("#cpiTrend");
+const rentTrend = document.querySelector("#rentTrend");
+const tourismTrend = document.querySelector("#tourismTrend");
 const menuButtons = document.querySelectorAll(".menu-button");
 const sidebarBackdrop = document.querySelector(".sidebar-backdrop");
 const sidebarLinks = document.querySelectorAll(".sidebar a");
@@ -1205,6 +1208,24 @@ function renderAnalyticalVisuals() {
   renderMobilityCoverage(dashboardPayload?.analytics || {});
   renderAccidentHeatmap(accidentHeatmap, dashboardPayload?.analytics?.accidentHeatmap || []);
   renderAccidentMobilityScatter(accidentMobilityScatter, mobilityRows);
+
+  const yearToDate = (row) => ({ ...row, period: (row.year || row.period || "") + "-01-01" });
+  const cpiRows = filterAnalyticsRows((dashboardPayload?.analytics?.cpiSeries || []).map(yearToDate));
+  const rentRows = filterAnalyticsRows((dashboardPayload?.analytics?.rentSeries || []).map(yearToDate));
+  const tourismRows = filterAnalyticsRows((dashboardPayload?.analytics?.tourismSeries || []).map(yearToDate));
+  renderSeriesLineChart(cpiTrend, cpiRows.map((row) => ({ ...row, series: row.city })), {
+    empty: "No hay datos de IPC para los filtros seleccionados.",
+    unit: "índice",
+    caption: "Dato provincial como proxy urbano. Base 2021 = 100."
+  });
+  renderSeriesLineChart(rentTrend, rentRows.map((row) => ({ ...row, series: row.city })), {
+    empty: "No hay datos de alquiler para los filtros seleccionados.",
+    unit: "€/mes"
+  });
+  renderSeriesLineChart(tourismTrend, tourismRows.map((row) => ({ ...row, series: row.city })), {
+    empty: "No hay datos de turismo para los filtros seleccionados.",
+    unit: "pernoctaciones"
+  });
 
   if (filterStatus) {
     const cityText = analyticsFilters.city === "all" ? "todas las ciudades" : analyticsFilters.city;
