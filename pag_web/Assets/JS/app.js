@@ -231,7 +231,7 @@ const sampleAnswers = [
       <div class="answer-panel">
         <div class="metric-row"><span>Equipamientos de salud</span><strong>Open Data BCN cuando exista</strong></div>
         <div class="metric-row"><span>Población de referencia</span><strong>INE / Idescat según territorio</strong></div>
-        <div class="metric-row"><span>Lectura ISEU</span><strong>Cobertura + presion demografica</strong></div>
+        <div class="metric-row"><span>Lectura ISEU</span><strong>Cobertura + presión demográfica</strong></div>
       </div>
       <p>El panel lateral queda filtrado para sanidad, con datos listos para cruzarse con otros indicadores.</p>
     `
@@ -255,7 +255,7 @@ const sampleAnswers = [
     html: `
       <p>Ahora mismo conviene priorizar variables con cobertura estable y trazabilidad clara.</p>
       <div class="answer-panel">
-        <div class="metric-row"><span>Fuentes mas solidas</span><strong>SEPE, MITMA/MIVAU, INE, REE</strong></div>
+        <div class="metric-row"><span>Fuentes más sólidas</span><strong>SEPE, MITMA/MIVAU, INE, REE</strong></div>
         <div class="metric-row"><span>Fuentes parciales</span><strong>Idescat, Open Data BCN, Seguridad Social</strong></div>
         <div class="metric-row"><span>Regla de respuesta</span><strong>Fuente + fecha + territorio + confianza</strong></div>
       </div>
@@ -1058,11 +1058,11 @@ function renderCityUpdates(updates) {
         <span>${formatNumber(item.rows)} filas</span>
       </div>
       <div class="city-update-received">
-        <span>Recibido por ultima vez</span>
+        <span>Recibido por última vez</span>
         <time datetime="${escapeHtml(String(item.received_at || ""))}">${escapeHtml(formatReceivedAt(item.received_at))}</time>
       </div>
       <div class="city-update-meta">
-        <span>Periodo mas reciente: <strong>${escapeHtml(formatDataPeriod(item.latest_period))}</strong></span>
+        <span>Periodo más reciente: <strong>${escapeHtml(formatDataPeriod(item.latest_period))}</strong></span>
         <span>${escapeHtml(String(item.sources || "Fuente n/d").replaceAll(",", " · "))}</span>
       </div>
     </article>
@@ -1585,7 +1585,7 @@ function renderTraceLog(trace) {
 
   if (trace?.analysis) {
     const analysisText = trace.analysis.enabled
-      ? `${trace.analysis.items} analisis ejecutados`
+      ? `${trace.analysis.items} análisis ejecutados`
       : "no requerido";
     statusRows.push(`
       <div class="trace-row">
@@ -1902,7 +1902,7 @@ function getAssistantViewContent(view = activeView) {
   const data = getViewData();
   const requestSummary = lastUserQuestion
     ? `Resumen de la consulta: <strong>${lastUserQuestion}</strong>`
-    : "Resumen de la consulta: el usuario aun no ha escrito una pregunta.";
+    : "Resumen de la consulta: el usuario aún no ha escrito una pregunta.";
 
   if (view === "tablas") {
     if (lastQueryRows.length > 0) {
@@ -1934,28 +1934,8 @@ function getAssistantViewContent(view = activeView) {
     `;
   }
 
-  const answer = lastAssistantText || `
-    <p>Haz una pregunta y puedo transformar la respuesta en tabla o grafico desde el panel lateral.</p>
-    ${renderSummary(data)}
-  `;
-  if (!lastLocalData?.table?.length) {
-    return answer;
-  }
-  return `
-    ${answer}
-    <section class="answer-evidence" aria-label="Evidencia utilizada en la respuesta">
-      <div class="evidence-heading">
-        <div>
-          <span>Evidencia utilizada</span>
-          <h3>Datos que sostienen la recomendacion</h3>
-        </div>
-        <strong>${escapeHtml(String(lastLocalData.confidence || "Media"))}</strong>
-      </div>
-      ${renderDataTable(lastLocalData)}
-      ${renderChart(lastLocalData)}
-      <p class="evidence-source">Fuente: ${escapeHtml(String(lastLocalData.source || "Base de datos"))}. La tabla conserva territorio, periodo y calidad del dato.</p>
-    </section>
-  `;
+  const answer = lastAssistantText || `<p>Escribe una pregunta para ver la respuesta aquí. Los datos también aparecerán en las pestañas Tablas y Gráficos.</p>`;
+  return answer;
 }
 
 function updateLastAssistantView() {

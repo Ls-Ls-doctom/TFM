@@ -100,24 +100,24 @@
 
         <div class="kpi-grid public-kpis" aria-label="Alcance de los datos">
           <article class="kpi-card">
-            <span>Registros de indicadores</span>
-            <strong id="kpiIndicators">--</strong>
-            <small>Observaciones disponibles, no KPI distintos.</small>
-          </article>
-          <article class="kpi-card">
-            <span>Indicadores disponibles</span>
+            <span>Tipos de indicador distintos</span>
             <strong id="kpiVariables">--</strong>
-            <small>Variables económicas, laborales y urbanas.</small>
+            <small>Variables únicas: empleo, renta, IPC, alquiler, turismo…</small>
           </article>
           <article class="kpi-card">
-            <span>Ciudades analizadas</span>
+            <span>Ciudades cubiertas</span>
             <strong id="kpiCities">--</strong>
-            <small>La cobertura varía según el indicador.</small>
+            <small>Barcelona, Madrid, Valencia, Sevilla, Bilbao, Málaga y Zaragoza.</small>
           </article>
           <article class="kpi-card">
-            <span>Fuentes principales</span>
+            <span>Fuentes de datos</span>
             <strong id="kpiSources">--</strong>
-            <small>INE, SEPE y Open Data municipal.</small>
+            <small>INE, SEPE y portales de datos abiertos municipales.</small>
+          </article>
+          <article class="kpi-card">
+            <span>Observaciones almacenadas</span>
+            <strong id="kpiIndicators">--</strong>
+            <small>Filas individuales en la base de datos (una ciudad, un indicador, un periodo).</small>
           </article>
         </div>
 
@@ -269,25 +269,25 @@
         <section class="dashboard-section" id="datos" aria-labelledby="dataInfoTitle">
           <div class="section-heading">
             <div>
-              <p class="section-kicker">Información sobre los datos</p>
-              <h2 id="dataInfoTitle">Cobertura y calidad</h2>
-              <p>Este bloque describe la base que alimenta los análisis; no sustituye a los indicadores mostrados anteriormente.</p>
+              <p class="section-kicker">Transparencia sobre los datos</p>
+              <h2 id="dataInfoTitle">Cobertura por ciudad</h2>
+              <p>La cobertura no es igual en todas las ciudades: cada fuente publica indicadores distintos según su normativa y recursos. Esta sección muestra cuántos indicadores distintos están disponibles en cada municipio.</p>
             </div>
           </div>
           <div class="analytics-layout analytics-layout--two-even">
             <article class="dashboard-panel">
-              <div class="panel-heading"><h3>Cobertura de indicadores por ciudad</h3><span>sobre el total disponible</span></div>
+              <div class="panel-heading"><h3>Número de indicadores disponibles por ciudad</h3><span>tipos distintos</span></div>
               <div id="cityCoverageChart" class="source-chart"></div>
-              <p class="chart-explainer">Cada barra indica cuántos indicadores distintos están disponibles para la ciudad. No representa el porcentaje de registros almacenados.</p>
+              <p class="chart-explainer">Cantidad de variables únicas con al menos un valor para esa ciudad. Barcelona lidera por su portal Open Data con mayor cobertura histórica.</p>
             </article>
             <article class="dashboard-panel methodology-card">
-              <div class="panel-heading"><h3>Cómo se clasifica la calidad</h3><span>metodología</span></div>
+              <div class="panel-heading"><h3>Criterio de calidad del dato</h3><span>cómo se etiqueta cada registro</span></div>
               <dl>
-                <div><dt>Alta</dt><dd>Fuente oficial, periodo y territorio identificados y formato comparable.</dd></div>
-                <div><dt>Media</dt><dd>Fuente oficial con cobertura parcial o transformación adicional.</dd></div>
-                <div><dt>Baja</dt><dd>Registro incompleto o no comparable. No se utiliza en los gráficos principales.</dd></div>
+                <div><dt>Alta</dt><dd>Fuente oficial, periodo y territorio identificados con claridad y formato comparable entre ciudades.</dd></div>
+                <div><dt>Media</dt><dd>Fuente oficial con cobertura territorial parcial o que requiere transformación adicional para ser comparable.</dd></div>
+                <div><dt>Baja</dt><dd>Registro incompleto o no homogéneo. Se almacena pero no se usa en los gráficos principales.</dd></div>
               </dl>
-              <p>La etiqueta evalúa trazabilidad y completitud técnica; no certifica la exactitud estadística del organismo publicador.</p>
+              <p>La etiqueta mide trazabilidad técnica, no la exactitud estadística del organismo publicador.</p>
             </article>
           </div>
         </section>
