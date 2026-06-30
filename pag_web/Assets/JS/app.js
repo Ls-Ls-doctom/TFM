@@ -99,6 +99,21 @@ function destroyChart(container) {
 
 // ── Info popup (click) ────────────────────────────────────────────────────────
 let currentInfoPopup = null;
+let currentTrigger   = null;
+
+function closeInfoPopup() {
+  if (currentInfoPopup) { currentInfoPopup.remove(); currentInfoPopup = null; }
+  currentTrigger = null;
+}
+
+// Único listener persistente: cierra si el click cae fuera del popup Y fuera del trigger activo
+document.addEventListener("click", (e) => {
+  if (!currentInfoPopup) return;
+  if (currentInfoPopup.contains(e.target)) return;
+  if (currentTrigger && (currentTrigger === e.target || currentTrigger.contains(e.target))) return;
+  closeInfoPopup();
+});
+document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeInfoPopup(); });
 
 const KPI_POPUP_CONTENT = {
   kpiVariables: {
@@ -262,7 +277,11 @@ function buildCityPopupBody(city, varCount, catalog) {
 }
 
 function showInfoPopup(triggerEl, title, bodyHtml) {
-  if (currentInfoPopup) { currentInfoPopup.remove(); currentInfoPopup = null; }
+  // Toggle: mismo trigger → cierra
+  if (currentTrigger === triggerEl) { closeInfoPopup(); return; }
+  // Nuevo trigger → sustituye popup existente
+  if (currentInfoPopup) currentInfoPopup.remove();
+  currentTrigger = triggerEl;
   const popup = document.createElement("div");
   popup.className = "info-popup";
   popup.innerHTML = `<div class="info-popup__header">
@@ -271,8 +290,7 @@ function showInfoPopup(triggerEl, title, bodyHtml) {
   </div><div class="info-popup__body">${bodyHtml}</div>`;
   popup.querySelector(".info-popup__close").addEventListener("click", (e) => {
     e.stopPropagation();
-    popup.remove();
-    currentInfoPopup = null;
+    closeInfoPopup();
   });
   document.body.appendChild(popup);
   currentInfoPopup = popup;
@@ -287,16 +305,6 @@ function showInfoPopup(triggerEl, title, bodyHtml) {
     popup.style.left = `${Math.max(8, x)}px`;
     popup.style.top  = `${Math.max(8, y)}px`;
   });
-  setTimeout(() => {
-    document.addEventListener("click", function outsideClose(e) {
-      if (!currentInfoPopup) { document.removeEventListener("click", outsideClose); return; }
-      if (!currentInfoPopup.contains(e.target) && e.target !== triggerEl) {
-        currentInfoPopup.remove();
-        currentInfoPopup = null;
-        document.removeEventListener("click", outsideClose);
-      }
-    });
-  }, 60);
 }
 
 // ── Tooltip global (hover) ────────────────────────────────────────────────────
