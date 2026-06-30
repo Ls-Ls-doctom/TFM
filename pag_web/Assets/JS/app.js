@@ -97,6 +97,55 @@ function destroyChart(container) {
   if (inst) { inst.destroy(); chartInstances.delete(container); }
 }
 
+// ── Tooltip global ────────────────────────────────────────────────────────────
+const KPI_TOOLTIPS = {
+  kpiVariables:  "Número de variables socioeconómicas distintas disponibles en la plataforma: empleo, renta, precios, vivienda, movilidad, demografía y turismo.",
+  kpiCities:     "Las 7 ciudades españolas monitorizadas: Barcelona, Madrid, Valencia, Sevilla, Bilbao, Málaga y Zaragoza.",
+  kpiSources:    "Fuentes oficiales utilizadas: INE Indicadores Urbanos, SEPE, INE IPC provincial, INE IPVA y portales de datos abiertos municipales.",
+  kpiIndicators: "Total de filas en la base de datos. Cada fila representa el valor de un indicador para una ciudad y un periodo concreto.",
+  kpiDetails:    "Total de registros de detalle: observaciones individuales de la base de datos desagregada.",
+};
+
+function initTooltips() {
+  const tip = document.createElement("div");
+  tip.className = "global-tooltip";
+  tip.setAttribute("role", "tooltip");
+  document.body.appendChild(tip);
+
+  // Asigna tooltips a los KPI cards vía JS (sin tocar HTML)
+  Object.entries(KPI_TOOLTIPS).forEach(([id, text]) => {
+    const card = document.getElementById(id)?.closest(".kpi-card");
+    if (card) card.dataset.tooltip = text;
+  });
+
+  const show = (e) => {
+    const target = e.target.closest("[data-tooltip]");
+    if (!target) { tip.classList.remove("is-visible"); return; }
+    tip.textContent = target.dataset.tooltip;
+    tip.classList.add("is-visible");
+    moveTooltip(e);
+  };
+  const move = (e) => { if (tip.classList.contains("is-visible")) moveTooltip(e); };
+  const hide = (e) => { if (!e.relatedTarget?.closest("[data-tooltip]")) tip.classList.remove("is-visible"); };
+
+  document.addEventListener("mouseover", show);
+  document.addEventListener("mousemove", move);
+  document.addEventListener("mouseout", hide);
+}
+
+function moveTooltip(e) {
+  const tip = document.querySelector(".global-tooltip");
+  if (!tip) return;
+  const pad = 14;
+  let x = e.clientX + pad;
+  let y = e.clientY - pad;
+  const { width: w, height: h } = tip.getBoundingClientRect();
+  if (x + w + pad > window.innerWidth) x = e.clientX - w - pad;
+  if (y - h < 4) y = e.clientY + pad;
+  tip.style.left = `${x}px`;
+  tip.style.top  = `${y - h}px`;
+}
+
 const taskLabels = {
   pensando: "Pensando",
   datos: "Recuperando datos",
@@ -1156,8 +1205,10 @@ function renderCityCoverage(cities) {
   cityCoverageChart.innerHTML = sorted.map((item) => {
     const v = Number(item.variables) || 0;
     const pct = ((v / max) * 100).toFixed(1);
-    return `<div class="coverage-row">
-      <span class="coverage-city">${escapeHtml(displayCityName(item.city))}</span>
+    const city = displayCityName(item.city);
+    const tipText = `${city}: ${formatNumber(v)} variables únicas disponibles. La cobertura varía según la política de datos abiertos de cada ayuntamiento.`;
+    return `<div class="coverage-row" data-tooltip="${escapeHtml(tipText)}">
+      <span class="coverage-city">${escapeHtml(city)}</span>
       <div class="coverage-bar-track"><div class="coverage-bar-fill" style="width:${pct}%"></div></div>
       <span class="coverage-count">${formatNumber(v)} variables</span>
     </div>`;
@@ -2445,6 +2496,7 @@ if (sectionNavLinks.length) {
 }
 
 renderLastUpdateTime();
+initTooltips();
 if (sourceChart || latestRows || cityUpdateGrid || indicatorCatalogGrid || unemploymentTrend) {
   loadDashboard();
 }
