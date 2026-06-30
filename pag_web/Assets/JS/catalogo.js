@@ -249,6 +249,17 @@ const UNIT_LABELS = {
   "contracts":          "contratos",
 };
 
+const SOURCE_URLS = {
+  "INE INDICADORES URBANOS": "https://www.ine.es/dyngs/INEbase/es/operacion.htm?c=Estadistica_C&cid=1254736177012&menu=ultiDatos&idp=1254734710990",
+  "INE IPVA":                "https://www.ine.es/dyngs/INEbase/es/operacion.htm?c=Estadistica_C&cid=1254736177015&menu=ultiDatos&idp=1254735976602",
+  "INE IPC PROVINCIAL (PROXY URBANO)": "https://www.ine.es/dyngs/INEbase/es/operacion.htm?c=Estadistica_C&cid=1254736176802&menu=ultiDatos&idp=1254735976607",
+  "INE ATLAS":               "https://www.ine.es/experimental/atlas/experimental_atlas.htm",
+  "SEPE":                    "https://www.sepe.es/HomeSepe/que-es-el-sepe/estadisticas.html",
+  "MUNICIPAL OPEN DATA":     "https://datos.gob.es/es/catalogo",
+  "DIRCE":                   "https://www.ine.es/dyngs/INEbase/es/operacion.htm?c=Estadistica_C&cid=1254736176927&menu=ultiDatos&idp=1254735576550",
+  "CORINE LAND COVER":       "https://land.copernicus.eu/en/products/corine-land-cover",
+};
+
 function normalizeCategory(desc) {
   if (!desc) return "other";
   const raw = String(desc).trim().toLowerCase();
@@ -362,7 +373,12 @@ function renderCatalog() {
           ${escapeHtml(catLabel)}
         </span>
         <div class="catalog-source-pills">
-          ${sources.map((s) => `<span class="catalog-source-pill">${escapeHtml(s)}</span>`).join("")}
+          ${sources.map((s) => {
+            const url = SOURCE_URLS[s];
+            return url
+              ? `<a class="catalog-source-pill" href="${url}" target="_blank" rel="noopener noreferrer">${escapeHtml(s)}</a>`
+              : `<span class="catalog-source-pill">${escapeHtml(s)}</span>`;
+          }).join("")}
         </div>
       </div>
       <h2 class="catalog-var-label">${escapeHtml(label)}</h2>

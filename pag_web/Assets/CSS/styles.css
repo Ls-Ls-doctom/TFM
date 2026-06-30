@@ -2487,6 +2487,94 @@ select:focus,
   line-height: 1.45;
 }
 
+/* ── Loading skeleton ─────────────────────────────────────────── */
+@keyframes skeleton-shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.is-loading .kpi-card strong {
+  color: transparent !important;
+  background: linear-gradient(90deg, #e8e0d6 25%, #f4efe8 50%, #e8e0d6 75%);
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.4s ease infinite;
+  border-radius: 6px;
+  display: block;
+  min-width: 60px;
+}
+
+/* ── Error banner ────────────────────────────────────────────── */
+.api-error-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin: 0 0 16px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: #fff5f5;
+  border: 1px solid #fecaca;
+  color: #991b1b;
+  font-size: 13px;
+  line-height: 1.5;
+}
+.api-error-banner .material-symbols-outlined {
+  font-size: 18px;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+.api-error-banner p { margin: 0; flex: 1; }
+.api-error-close {
+  border: none;
+  background: none;
+  color: #b91c1c;
+  cursor: pointer;
+  font-size: 14px;
+  padding: 0 2px;
+  flex-shrink: 0;
+}
+
+/* ── Chart download button ───────────────────────────────────── */
+.chart-download-btn {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 26px;
+  height: 26px;
+  border: 1px solid rgba(62,72,67,0.15);
+  border-radius: 6px;
+  background: rgba(255,255,255,0.92);
+  color: #6a7a72;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.15s;
+  z-index: 2;
+}
+.chart-canvas-wrap:hover .chart-download-btn {
+  opacity: 1;
+}
+.chart-download-btn:hover {
+  background: #fff;
+  color: var(--accent-green, #3d6b4f);
+  border-color: var(--accent-green, #3d6b4f);
+}
+.chart-download-btn .material-symbols-outlined {
+  font-size: 15px;
+}
+
+/* ── Source pills as links ───────────────────────────────────── */
+a.catalog-source-pill {
+  text-decoration: none;
+  cursor: pointer;
+}
+a.catalog-source-pill:hover {
+  background: rgba(61,107,79,0.12);
+  color: var(--accent-green, #3d6b4f);
+  text-decoration: underline;
+}
+
 .ranking-list {
   display: grid;
   gap: 14px;

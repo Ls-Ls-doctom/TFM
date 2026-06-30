@@ -43,6 +43,7 @@ const resetAnalyticsFilters = document.querySelector("#resetAnalyticsFilters");
 const filterStatus = document.querySelector("#filterStatus");
 const catalogSearch = document.querySelector("#catalogSearch");
 const cityCoverageChart = document.querySelector("#cityCoverageChart");
+const kpiGrid = document.querySelector(".public-kpis");
 const unemploymentTrend = document.querySelector("#unemploymentTrend");
 const unemploymentRanking = document.querySelector("#unemploymentRanking");
 const contractsTrend = document.querySelector("#contractsTrend");
@@ -355,6 +356,7 @@ async function loadDashboard() {
       localStorage.removeItem(DASHBOARD_CACHE_KEY);
     }
   }
+  kpiGrid?.classList.add("is-loading");
   try {
     if (pipelineStatus) {
       pipelineStatus.textContent = "Actualizando resumen de datos.";
@@ -379,19 +381,26 @@ async function loadDashboard() {
       }
     }
   } catch (error) {
+    kpiGrid?.classList.remove("is-loading");
     const message = error instanceof TypeError
       ? `No se puede conectar con la API de datos en ${LOCAL_API_BASE_URL}. Inicia el servicio local.`
       : error.message;
-    if (pipelineStatus) {
-      pipelineStatus.textContent = message;
-    }
-    if (sourceChart) {
-      sourceChart.innerHTML = `<p class="trace-empty">${escapeHtml(message)}</p>`;
+    if (pipelineStatus) pipelineStatus.textContent = message;
+    const dashScreen = document.querySelector("#dashboardScreen");
+    const existing = dashScreen?.querySelector(".api-error-banner");
+    if (existing) existing.remove();
+    if (dashScreen) {
+      const banner = document.createElement("div");
+      banner.className = "api-error-banner";
+      banner.innerHTML = `<span class="material-symbols-outlined">error_outline</span><p>${escapeHtml(message)}</p><button class="api-error-close" aria-label="Cerrar">✕</button>`;
+      banner.querySelector(".api-error-close").addEventListener("click", () => banner.remove());
+      dashScreen.prepend(banner);
     }
   }
 }
 
 function renderDashboard(payload) {
+  kpiGrid?.classList.remove("is-loading");
   dashboardPayload = payload;
   const kpis = payload.kpis || {};
   if (kpiIndicators) kpiIndicators.textContent = formatNumber(kpis.indicatorRows);
@@ -408,8 +417,11 @@ function renderDashboard(payload) {
     pipelineStatus.textContent = `Fuentes OK: ${apiSummary.total_ok ?? "-"} | errores: ${apiSummary.total_error ?? "-"} | manuales: ${apiSummary.total_manual ?? "-"}`;
   }
   if (lastUpdateTime && payload.updatedAt) {
-    lastUpdateTime.dateTime = payload.updatedAt;
-    lastUpdateTime.textContent = payload.updatedAt.replace("T", " ");
+    const d = new Date(payload.updatedAt);
+    lastUpdateTime.dateTime = d.toISOString();
+    lastUpdateTime.textContent = Number.isFinite(d.getTime())
+      ? new Intl.DateTimeFormat("es-ES", { day: "2-digit", month: "short", year: "numeric" }).format(d)
+      : payload.updatedAt;
   }
   renderSourceChart(payload.cities || []);
   renderSourcePie(payload.cities || []);
@@ -1317,6 +1329,23 @@ function renderSeriesLineChart(container, rows, options = {}) {
     },
   });
   chartInstances.set(container, chart);
+
+  const wrap = container.querySelector(".chart-canvas-wrap");
+  if (wrap) {
+    const btn = document.createElement("button");
+    btn.className = "chart-download-btn";
+    btn.title = "Descargar gráfico";
+    btn.setAttribute("aria-label", "Descargar gráfico como imagen PNG");
+    btn.innerHTML = '<span class="material-symbols-outlined">download</span>';
+    btn.addEventListener("click", () => {
+      const url = chart.toBase64Image("image/png", 1);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `iseu-grafico-${Date.now()}.png`;
+      a.click();
+    });
+    wrap.appendChild(btn);
+  }
 }
 
 function compactNumber(value) {
