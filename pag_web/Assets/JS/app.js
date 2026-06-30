@@ -97,7 +97,109 @@ function destroyChart(container) {
   if (inst) { inst.destroy(); chartInstances.delete(container); }
 }
 
-// ── Tooltip global ────────────────────────────────────────────────────────────
+// ── Info popup (click) ────────────────────────────────────────────────────────
+let currentInfoPopup = null;
+
+const KPI_POPUP_CONTENT = {
+  kpiVariables: {
+    title: "Variables únicas disponibles",
+    body: `<p>La plataforma integra <strong>99 tipos de indicadores</strong> socioeconómicos urbanos agrupados en 8 categorías temáticas.</p>
+<ul>
+  <li><strong>Mercado laboral</strong> — paro registrado, contratos, demandantes de empleo</li>
+  <li><strong>Renta y economía</strong> — renta bruta, mediana del hogar, desigualdad Gini y P80/P20</li>
+  <li><strong>Vivienda</strong> — alquiler mensual y por m², precio de la vivienda, viviendas vacías, índice IPVA</li>
+  <li><strong>Demografía</strong> — población, edad mediana, natalidad, mortalidad, extranjería</li>
+  <li><strong>Movilidad</strong> — accidentes de tráfico, bicicleta pública, patrones de desplazamiento al trabajo</li>
+  <li><strong>Territorio</strong> — superficie, usos del suelo, zonas verdes, tejido urbano</li>
+  <li><strong>Educación</strong> — nivel educativo de la población adulta, cobertura de guarderías</li>
+  <li><strong>Turismo y costes</strong> — pernoctaciones, plazas turísticas, variaciones del IPC por grupo</li>
+</ul>
+<p class="popup-note">No todas las variables están disponibles en todas las ciudades. Consulta el <a href="catalogo.html">catálogo</a> para la cobertura exacta.</p>`
+  },
+  kpiCities: {
+    title: "Ciudades cubiertas",
+    body: "__dynamic__"
+  },
+  kpiSources: {
+    title: "Fuentes de datos oficiales",
+    body: `<p>Los indicadores proceden de <strong>7 fuentes oficiales</strong>:</p>
+<ul>
+  <li><strong>INE Indicadores Urbanos</strong> — demografía, educación, vivienda, territorio</li>
+  <li><strong>INE IPC provincial</strong> — variaciones de precios por grupo (proxy urbano)</li>
+  <li><strong>INE IPVA</strong> — índice y variación anual del precio del alquiler</li>
+  <li><strong>SEPE</strong> — paro registrado, contratos y demandantes de empleo (serie mensual)</li>
+  <li><strong>Open Data municipal</strong> — accidentes de tráfico (Barcelona, Madrid y Valencia)</li>
+  <li><strong>INE DIRCE</strong> — directorio de unidades locales empresariales activas</li>
+  <li><strong>Copernicus / Corine Land Cover</strong> — usos del suelo y superficies urbanas</li>
+</ul>`
+  },
+  kpiIndicators: {
+    title: "Observaciones almacenadas",
+    body: `<p>Cada <strong>observación</strong> representa el valor de un indicador para una ciudad y un periodo de tiempo concreto.</p>
+<p>Por ejemplo: <em>"Paro registrado en Barcelona, enero 2024 = 53.420 personas"</em> es una observación.</p>
+<p>El total supera las <strong>136.000 filas</strong> en la tabla principal, más registros adicionales de accidentalidad mensual.</p>
+<p class="popup-note">La cifra varía al actualizarse las fuentes o al añadir nuevas ciudades y periodos.</p>`
+  },
+};
+
+function buildCityPopupBody(city, varCount, catalog) {
+  const byCategory = {};
+  (catalog || []).forEach((item) => {
+    const cat = item.description || "Otros";
+    if (!byCategory[cat]) byCategory[cat] = [];
+    byCategory[cat].push(item.variable);
+  });
+  const totalVars = (catalog || []).length;
+  let html = `<p>Esta ciudad cuenta con <strong>${varCount} variables</strong> únicas de las <strong>${totalVars}</strong> disponibles en la plataforma.</p>`;
+  html += Object.entries(byCategory)
+    .sort(([a], [b]) => a.localeCompare(b, "es"))
+    .map(([cat, vars]) => `<div class="popup-cat">
+      <p class="popup-cat-label">${escapeHtml(cat)}<span class="popup-cat-count">${vars.length}</span></p>
+      <ul>${vars.map((v) => `<li>${escapeHtml(v)}</li>`).join("")}</ul>
+    </div>`).join("");
+  html += `<p class="popup-note">La lista refleja el catálogo completo de la plataforma. <a href="catalogo.html">Ver catálogo detallado →</a></p>`;
+  return html;
+}
+
+function showInfoPopup(triggerEl, title, bodyHtml) {
+  if (currentInfoPopup) { currentInfoPopup.remove(); currentInfoPopup = null; }
+  const popup = document.createElement("div");
+  popup.className = "info-popup";
+  popup.innerHTML = `<div class="info-popup__header">
+    <span class="info-popup__title">${escapeHtml(title)}</span>
+    <button class="info-popup__close" aria-label="Cerrar">✕</button>
+  </div><div class="info-popup__body">${bodyHtml}</div>`;
+  popup.querySelector(".info-popup__close").addEventListener("click", (e) => {
+    e.stopPropagation();
+    popup.remove();
+    currentInfoPopup = null;
+  });
+  document.body.appendChild(popup);
+  currentInfoPopup = popup;
+  requestAnimationFrame(() => {
+    const rect = triggerEl.getBoundingClientRect();
+    const pw = popup.offsetWidth;
+    const ph = popup.offsetHeight;
+    let x = rect.left + window.scrollX;
+    let y = rect.bottom + window.scrollY + 10;
+    if (x + pw > window.innerWidth - 12) x = window.innerWidth - pw - 12;
+    if (rect.bottom + ph + 10 > window.innerHeight) y = rect.top + window.scrollY - ph - 10;
+    popup.style.left = `${Math.max(8, x)}px`;
+    popup.style.top  = `${Math.max(8, y)}px`;
+  });
+  setTimeout(() => {
+    document.addEventListener("click", function outsideClose(e) {
+      if (!currentInfoPopup) { document.removeEventListener("click", outsideClose); return; }
+      if (!currentInfoPopup.contains(e.target) && e.target !== triggerEl) {
+        currentInfoPopup.remove();
+        currentInfoPopup = null;
+        document.removeEventListener("click", outsideClose);
+      }
+    });
+  }, 60);
+}
+
+// ── Tooltip global (hover) ────────────────────────────────────────────────────
 const KPI_TOOLTIPS = {
   kpiVariables:  "Número de variables socioeconómicas distintas disponibles en la plataforma: empleo, renta, precios, vivienda, movilidad, demografía y turismo.",
   kpiCities:     "Las 7 ciudades españolas monitorizadas: Barcelona, Madrid, Valencia, Sevilla, Bilbao, Málaga y Zaragoza.",
@@ -112,10 +214,24 @@ function initTooltips() {
   tip.setAttribute("role", "tooltip");
   document.body.appendChild(tip);
 
-  // Asigna tooltips a los KPI cards vía JS (sin tocar HTML)
+  // Asigna tooltips hover y click popups a los KPI cards
   Object.entries(KPI_TOOLTIPS).forEach(([id, text]) => {
     const card = document.getElementById(id)?.closest(".kpi-card");
-    if (card) card.dataset.tooltip = text;
+    if (!card) return;
+    card.dataset.tooltip = text;
+    card.style.cursor = "pointer";
+    card.addEventListener("click", () => {
+      const conf = KPI_POPUP_CONTENT[id];
+      if (!conf) return;
+      let body = conf.body;
+      if (id === "kpiCities" && dashboardPayload?.cities) {
+        const sorted = [...dashboardPayload.cities].sort((a, b) => Number(b.variables || 0) - Number(a.variables || 0));
+        body = `<p>La plataforma monitoriza <strong>${sorted.length} ciudades</strong> españolas:</p>
+<ul>${sorted.map((c) => `<li><strong>${escapeHtml(displayCityName(c.city))}</strong> — ${formatNumber(c.variables)} variables únicas</li>`).join("")}</ul>
+<p class="popup-note">La cobertura varía según la política de datos abiertos de cada ayuntamiento.</p>`;
+      }
+      showInfoPopup(card, conf.title, body);
+    });
   });
 
   const show = (e) => {
@@ -1207,12 +1323,22 @@ function renderCityCoverage(cities) {
     const pct = ((v / max) * 100).toFixed(1);
     const city = displayCityName(item.city);
     const tipText = `${city}: ${formatNumber(v)} variables únicas disponibles. La cobertura varía según la política de datos abiertos de cada ayuntamiento.`;
-    return `<div class="coverage-row" data-tooltip="${escapeHtml(tipText)}">
+    return `<div class="coverage-row" data-city="${escapeHtml(item.city)}" data-vars="${v}" data-tooltip="${escapeHtml(tipText)}" style="cursor:pointer">
       <span class="coverage-city">${escapeHtml(city)}</span>
       <div class="coverage-bar-track"><div class="coverage-bar-fill" style="width:${pct}%"></div></div>
       <span class="coverage-count">${formatNumber(v)} variables</span>
     </div>`;
   }).join("");
+
+  cityCoverageChart.querySelectorAll(".coverage-row").forEach((row) => {
+    row.addEventListener("click", () => {
+      const city = row.dataset.city || "";
+      const varCount = Number(row.dataset.vars) || 0;
+      const catalog = dashboardPayload?.indicatorCatalog || [];
+      const body = buildCityPopupBody(city, varCount, catalog);
+      showInfoPopup(row, `${displayCityName(city)} — ${formatNumber(varCount)} variables`, body);
+    });
+  });
 }
 
 function analyticsRows() {
