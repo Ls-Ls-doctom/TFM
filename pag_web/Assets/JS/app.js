@@ -419,7 +419,7 @@ function renderDashboard(payload) {
   renderLatestRows(getFilteredLatestRows());
   renderCityUpdates(payload.cityUpdates || []);
   renderIndicatorCatalog(payload.indicatorCatalog || []);
-  renderCityCoverage(payload.cities || [], Number(kpis.variableCount) || 0);
+  renderCityCoverage(payload.cities || []);
   populateAnalyticsFilters(payload.analytics || {});
   renderAnalyticalVisuals();
 }
@@ -1125,28 +1125,31 @@ function renderIndicatorCatalog(indicators) {
   }).join("");
 }
 
-function renderCityCoverage(cities, totalVariables) {
+const CITY_DISPLAY_NAMES = {
+  "malaga": "Málaga", "barcelona": "Barcelona", "madrid": "Madrid",
+  "valencia": "Valencia", "sevilla": "Sevilla", "bilbao": "Bilbao", "zaragoza": "Zaragoza",
+};
+function displayCityName(raw) {
+  return CITY_DISPLAY_NAMES[String(raw || "").toLowerCase()] || String(raw || "");
+}
+
+function renderCityCoverage(cities) {
   if (!cityCoverageChart) return;
-  if (!cities.length || !totalVariables) {
+  if (!cities.length) {
     cityCoverageChart.innerHTML = `<div class="viz-empty">No hay información de cobertura disponible.</div>`;
     return;
   }
-  cityCoverageChart.innerHTML = [...cities]
-    .sort((a, b) => Number(b.variables || 0) - Number(a.variables || 0))
-    .map((item) => {
-      const variables = Number(item.variables) || 0;
-      const percentage = Math.min(100, (variables / totalVariables) * 100);
-      return `
-        <div class="source-row">
-          <div class="source-meta">
-            <span>${escapeHtml(String(item.city || "Ciudad"))}</span>
-            <strong>${formatNumber(variables)} de ${formatNumber(totalVariables)} indicadores · ${formatNumber(item.sources)} fuentes</strong>
-          </div>
-          <div class="bar-track" role="img" aria-label="${percentage.toFixed(1)} por ciento de cobertura">
-            <span class="bar-fill" style="width:${percentage.toFixed(2)}%"></span>
-          </div>
-        </div>`;
-    }).join("");
+  const sorted = [...cities].sort((a, b) => Number(b.variables || 0) - Number(a.variables || 0));
+  const max = Number(sorted[0]?.variables) || 1;
+  cityCoverageChart.innerHTML = sorted.map((item) => {
+    const v = Number(item.variables) || 0;
+    const pct = ((v / max) * 100).toFixed(1);
+    return `<div class="coverage-row">
+      <span class="coverage-city">${escapeHtml(displayCityName(item.city))}</span>
+      <div class="coverage-bar-track"><div class="coverage-bar-fill" style="width:${pct}%"></div></div>
+      <span class="coverage-count">${formatNumber(v)} variables</span>
+    </div>`;
+  }).join("");
 }
 
 function analyticsRows() {
